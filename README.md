@@ -1,2 +1,1 @@
 # Investing
-Dividends
