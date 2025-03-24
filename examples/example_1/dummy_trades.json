@@ -1,0 +1,32 @@
+[
+    {
+        "brokerage": "Robinhood",
+        "account": "margin123",
+        "symbol": "AAPL",
+        "action": "buy",
+        "quantity": 10,
+        "fees": 0.50,
+        "strategy": "day_trade",
+        "trade_date": "2025-03-20"
+    },
+    {
+        "brokerage": "TD Ameritrade",
+        "account": "ira456",
+        "symbol": "TSLA",
+        "action": "sell",
+        "quantity": 5,
+        "fees": 1.25,
+        "strategy": "swing",
+        "trade_date": "2025-03-22"
+    },
+    {
+        "brokerage": "Fidelity",
+        "account": "roth789",
+        "symbol": "NVDA",
+        "action": "buy",
+        "quantity": 25,
+        "fees": 0.75,
+        "strategy": "long_term",
+        "trade_date": "2025-03-23"
+    }
+]
