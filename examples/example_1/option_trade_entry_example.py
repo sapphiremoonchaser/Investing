@@ -1,8 +1,7 @@
 import json
 import os.path
 
-from trading_analytics.data.data_model.trade_entry import TradeEntry
-
+from trading_analytics.data.data_model.option_entry import OptionEntry
 
 def __main(json_file_path: str) -> None:
     """This function is the main function for the example
@@ -17,10 +16,10 @@ def __main(json_file_path: str) -> None:
     with open(json_file_path, "r") as file:
         data = json.load(file)
 
-    stock_entries = []
+    option_entries = []
     for entry in data:
-        stock_entries.append(
-            TradeEntry(**entry)
+        option_entries.append(
+            OptionEntry(**entry)
         )
 
     x = 1
@@ -28,5 +27,5 @@ def __main(json_file_path: str) -> None:
 
 if __name__ == "__main__":
     __main(
-        json_file_path="dummy_trades.json",
+        json_file_path="dummy_option_trades.json",
     )

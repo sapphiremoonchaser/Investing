@@ -5,7 +5,7 @@ from datetime import date, datetime
 from pydantic import field_validator
 from src.trading_analytics.data.data_model.trade_entry import TradeEntry
 
-class StockEntry(TradeEntry):
+class OptionEntry(TradeEntry):
     expiration: date
     strike: float
     premium: float

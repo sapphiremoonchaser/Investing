@@ -1,0 +1,35 @@
+[
+    {
+        "brokerage": "Charles Schwab",
+        "account": "brokerage123",
+        "symbol": "MSFT",
+        "action": "buy",
+        "quantity": 15,
+        "fees": 0.65,
+        "strategy": "momentum",
+        "trade_date": "2025-04-01",
+        "price": 420.50
+    },
+    {
+        "brokerage": "E*TRADE",
+        "account": "taxable456",
+        "symbol": "GOOGL",
+        "action": "sell",
+        "quantity": 8,
+        "fees": 0.80,
+        "strategy": "scalp",
+        "trade_date": "2025-04-05",
+        "price": 175.25
+    },
+    {
+        "brokerage": "Interactive Brokers",
+        "account": "margin789",
+        "symbol": "AMZN",
+        "action": "buy",
+        "quantity": 20,
+        "fees": 1.00,
+        "strategy": "value",
+        "trade_date": "2025-04-10",
+        "price": 190.75
+    }
+]

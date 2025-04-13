@@ -1,0 +1,44 @@
+[
+    {
+        "brokerage": "Merrill Edge",
+        "account": "option123",
+        "symbol": "SPY",
+        "action": "buy",
+        "quantity": 10,
+        "fees": 0.70,
+        "strategy": "options",
+        "trade_date": "2025-04-15",
+        "expiration": "2025-05-16",
+        "strike": 500.00,
+        "premium": 5.20,
+        "subtype": "call"
+    },
+    {
+        "brokerage": "Vanguard",
+        "account": "trade456",
+        "symbol": "QQQ",
+        "action": "sell",
+        "quantity": 5,
+        "fees": 0.95,
+        "strategy": "hedge",
+        "trade_date": "2025-04-20",
+        "expiration": "2025-06-20",
+        "strike": 450.00,
+        "premium": 3.75,
+        "subtype": "put"
+    },
+    {
+        "brokerage": "Tastyworks",
+        "account": "opt789",
+        "symbol": "IWM",
+        "action": "buy",
+        "quantity": 20,
+        "fees": 1.50,
+        "strategy": "straddle",
+        "trade_date": "2025-04-25",
+        "expiration": "2025-07-18",
+        "strike": 220.00,
+        "premium": 4.10,
+        "subtype": "call"
+    }
+]
