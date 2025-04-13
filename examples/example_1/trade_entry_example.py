@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from trading_analytics.data.data_model.stock_entry import StockEntry
+from trading_analytics.data.data_model.trade_entry import TradeEntry
 
 
 def __main(json_file_path: str) -> None:
@@ -20,7 +20,7 @@ def __main(json_file_path: str) -> None:
     stock_entries = []
     for entry in data:
         stock_entries.append(
-            StockEntry(**entry)
+            TradeEntry(**entry)
         )
 
     x = 1
