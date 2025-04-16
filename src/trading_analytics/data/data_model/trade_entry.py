@@ -1,6 +1,7 @@
 
 from datetime import date, datetime
 from pydantic import BaseModel, field_validator
+from typing import Optional
 
 
 class TradeEntry(BaseModel):
