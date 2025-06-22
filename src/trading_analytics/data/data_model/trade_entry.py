@@ -9,6 +9,14 @@ from typing import Optional
 # Enum is used to define a set of named constant values
 # Advantages: readability, type safe, maintainable, iterability, immutable
 class TradeType(str, Enum):
+    """An enumeration of valid trade types.
+
+    Attributes:
+        STOCK (str): Represents a stock trade.
+        INDEX (str): Represents an index trade.
+        OPTION (str): Represents an option trade.
+        DIVIDEND (str): Represents a dividend trade.
+    """
     STOCK = 'STOCK'
     INDEX = 'INDEX'
     OPTION = 'OPTION'
