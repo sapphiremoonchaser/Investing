@@ -22,6 +22,19 @@ class TradeType(str, Enum):
     OPTION = 'OPTION'
     DIVIDEND = 'DIVIDEND'
 
+# Enum for valid trade actions
+class TradeAction(str, Enum):
+    BOUGHT = 'BOUGHT'
+    BOUGHT_COVER = 'BOUGHT COVER'
+    BOUGHT_OPEN = 'BOUGHT OPEN'
+    DIVIDEND = 'DIVIDEND'
+    OPTION_EXPIRED = 'OPTION EXPIRED'
+    OPTION_ASSIGNED = 'OPTION ASSIGNED'
+    OPTION_EXERCISED = 'OPTION EXERCISED'
+    SOLD = 'SOLD'
+    SOLD_SHORT = 'SOLD SHORT'
+    SOLD_CLOSE = 'SOLD CLOSE'
+
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
 
@@ -96,3 +109,9 @@ class TradeEntry(BaseModel):
         if value not in valid_types:
             raise ValueError(f"Trade type must be one of {valid_types}, got {value}")
         return value
+
+    # ToDo: Validator for trade action
+
+    # ToDo: Validator that quantity is >= 0
+
+    # ToDo: Validator that fees are >= 0
