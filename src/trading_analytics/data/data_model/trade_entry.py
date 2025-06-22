@@ -2,7 +2,7 @@ from dataclasses import Field
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, model_validator
 from typing import Optional
 
 # Enum for valid security types
@@ -111,6 +111,25 @@ class TradeEntry(BaseModel):
         return value
 
     # ToDo: Validator for trade action
+    # Model Validator for mapping type to action
+    # Defines a valid_action_map mapping type to action
+    @model_validator(mode='after')
+    def validate_action_type(self):
+        action = self.action
+        type = self.type
+
+        # Define mapping of actions to type
+        valid_action_map = {
+            TradeType.STOCK: {TradeAction.BOUGHT, TradeAction.SOLD},
+            TradeType.INDEX: {TradeAction.BOUGHT, TradeAction.SOLD},
+            TradeType.DIVIDEND: {TradeAction.DIVIDEND},
+            TradeType.OPTION: {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
+                               TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
+                               TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
+        }
+
+
+
 
     # ToDo: Validator that quantity is >= 0
 
