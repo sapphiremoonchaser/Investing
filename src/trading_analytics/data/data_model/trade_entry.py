@@ -135,8 +135,6 @@ class TradeEntry(BaseModel):
         return self
 
 
-
-
     # ToDo: Validator that quantity is >= 0
 
     # ToDo: Validator that fees are >= 0
