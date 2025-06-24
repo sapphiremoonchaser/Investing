@@ -128,6 +128,12 @@ class TradeEntry(BaseModel):
                                TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
         }
 
+        valid_actions = valid_action_map.get(type, set())
+        if action not in valid_actions:
+            raise ValueError(f"Action '{action}' is not valid for trade type, '{type}'. Valid actions: {valid_actions}")
+
+        return self
+
 
 
 
