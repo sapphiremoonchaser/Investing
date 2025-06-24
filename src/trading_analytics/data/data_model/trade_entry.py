@@ -115,6 +115,16 @@ class TradeEntry(BaseModel):
     # Defines a valid_action_map mapping type to action
     @model_validator(mode='after')
     def validate_action_type(self):
+        """Ensures trade actions are valid for the specified trade type.
+
+        Validates that the `action` field of the model is allowed for the given `type` field based on a predefined mapping.
+
+        Returns:
+            self: The validated model instance.
+
+        Raises:
+            ValueError: If the `action` is not valid for the specified `type`. For example, 'BOUGHT' is only allowed for 'STOCK' or 'INDEX' types.
+        """
         action = self.action
         type = self.type
 
