@@ -57,7 +57,17 @@ class TradeStrategy(str, Enum):
     COVERED_CALL = 'COVERED CALL'
     SPREAD = 'SPREAD'
 
-# ToDo: Enum class for brokerage
+# Enum for brokerage
+class Brokerage(str, Enum):
+    """Enum class for valid brokerage names.
+
+        This class defines a set of valid brokerage names as string enumerations.
+        Each value represents a specific brokerage platform.
+
+        Attributes:
+            ETRADE (str): E*TRADE brokerage platform.
+        """
+    ETRADE = 'ETRADE'
 
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
