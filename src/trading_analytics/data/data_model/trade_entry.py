@@ -3,12 +3,13 @@ from datetime import date, datetime
 from enum import Enum
 
 from pydantic import BaseModel, field_validator, model_validator
-from typing import Optional
+from typing import Optional, Union
+
 
 # Enum for valid security types
 # Enum is used to define a set of named constant values
 # Advantages: readability, type safe, maintainable, iterability, immutable
-class TradeType(str, Enum):
+class SecurityType(str, Enum):
     """An enumeration of valid trade types.
 
     Attributes:
@@ -78,7 +79,7 @@ class TradeEntry(BaseModel):
         brokerage (str): The name of the brokerage where the trade is executed.
         account (str): The account identifier for the trade.
         strategy (str): The trading strategy used (e.g., 'swing', 'day').
-        type (str): Type of security (STOCK, DIVIDEND, OPTION).
+        security (str): Type of security (STOCK, DIVIDEND, OPTION).
         trade_date (date): The date the trade was executed.
         symbol (str): The stock or asset symbol (e.g., AAPL).
         action (str): The trade action (e.g., 'buy' or 'sell').
@@ -90,7 +91,7 @@ class TradeEntry(BaseModel):
     brokerage: str
     account: str
     strategy: str
-    type: TradeType
+    security: SecurityType
     trade_date: date
     symbol: str
     action: TradeAction
@@ -107,8 +108,8 @@ class TradeEntry(BaseModel):
     # make type a list?
 
     # Normalize 'type' to uppercase
-    @field_validator('type')
-    def validate_type(cls, value: str) -> str:
+    @field_validator('security', mode='before')
+    def validate_security(cls, value: Union[str, SecurityType]) -> SecurityType:
         """Normalizes and validates the trade type.
 
             Args:
@@ -121,11 +122,15 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the trade type is not one of the valid types.
             """
-        value = value.upper()
-        valid_types = {TradeType.STOCK, TradeType.INDEX, TradeType.OPTION, TradeType.DIVIDEND}
-        if value not in valid_types:
-            raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
-        return value
+        # Don't need this if for my csv file but might need it later
+        if isinstance(value, SecurityType):
+            return value
+        # This is the case for my csv file
+        if isinstance(value, str):
+            try:
+                return SecurityType(value.upper())
+            except Exception:
+                raise ValueError(f"Security type {value} is invalid.")
 
     # Convert date to format YYYY-mm-dd
     @field_validator("trade_date", mode="before")
@@ -189,16 +194,16 @@ class TradeEntry(BaseModel):
             ValueError: If the `action` is not valid for the specified `type`. For example, 'BOUGHT' is only allowed for 'STOCK' or 'INDEX' types.
         """
         action = self.action
-        type = self.type
+        type = self.security
 
         # Define mapping of actions to type
         valid_action_map = {
-            TradeType.STOCK: {TradeAction.BOUGHT, TradeAction.SOLD},
-            TradeType.INDEX: {TradeAction.BOUGHT, TradeAction.SOLD},
-            TradeType.DIVIDEND: {TradeAction.DIVIDEND},
-            TradeType.OPTION: {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
-                               TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
-                               TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
+            SecurityType.STOCK: {TradeAction.BOUGHT, TradeAction.SOLD},
+            SecurityType.INDEX: {TradeAction.BOUGHT, TradeAction.SOLD},
+            SecurityType.DIVIDEND: {TradeAction.DIVIDEND},
+            SecurityType.OPTION: {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
+                                  TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
+                                  TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
         }
 
         valid_actions = valid_action_map.get(type, set())
