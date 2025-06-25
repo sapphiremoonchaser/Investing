@@ -35,7 +35,6 @@ class TradeAction(str, Enum):
     SOLD_SHORT = 'SOLD SHORT'
     SOLD_CLOSE = 'SOLD CLOSE'
 
-# ToDo: Enum for Strategy
 # Enum for valid strategies
 class TradeStrategy(str, Enum):
     """Enum class for valid trading strategies.
