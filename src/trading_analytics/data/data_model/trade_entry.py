@@ -85,6 +85,15 @@ class TradeEntry(BaseModel):
         except Exception as e:
             raise ValueError("Yo mama needs to get tha time, fool")
 
+    # Normalize 'type' to uppercase
+    @field_validator('type')
+    def validate_type(cls, value: str) -> str:
+        value = value.upper()
+        valid_types = {TradeType.STOCK, TradeType.INDEX, TradeType.OPTION, TradeType.DIVIDEND}
+        if value not in valid_types:
+            raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
+        return value
+
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
     @model_validator(mode='after')
