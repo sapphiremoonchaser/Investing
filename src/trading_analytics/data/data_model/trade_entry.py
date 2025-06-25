@@ -56,10 +56,10 @@ class TradeEntry(BaseModel):
     brokerage: str
     account: str
     strategy: str
-    type: str
+    type: TradeType
     trade_date: date
     symbol: str
-    action: str
+    action: TradeAction
     quantity: int
     fees: float
 
@@ -84,31 +84,6 @@ class TradeEntry(BaseModel):
             return datetime.strptime(value, "%Y-%m-%d").date()
         except Exception as e:
             raise ValueError("Yo mama needs to get tha time, fool")
-
-    # Make sure trade type is in a specific set
-    @field_validator('type')
-    def validate_type(cls, value: str) -> str:
-        """Validates that the trade type is one of the allowed values.
-
-        Args:
-            cls: The class calling this method (used in classmethod context).
-            value (str): The trade type to validate.
-
-        Returns:
-            str: The validated trade type.
-
-        Raises:
-            ValueError: If the trade type is not one of 'STOCK', 'INDEX', 'OPTION', or 'DIVIDEND'.
-        """
-        valid_types = {
-            TradeType.STOCK,
-            TradeType.INDEX,
-            TradeType.OPTION,
-            TradeType.DIVIDEND
-        }
-        if value not in valid_types:
-            raise ValueError(f"Trade type must be one of {valid_types}, got {value}")
-        return value
 
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
@@ -150,9 +125,8 @@ class TradeEntry(BaseModel):
             raise ValueError("Quantity cannot be negative")
         return value
 
-    # ToDo: Validator that fees are >= 0
     # Validate that fees are 0 or positive
-    @field_validator('fees', mode="after"):
+    @field_validator('fees', mode="after")
     def validate_fees(cls, value: int) -> float:
         if value < 0:
             raise ValueError("Fees cannot be negative")
