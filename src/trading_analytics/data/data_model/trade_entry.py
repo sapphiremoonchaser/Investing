@@ -57,6 +57,8 @@ class TradeStrategy(str, Enum):
     COVERED_CALL = 'COVERED CALL'
     SPREAD = 'SPREAD'
 
+# ToDo: Enum class for brokerage
+
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
 
@@ -85,6 +87,36 @@ class TradeEntry(BaseModel):
     quantity: int
     fees: float
 
+    # ToDo: validator to make sure trade_id is non-empty, positive, int
+
+    # ToDo: validator to make sure strategy_id is non-empty, positve, int
+
+    # ToDo: validator to make sure brokerage in Enum class Brokerage
+
+    # ToDo: validator for strategy
+    # make type a list?
+
+    # Normalize 'type' to uppercase
+    @field_validator('type')
+    def validate_type(cls, value: str) -> str:
+        """Normalizes and validates the trade type.
+
+            Args:
+                cls: The class being validated.
+                value (str): The trade type value to validate.
+
+            Returns:
+                str: The normalized (uppercase) trade type value.
+
+            Raises:
+                ValueError: If the trade type is not one of the valid types.
+            """
+        value = value.upper()
+        valid_types = {TradeType.STOCK, TradeType.INDEX, TradeType.OPTION, TradeType.DIVIDEND}
+        if value not in valid_types:
+            raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
+        return value
+
     # Convert date to format YYYY-mm-dd
     @field_validator("trade_date", mode="before")
     def parse_date(cls, value):
@@ -107,26 +139,7 @@ class TradeEntry(BaseModel):
         except Exception as e:
             raise ValueError("Yo mama needs to get tha time, fool")
 
-    # Normalize 'type' to uppercase
-    @field_validator('type')
-    def validate_type(cls, value: str) -> str:
-        """Normalizes and validates the trade type.
-
-            Args:
-                cls: The class being validated.
-                value (str): The trade type value to validate.
-
-            Returns:
-                str: The normalized (uppercase) trade type value.
-
-            Raises:
-                ValueError: If the trade type is not one of the valid types.
-            """
-        value = value.upper()
-        valid_types = {TradeType.STOCK, TradeType.INDEX, TradeType.OPTION, TradeType.DIVIDEND}
-        if value not in valid_types:
-            raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
-        return value
+    # ToDo: validator to make sure symbol is non-empty
 
     # Normalize 'action' to uppercase
     @field_validator('action')
@@ -221,16 +234,3 @@ class TradeEntry(BaseModel):
         if value < 0:
             raise ValueError("Fees cannot be negative")
         return value
-
-    # ToDo: validator to make sure symbol is non-empty
-
-    # ToDo: validator to make sure trade_id is non-empty, positive, int
-
-    # ToDo: validator to make sure strategy_id is non-empty, positve, int
-
-    # ToDo: validator to make sure brokerage is nonempty
-
-    # ToDo: validator for strategy
-    # make type a list?
-
-
