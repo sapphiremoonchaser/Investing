@@ -110,7 +110,6 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Trade type must be one of {valid_types}, got {value}")
         return value
 
-    # ToDo: Validator for trade action
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
     @model_validator(mode='after')
@@ -144,7 +143,17 @@ class TradeEntry(BaseModel):
 
         return self
 
-
-    # ToDo: Validator that quantity is >= 0
+    # Validate that quantity is not negative
+    @field_validator('quantity', mode="after")
+    def validate_quantity(cls, value: int) -> int:
+        if value < 0:
+            raise ValueError("Quantity cannot be negative")
+        return value
 
     # ToDo: Validator that fees are >= 0
+    # Validate that fees are 0 or positive
+    @field_validator('fees', mode="after"):
+    def validate_fees(cls, value: int) -> float:
+        if value < 0:
+            raise ValueError("Fees cannot be negative")
+        return value
