@@ -163,6 +163,18 @@ class TradeEntry(BaseModel):
     # Validate that quantity is not negative
     @field_validator('quantity', mode="after")
     def validate_quantity(cls, value: int) -> int:
+        """Validates that the quantity is not negative.
+
+            Args:
+                cls: The class being validated.
+                value (int): The quantity value to validate.
+
+            Returns:
+                int: The validated quantity value.
+
+            Raises:
+                ValueError: If the quantity is negative.
+            """
         if value < 0:
             raise ValueError("Quantity cannot be negative")
         return value
@@ -170,6 +182,18 @@ class TradeEntry(BaseModel):
     # Validate that fees are 0 or positive
     @field_validator('fees', mode="after")
     def validate_fees(cls, value: int) -> float:
+        """Validates that the fees are zero or positive.
+
+        Args:
+            cls: The class being validated.
+            value (int): The fees value to validate.
+
+        Returns:
+            float: The validated fees value.
+
+        Raises:
+            ValueError: If the fees are negative.
+        """
         if value < 0:
             raise ValueError("Fees cannot be negative")
         return value
