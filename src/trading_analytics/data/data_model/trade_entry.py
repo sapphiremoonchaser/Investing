@@ -35,6 +35,8 @@ class TradeAction(str, Enum):
     SOLD_SHORT = 'SOLD SHORT'
     SOLD_CLOSE = 'SOLD CLOSE'
 
+# ToDo: Enum for Strategy
+
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
 
@@ -94,6 +96,17 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
         return value
 
+    # Normalize 'action' to uppercase
+    @field_validator('action')
+    def validate_action(cls, value: str) -> str:
+        value = value.upper()
+        valid_types = {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
+                        TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
+                        TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
+        if value not in valid_types:
+            raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
+        return value
+
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
     @model_validator(mode='after')
@@ -140,3 +153,16 @@ class TradeEntry(BaseModel):
         if value < 0:
             raise ValueError("Fees cannot be negative")
         return value
+
+    # ToDo: validator to make sure symbol is non-empty
+
+    # ToDo: validator to make sure trade_id is non-empty, positive, int
+
+    # ToDo: validator to make sure strategy_id is non-empty, positve, int
+
+    # ToDo: validator to make sure brokerage is nonempty
+
+    # ToDo: validator for strategy
+    # make type a list?
+
+
