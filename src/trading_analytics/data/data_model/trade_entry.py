@@ -110,6 +110,18 @@ class TradeEntry(BaseModel):
     # Normalize 'type' to uppercase
     @field_validator('type')
     def validate_type(cls, value: str) -> str:
+        """Normalizes and validates the trade type.
+
+            Args:
+                cls: The class being validated.
+                value (str): The trade type value to validate.
+
+            Returns:
+                str: The normalized (uppercase) trade type value.
+
+            Raises:
+                ValueError: If the trade type is not one of the valid types.
+            """
         value = value.upper()
         valid_types = {TradeType.STOCK, TradeType.INDEX, TradeType.OPTION, TradeType.DIVIDEND}
         if value not in valid_types:
@@ -119,6 +131,18 @@ class TradeEntry(BaseModel):
     # Normalize 'action' to uppercase
     @field_validator('action')
     def validate_action(cls, value: str) -> str:
+        """Normalizes and validates the trade action.
+
+            Args:
+                cls: The class being validated.
+                value (str): The trade action value to validate.
+
+            Returns:
+                str: The normalized (uppercase) trade action value.
+
+            Raises:
+                ValueError: If the trade action is not one of the valid types.
+            """
         value = value.upper()
         valid_types = {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
                         TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
