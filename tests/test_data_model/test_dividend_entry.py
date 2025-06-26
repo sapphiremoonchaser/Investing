@@ -20,8 +20,8 @@ def valid_dividend_data():
         "interest_paid": 0.82
     }
 
-def test_valid_dividend_entry():
-    dividend = DividendEntry(**valid_dividend_data())
+def test_valid_dividend_entry(valid_dividend_data):
+    dividend = DividendEntry(**valid_dividend_data)
     assert dividend.interest_paid == 0.82
     assert dividend.security == SecurityType.DIVIDEND
     assert dividend.action == TradeAction.DIVIDEND
@@ -38,7 +38,7 @@ def test_invalid_security_type():
     with pytest.raises(ValidationError, match="not valid for security type"):
         DividendEntry(**data)
 
-def test_immutability():
-    dividend = DividendEntry(**valid_dividend_data())
+def test_immutability(valid_dividend_data):
+    dividend = DividendEntry(**valid_dividend_data)
     with pytest.raises(Exception, match="Cannot change a frozen field"):
         dividend.interest_paid = 1.0
