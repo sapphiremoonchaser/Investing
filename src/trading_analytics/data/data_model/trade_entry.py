@@ -98,8 +98,8 @@ class TradeEntry(BaseModel):
     quantity: int = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
 
-    # Validator to make sure brokerage in Enum class Brokerage
-    @field_validator('brokerage')
+    # Normalize brokerage to uppercase
+    @field_validator('brokerage', mode='before')
     def validate_brokerage(cls, value: Union[str, Brokerage]) -> Brokerage:
         """Validates and normalizes the brokerage name.
 
@@ -119,10 +119,9 @@ class TradeEntry(BaseModel):
         # This is case for csv file
         if isinstance(value, str):
             try:
-                return Brokerage(values.upper())
+                return Brokerage(value.upper())
             except Exception:
                 raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
-
 
     # ToDo: validator for strategy
     # make type a list?
@@ -175,7 +174,7 @@ class TradeEntry(BaseModel):
             raise ValueError("Yo mama needs to get tha time, fool")
 
     # Normalize 'action' to uppercase
-    @field_validator('action')
+    @field_validator('action', mode='before')
     def validate_action(cls, value: Union[str, TradeAction]) -> TradeAction:
         """Normalizes and validates the trade action.
 
@@ -230,41 +229,3 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Action '{action}' is not valid for security type, '{security}'. Valid actions: {valid_actions}")
 
         return self
-
-    # Validate that quantity is not negative
-    @field_validator('quantity', mode="after")
-    def validate_quantity(cls, value: int) -> int:
-        """Validates that the quantity is not negative.
-
-            Args:
-                cls: The class being validated.
-                value (int): The quantity value to validate.
-
-            Returns:
-                int: The validated quantity value.
-
-            Raises:
-                ValueError: If the quantity is negative.
-            """
-        if value < 0:
-            raise ValueError("Quantity cannot be negative")
-        return value
-
-    # Validate that fees are 0 or positive
-    @field_validator('fees', mode="after")
-    def validate_fees(cls, value: float) -> float:
-        """Validates that the fees are zero or positive.
-
-        Args:
-            cls: The class being validated.
-            value (int): The fees value to validate.
-
-        Returns:
-            float: The validated fees value.
-
-        Raises:
-            ValueError: If the fees are negative.
-        """
-        if value < 0:
-            raise ValueError("Fees cannot be negative")
-        return value
