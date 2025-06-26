@@ -158,7 +158,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'action' to uppercase
     @field_validator('action')
-    def validate_action(cls, value: str) -> str:
+    def validate_action(cls, value: Union[str, TradeAction]) -> TradeAction:
         """Normalizes and validates the trade action.
 
             Args:
@@ -171,13 +171,14 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the trade action is not one of the valid types.
             """
-        value = value.upper()
-        valid_types = {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
-                        TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
-                        TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
-        if value not in valid_types:
-            raise ValueError(f"Trade type must be one of {valid_types}, got {value}.")
-        return value
+        if isinstance(value, TradeAction):
+            return value
+        # This is the case for my csv file
+        if isinstance(value, str):
+            try:
+                return TradeAction(value.upper())
+            except Exception:
+                raise ValueError(f"Trade action '{value}' is invalid.")
 
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
@@ -194,7 +195,7 @@ class TradeEntry(BaseModel):
             ValueError: If the `action` is not valid for the specified `type`. For example, 'BOUGHT' is only allowed for 'STOCK' or 'INDEX' types.
         """
         action = self.action
-        type = self.security
+        security = self.security
 
         # Define mapping of actions to type
         valid_action_map = {
@@ -206,9 +207,9 @@ class TradeEntry(BaseModel):
                                   TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
         }
 
-        valid_actions = valid_action_map.get(type, set())
+        valid_actions = valid_action_map.get(security, set())
         if action not in valid_actions:
-            raise ValueError(f"Action '{action}' is not valid for trade type, '{type}'. Valid actions: {valid_actions}")
+            raise ValueError(f"Action '{action}' is not valid for security type, '{security}'. Valid actions: {valid_actions}")
 
         return self
 
