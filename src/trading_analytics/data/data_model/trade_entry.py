@@ -88,7 +88,7 @@ class TradeEntry(BaseModel):
     """
     trade_id: int
     strategy_id: int
-    brokerage: str
+    brokerage: Brokerage
     account: str
     strategy: str
     security: SecurityType
@@ -103,6 +103,30 @@ class TradeEntry(BaseModel):
     # ToDo: validator to make sure strategy_id is non-empty, positve, int
 
     # ToDo: validator to make sure brokerage in Enum class Brokerage
+    @field_validator('brokerage')
+    def validate_brokerage(cls, value: Union[str, Brokerage]) -> Brokerage:
+        """Validates and normalizes the brokerage name.
+
+            Args:
+                cls: The class being validated.
+                value (Union[str, Brokerage]): The brokerage value to validate, either a string or Brokerage enum.
+
+            Returns:
+                Brokerage: The validated Brokerage enum value.
+
+            Raises:
+                ValueError: If the provided brokerage name is not valid.
+            """
+        # Don't need this if using my csv file but might need later
+        if isinstance(value, Brokerage):
+            return value
+        # This is case for csv file
+        if isinstance(value, str):
+            try:
+                return Brokerage(values.upper())
+            except Exception:
+                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
+
 
     # ToDo: validator for strategy
     # make type a list?
@@ -234,7 +258,7 @@ class TradeEntry(BaseModel):
 
     # Validate that fees are 0 or positive
     @field_validator('fees', mode="after")
-    def validate_fees(cls, value: int) -> float:
+    def validate_fees(cls, value: float) -> float:
         """Validates that the fees are zero or positive.
 
         Args:
