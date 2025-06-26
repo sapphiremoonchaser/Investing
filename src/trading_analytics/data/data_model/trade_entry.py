@@ -2,7 +2,7 @@ from dataclasses import Field
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, Union
 
 
@@ -86,23 +86,19 @@ class TradeEntry(BaseModel):
         quantity (int): The number of shares or units traded.
         fees (float): The transaction fees associated with the trade.
     """
-    trade_id: int
-    strategy_id: int
-    brokerage: Brokerage
-    account: str
-    strategy: str
-    security: SecurityType
-    trade_date: date
-    symbol: str
-    action: TradeAction
-    quantity: int
-    fees: float
+    trade_id: int = Field(gt=0, frozen=True)
+    strategy_id: int = Field(gt=0, frozen=True)
+    brokerage: Brokerage = Field(frozen=True) # Do I even need to validate this?
+    account: str = Field(min_length=4, frozen=True)
+    strategy: TradeStrategy = Field(frozen=True) # Do I even need to validate this?
+    security: SecurityType = Field(frozen=True) # Do I even need to validate this?
+    trade_date: date = Field(frozen=True)
+    symbol: str = Field(min_length=3, frozen=True)
+    action: TradeAction = Field(frozen=True) # Do I even need to validate this?
+    quantity: int = Field(ge=0, frozen=True)
+    fees: float = Field(ge=0, frozen=True)
 
-    # ToDo: validator to make sure trade_id is non-empty, positive, int
-
-    # ToDo: validator to make sure strategy_id is non-empty, positve, int
-
-    # ToDo: validator to make sure brokerage in Enum class Brokerage
+    # Validator to make sure brokerage in Enum class Brokerage
     @field_validator('brokerage')
     def validate_brokerage(cls, value: Union[str, Brokerage]) -> Brokerage:
         """Validates and normalizes the brokerage name.
@@ -177,8 +173,6 @@ class TradeEntry(BaseModel):
             return datetime.strptime(value, "%Y-%m-%d").date()
         except Exception as e:
             raise ValueError("Yo mama needs to get tha time, fool")
-
-    # ToDo: validator to make sure symbol is non-empty
 
     # Normalize 'action' to uppercase
     @field_validator('action')
