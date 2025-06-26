@@ -95,3 +95,4 @@ class OptionEntry(TradeEntry):
 
         return self
 
+
