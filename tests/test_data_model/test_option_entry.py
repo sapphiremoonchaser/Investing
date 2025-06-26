@@ -28,7 +28,7 @@ def test_valid_option_entry():
     option = OptionEntry(**valid_option_data())
     assert option.strike == 150.0
     assert option.premium == 100.0
-    assert option.subtype == "CALL"  # Note: Will fail due to validator bug
+    assert option.subtype == OptionType.CALL  # Note: Will fail due to validator bug
     assert option.security == SecurityType.OPTION
     assert option.expiration == date(2025, 12, 31)
 
