@@ -75,7 +75,7 @@ class OptionEntry(TradeEntry):
                 raise ValueError(f"Option type '{value}' is not a valid option type.")
 
     # Validate that the security type is 'OPTION'
-    @model_validator(model_validator='after')
+    @model_validator(mode='after')
     def check_option_security(self):
         """Validates that the security type is 'OPTION' and expiration date is after trade date.
 
