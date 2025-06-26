@@ -88,13 +88,13 @@ class TradeEntry(BaseModel):
     """
     trade_id: int = Field(gt=0, frozen=True)
     strategy_id: int = Field(gt=0, frozen=True)
-    brokerage: Brokerage = Field(frozen=True) # Do I even need to validate this?
+    brokerage: Brokerage = Field(frozen=True)
     account: str = Field(min_length=4, frozen=True)
-    strategy: TradeStrategy = Field(frozen=True) # Do I even need to validate this?
-    security: SecurityType = Field(frozen=True) # Do I even need to validate this?
+    strategy: list[TradeStrategy] = Field(frozen=True)
+    security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=3, frozen=True)
-    action: TradeAction = Field(frozen=True) # Do I even need to validate this?
+    action: TradeAction = Field(frozen=True)
     quantity: int = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
 
@@ -122,9 +122,6 @@ class TradeEntry(BaseModel):
                 return Brokerage(value.upper())
             except Exception:
                 raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
-
-    # ToDo: validator for strategy
-    # make type a list?
 
     # Normalize 'type' to uppercase
     @field_validator('security', mode='before')
