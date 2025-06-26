@@ -25,6 +25,23 @@ class SecurityType(str, Enum):
 
 # Enum for valid trade actions
 class TradeAction(str, Enum):
+    """Enum class for valid trade actions.
+
+    This class defines a set of valid trade actions as string enumerations.
+    Each action represents a specific type of trading activity.
+
+    Attributes:
+        BOUGHT (str): Standard purchase of a security.
+        BOUGHT_COVER (str): Purchase to cover a short position.
+        BOUGHT_OPEN (str): Purchase to open a position, typically for options.
+        DIVIDEND (str): Dividend payment received.
+        OPTION_EXPIRED (str): Option contract expired.
+        OPTION_ASSIGNED (str): Option contract assigned.
+        OPTION_EXERCISED (str): Option contract exercised.
+        SOLD (str): Standard sale of a security.
+        SOLD_SHORT (str): Sale to open a short position.
+        SOLD_CLOSE (str): Sale to close a position, typically for options.
+    """
     BOUGHT = 'BOUGHT'
     BOUGHT_COVER = 'BOUGHT COVER'
     BOUGHT_OPEN = 'BOUGHT OPEN'
@@ -150,7 +167,7 @@ class TradeEntry(BaseModel):
 
     # Convert date to format YYYY-mm-dd
     @field_validator("trade_date", mode="before")
-    def parse_date(cls, value):
+    def parse_trade_date(cls, value):
         """Parses a date from a string or returns an existing date object.
 
         Args:
