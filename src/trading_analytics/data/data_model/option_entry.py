@@ -50,7 +50,7 @@ class OptionEntry(TradeEntry):
             raise ValueError("Yo mama needs to get tha time, fool")
 
     # Normalize option type to uppercase
-    @field_validator('brokerage', mode='before')
+    @field_validator('subtype', mode='before')
     def validate_option_type(cls, value: Union[str, OptionType]) -> OptionType:
 
         # Don't need this if using my csv file but might need later
