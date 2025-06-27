@@ -110,7 +110,7 @@ class TradeEntry(BaseModel):
     strategy: list[TradeStrategy] = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
-    symbol: str = Field(min_length=3, frozen=True)
+    symbol: str = Field(min_length=1, frozen=True)
     action: TradeAction = Field(frozen=True)
     quantity: int = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
