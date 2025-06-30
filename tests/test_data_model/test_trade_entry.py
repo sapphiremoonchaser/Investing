@@ -222,7 +222,7 @@ class TestAccount(unittest.TestCase):
 
     Invalid Test Cases:
         string less than length 4
-        integer instead of string (ToDo: Fix this so that convert to str before applying field constraints)
+        integer less than length 4
     """
     def test_valid_account(self):
         """Tests the validation of account values for TradeEntry.
@@ -230,7 +230,7 @@ class TestAccount(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_accounts = ['1234']
+        valid_accounts = ['1234', 12345]
         for value in valid_accounts:
             with self.subTest(value=value):
                 trade_entry = TradeEntry(
@@ -246,7 +246,7 @@ class TestAccount(unittest.TestCase):
                     quantity=100,
                     fees=5.0
                 )
-                self.assertEqual(trade_entry.account, value)
+                self.assertEqual(trade_entry.account, str(value))
 
     def test_invalid_account(self):
         """Tests the validation of invalid trade_id values for TradeEntry.
@@ -257,7 +257,7 @@ class TestAccount(unittest.TestCase):
         Raises:
             ValidationError: If the trade_id is not a positive integer.
         """
-        invalid_accounts = [1234, '123']
+        invalid_accounts = ['123', 123]
         for value in invalid_accounts:
             with self.assertRaises(ValidationError):
                 TradeEntry(

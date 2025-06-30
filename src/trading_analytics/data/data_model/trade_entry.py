@@ -140,7 +140,29 @@ class TradeEntry(BaseModel):
             except Exception:
                 raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
 
-    # Normalize 'type' to uppercase
+    # Convert account to string
+    @field_validator('account', mode='before')
+    def convert_account_to_string(cls, value):
+        """Converts and validates the account field to a string.
+
+        Args:
+            cls: The class being validated.
+            value: The account value to validate and convert.
+
+        Returns:
+            str: The validated account value as a string.
+
+        Raises:
+            ValueError: If the account value cannot be converted to a string.
+        """
+        if isinstance(value, str):
+            return value
+        try:
+            return f"{value}"
+        except Exception as e:
+            raise ValueError(f"Check the length.")
+
+    # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
     def validate_security(cls, value: Union[str, SecurityType]) -> SecurityType:
         """Normalizes and validates the trade type.
