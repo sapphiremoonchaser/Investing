@@ -252,13 +252,13 @@ class TestAccount(unittest.TestCase):
                 self.assertEqual(trade_entry.account, str(value))
 
     def test_invalid_account(self):
-        """Tests the validation of invalid trade_id values for TradeEntry.
+        """Tests the validation of invalid account values for TradeEntry.
 
         Args:
             self: The test case instance.
 
         Raises:
-            ValidationError: If the trade_id is not a positive integer.
+            ValidationError: If the account is not a positive integer.
         """
         invalid_accounts = ['123', 123]
         for value in invalid_accounts:
@@ -486,7 +486,7 @@ class TestSecurity(unittest.TestCase):
 
 # ToDo: test trade date
 
-# ToDo: test symbol
+
 class TestSymbol(unittest.TestCase):
     """Unit tests for validating symbol values in TradeEntry.
 
@@ -494,7 +494,7 @@ class TestSymbol(unittest.TestCase):
         string with a length of at least 1
 
     Invalid Test Cases:
-        None
+        empty string
     """
     def test_valid_symbol(self):
         """Tests the validation of symbol values for TradeEntry.
@@ -502,7 +502,7 @@ class TestSymbol(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_symbols = ['A', 'DSX', None]
+        valid_symbols = ['A', 'DSX']
         for value in valid_symbols:
             with self.subTest(value=value):
                 trade_entry = TradeEntry(
@@ -519,6 +519,33 @@ class TestSymbol(unittest.TestCase):
                     fees=5.0
                 )
                 self.assertEqual(trade_entry.symbol, value)
+
+    def test_invalid_symbol(self):
+        """Tests the validation of invalid symbol values for TradeEntry.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the symbol is not a positive integer.
+        """
+        invalid_symbols = ['']
+        for value in invalid_symbols:
+            with self.assertRaises(ValidationError):
+                TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account='1234',
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol=value,
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+
 
 # ToDo: test action
 
