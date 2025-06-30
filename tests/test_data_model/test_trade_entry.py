@@ -8,11 +8,13 @@ from pydantic import ValidationError
 class TestTradeId(unittest.TestCase):
     """Unit tests for validating trade_id values in TradeEntry.
 
-    This class contains test cases to verify the behavior of trade_id validation,
-    ensuring no negative numbers or decimals.
+    Valid Test Cases:
+        positive integers
 
-    Attributes:
-        None
+    Invalid Test Cases:
+        0
+        negative integers
+        decimals
     """
     def test_valid_trade_id(self):
         """Tests the validation of trade_id values for TradeEntry.
@@ -73,11 +75,13 @@ class TestTradeId(unittest.TestCase):
 class TestStrategyId(unittest.TestCase):
     """Unit tests for validating strategy_id values in TradeEntry.
 
-    This class contains test cases to verify the behavior of strategy_id validation,
-    ensuring no negative numbers or decimals.
+    Valid Test Cases:
+        positive integers
 
-    Attributes:
-        None
+    Invalid Test Cases:
+        0
+        negative integers
+        decimals
     """
     def test_valid_strategy_id(self):
         """Tests the validation of strategy_id values for TradeEntry.
@@ -138,11 +142,17 @@ class TestStrategyId(unittest.TestCase):
 class TestBrokerage(unittest.TestCase):
     """Unit tests for validating brokerage values in TradeEntry.
 
-    This class contains test cases to verify the behavior of brokerage validation,
-    ensuring valid inputs are correctly normalized and invalid inputs raise appropriate errors.
+    Valid Test Cases:
+        UPPERCASE valid brokerage name, (ETRADE)
+        lowercase valid brokerage name (etrade)
 
-    Attributes:
-        None
+    Invalid Test Cases:
+        None,
+        invalid string
+
+    ToDo:
+        Enum Bokerage?
+
     """
     def test_valid_brokerage(self):
         """Tests the validation of brokerage values for TradeEntry.
@@ -211,12 +221,18 @@ class TestBrokerage(unittest.TestCase):
 class TestSecurity(unittest.TestCase):
     """Unit tests for validating security types in TradeEntry.
 
-    This class contains test cases to verify the behavior of security type validation,
-    ensuring valid security types (STOCK, INDEX, DIVIDEND, OPTION) are correctly normalized
-    and invalid inputs raise appropriate ValidationError exceptions.
+    This is split into stock/index, dividend, and option since action would be distinctly different among each set.
 
-    Attributes:
-        None
+    Valid Test Cases:
+        - everything from enum class SecurityType
+        - UPPERCASE valid strings
+        - lowercase valid strings
+
+    Invalid Test Cases:
+        - string that is not the equivalent of something in SecurityType enum class
+        - empty string
+        - None
+
     """
     def test_valid_stock_index(self):
         """Tests the validation of stock and index security types for TradeEntry.
@@ -270,8 +286,8 @@ class TestSecurity(unittest.TestCase):
         Raises:
             ValidationError: If the brokerage value is invalid.
         """
-        invalid_brokerages = [SecurityType.DIVIDEND, SecurityType.OPTION, "Heather", "", None]
-        for value in invalid_brokerages:
+        invalid_securities = [SecurityType.DIVIDEND, SecurityType.OPTION, "Heather", "", None]
+        for value in invalid_securities:
             with self.subTest(value=value):
                 with self.assertRaises(ValidationError):
                     TradeEntry(
