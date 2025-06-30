@@ -214,7 +214,67 @@ class TestBrokerage(unittest.TestCase):
                     )
 
 
-# ToDo: test account
+class TestAccount(unittest.TestCase):
+    """Unit tests for validating account values in TradeEntry.
+
+    Valid Test Cases:
+        string with a length of at least 4
+
+    Invalid Test Cases:
+        string less than length 4
+        integer instead of string (ToDo: Fix this so that convert to str before applying field constraints)
+    """
+    def test_valid_account(self):
+        """Tests the validation of account values for TradeEntry.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_accounts = ['1234']
+        for value in valid_accounts:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account=value,
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.account, value)
+
+    def test_invalid_account(self):
+        """Tests the validation of invalid trade_id values for TradeEntry.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the trade_id is not a positive integer.
+        """
+        invalid_accounts = [1234, '123']
+        for value in invalid_accounts:
+            with self.assertRaises(ValidationError):
+                TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account=value,
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+
+
 
 # ToDo: test strategy
 
