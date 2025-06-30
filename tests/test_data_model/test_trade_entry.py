@@ -70,7 +70,70 @@ class TestTradeId(unittest.TestCase):
                 )
 
 
-# ToDo: test strategy_id
+class TestStrategyId(unittest.TestCase):
+    """Unit tests for validating strategy_id values in TradeEntry.
+
+    This class contains test cases to verify the behavior of strategy_id validation,
+    ensuring no negative numbers or decimals.
+
+    Attributes:
+        None
+    """
+    def test_valid_strategy_id(self):
+        """Tests the validation of strategy_id values for TradeEntry.
+
+        Iterates through a list of valid strategy_id inputs, positive numbers.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_strategy_ids = [1, 10, 100]
+        for value in valid_strategy_ids:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=value,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.strategy_id, value)
+
+    def test_invalid_strategy_id(self):
+        """Tests the validation of invalid strategy_id values for TradeEntry.
+
+        Iterates through a list of invalid strategy_id inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the trade_id is not a positive integer.
+        """
+        invalid_strategy_ids = [-1, 0.5, 0]
+        for value in invalid_strategy_ids:
+            with self.assertRaises(ValidationError):
+                TradeEntry(
+                    trade_id=1,
+                    strategy_id=value,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+
 
 class TestBrokerage(unittest.TestCase):
     """Unit tests for validating brokerage values in TradeEntry.
@@ -139,6 +202,7 @@ class TestBrokerage(unittest.TestCase):
                         quantity=100,
                         fees=5.0
                     )
+
 
 # ToDo: test account
 
