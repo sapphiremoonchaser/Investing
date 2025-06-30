@@ -550,6 +550,20 @@ class TestSymbol(unittest.TestCase):
 # ToDo: test action
 
 # ToDo: test quantity
+class TestQuantity(unittest.TestCase):
+    """Unit tests for validating quantity values in TradeEntry.
+
+    Valid Test Cases:
+        positive integers, decimals
+
+    Invalid Test Cases:
+        negative integers
+    """
+    def test_valid_quantity(self):
+        pass
+
+    def test_invalid_quantity(self):
+        pass
 
 # ToDo: test fees
 

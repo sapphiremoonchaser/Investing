@@ -112,7 +112,7 @@ class TradeEntry(BaseModel):
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
     action: TradeAction = Field(frozen=True)
-    quantity: int = Field(ge=0, frozen=True)
+    quantity: float = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
 
     # Normalize brokerage to uppercase
@@ -208,7 +208,6 @@ class TradeEntry(BaseModel):
             return f"{value}"
         except Exception as e:
             raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1?")
-
 
     # Convert date to format YYYY-mm-dd
     @field_validator("trade_date", mode="before")
