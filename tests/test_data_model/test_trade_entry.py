@@ -5,6 +5,73 @@ from datetime import date
 from pydantic import ValidationError
 
 
+class TestTradeId(unittest.TestCase):
+    """Unit tests for validating trade_id values in TradeEntry.
+
+    This class contains test cases to verify the behavior of trade_id validation,
+    ensuring no negative numbers or decimals.
+
+    Attributes:
+        None
+    """
+    def test_valid_trade_id(self):
+        """Tests the validation of trade_id values for TradeEntry.
+
+        Iterates through a list of valid trade_id inputs, positive numbers.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_trade_ids = [1, 10, 100]
+        for value in valid_trade_ids:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=value,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.trade_id, value)
+
+    def test_invalid_trade_id(self):
+        """Tests the validation of invalid trade_id values for TradeEntry.
+
+        Iterates through a list of invalid trade_id inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the trade_id is not a positive integer.
+        """
+        invalid_trade_ids = [-1, 0.5, 0]
+        for value in invalid_trade_ids:
+            with self.assertRaises(ValidationError):
+                TradeEntry(
+                    trade_id=value,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+
+
+# ToDo: test strategy_id
+
 class TestBrokerage(unittest.TestCase):
     """Unit tests for validating brokerage values in TradeEntry.
 
@@ -72,6 +139,10 @@ class TestBrokerage(unittest.TestCase):
                         quantity=100,
                         fees=5.0
                     )
+
+# ToDo: test account
+
+# ToDo: test strategy
 
 class TestSecurity(unittest.TestCase):
     """Unit tests for validating security types in TradeEntry.
@@ -269,6 +340,16 @@ class TestSecurity(unittest.TestCase):
                         quantity=100,
                         fees=5.0
                     )
+
+# ToDo: test trade date
+
+# ToDo: test symbol
+
+# ToDo: test action
+
+# ToDo: test quantity
+
+# ToDo: test fees
 
 if __name__ == '__main__':
     unittest.main()
