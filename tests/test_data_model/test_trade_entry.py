@@ -554,16 +554,69 @@ class TestQuantity(unittest.TestCase):
     """Unit tests for validating quantity values in TradeEntry.
 
     Valid Test Cases:
-        positive integers, decimals
+        positive integers
+        decimals
+        0
 
     Invalid Test Cases:
         negative integers
+        negative decimals
+        None
     """
     def test_valid_quantity(self):
-        pass
+        """Tests the validation of quantity values for TradeEntry.
+
+        Iterates through a list of valid quantity inputs, positive numbers.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_quantities = [100, 1.4, 0]
+        for value in valid_quantities:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=value,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.quantity, value)
 
     def test_invalid_quantity(self):
-        pass
+        """Tests the validation of invalid quantity values for TradeEntry.
+
+        Iterates through a list of invalid quantity inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the quantity is not a positive float.
+        """
+        invalid_trade_ids = [-1, -0.5, 'a', None]
+        for value in invalid_trade_ids:
+            with self.assertRaises(ValidationError):
+                TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=value,
+                    fees=5.0
+                )
 
 # ToDo: test fees
 
