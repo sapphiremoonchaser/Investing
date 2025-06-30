@@ -15,6 +15,7 @@ class TestTradeId(unittest.TestCase):
         0
         negative integers
         decimals
+        None
     """
     def test_valid_trade_id(self):
         """Tests the validation of trade_id values for TradeEntry.
@@ -54,7 +55,7 @@ class TestTradeId(unittest.TestCase):
         Raises:
             ValidationError: If the trade_id is not a positive integer.
         """
-        invalid_trade_ids = [-1, 0.5, 0]
+        invalid_trade_ids = [-1, 0.5, 0, None]
         for value in invalid_trade_ids:
             with self.assertRaises(ValidationError):
                 TradeEntry(
@@ -82,6 +83,7 @@ class TestStrategyId(unittest.TestCase):
         0
         negative integers
         decimals
+        None
     """
     def test_valid_strategy_id(self):
         """Tests the validation of strategy_id values for TradeEntry.
@@ -121,7 +123,7 @@ class TestStrategyId(unittest.TestCase):
         Raises:
             ValidationError: If the trade_id is not a positive integer.
         """
-        invalid_strategy_ids = [-1, 0.5, 0]
+        invalid_strategy_ids = [-1, 0.5, 0, None]
         for value in invalid_strategy_ids:
             with self.assertRaises(ValidationError):
                 TradeEntry(
@@ -219,6 +221,7 @@ class TestAccount(unittest.TestCase):
 
     Valid Test Cases:
         string with a length of at least 4
+        None (bc validator can handle this)
 
     Invalid Test Cases:
         string less than length 4
@@ -230,7 +233,7 @@ class TestAccount(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_accounts = ['1234', 12345]
+        valid_accounts = ['1234', 12345, None]
         for value in valid_accounts:
             with self.subTest(value=value):
                 trade_entry = TradeEntry(
@@ -484,6 +487,38 @@ class TestSecurity(unittest.TestCase):
 # ToDo: test trade date
 
 # ToDo: test symbol
+class TestSymbol(unittest.TestCase):
+    """Unit tests for validating symbol values in TradeEntry.
+
+    Valid Test Cases:
+        string with a length of at least 1
+
+    Invalid Test Cases:
+        None
+    """
+    def test_valid_symbol(self):
+        """Tests the validation of symbol values for TradeEntry.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_symbols = ['A', 'DSX', None]
+        for value in valid_symbols:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account='1234',
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol=value,
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.symbol, value)
 
 # ToDo: test action
 

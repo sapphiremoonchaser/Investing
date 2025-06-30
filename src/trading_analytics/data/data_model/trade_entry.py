@@ -142,7 +142,7 @@ class TradeEntry(BaseModel):
 
     # Convert account to string
     @field_validator('account', mode='before')
-    def convert_account_to_string(cls, value):
+    def convert_account_to_string(cls, value: Union[str, int]) -> str:
         """Converts and validates the account field to a string.
 
         Args:
@@ -160,7 +160,7 @@ class TradeEntry(BaseModel):
         try:
             return f"{value}"
         except Exception as e:
-            raise ValueError(f"Check the length.")
+            raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
@@ -186,6 +186,29 @@ class TradeEntry(BaseModel):
                 return SecurityType(value.upper())
             except Exception:
                 raise ValueError(f"Security type {value} is invalid.")
+
+    # Convert symbol to a string
+    @field_validator('symbol', mode='before')
+    def validate_symbol(cls, value: Union[str, int]) -> str:
+        """Converts and validates the symbol field to a string.
+
+        Args:
+            cls: The class being validated.
+            value: The account value to validate and convert.
+
+        Returns:
+            str: The validated symbol value as a string.
+
+        Raises:
+            ValueError: If the symbol value cannot be converted to a string.
+        """
+        if isinstance(value, str):
+            return value
+        try:
+            return f"{value}"
+        except Exception as e:
+            raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1?")
+
 
     # Convert date to format YYYY-mm-dd
     @field_validator("trade_date", mode="before")
