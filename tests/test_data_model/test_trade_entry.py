@@ -336,17 +336,6 @@ class TestSecurity(unittest.TestCase):
         Raises:
             ValidationError: If the security type is invalid.
         """
-        """Tests the validation of invalid brokerage values for TradeEntry.
-
-        Iterates through a list of invalid brokerage inputs to ensure they raise a ValidationError
-        when used in a TradeEntry instance.
-
-        Args:
-            self: The test case instance.
-
-        Raises:
-            ValidationError: If the brokerage value is invalid.
-        """
         invalid_securities = [SecurityType.DIVIDEND, SecurityType.OPTION, "Heather", "", None]
         for value in invalid_securities:
             with self.subTest(value=value):
@@ -613,7 +602,196 @@ class TestSymbol(unittest.TestCase):
                 )
 
 
-# ToDo: test action
+class TestAction(unittest.TestCase):
+    """Unit tests for validating action types in TradeEntry.
+
+    Valid Test Cases:
+        - everything from enum class TradeAction
+        - UPPERCASE valid strings
+        - lowercase valid strings
+
+    Invalid Test Cases:
+        - string that is not the equivalent of something in SecurityType enum class
+        - empty string
+        - None
+
+    ToDo (other tests):
+        - lower cases for everything
+    """
+    def test_valid_action_dividend(self):
+        """Tests the validation of action types where security type is 'dividend' for TradeEntry.
+
+        Iterates through a list of valid action inputs, including TradeAction enum values
+        and their string equivalents (case-insensitive), to ensure they are correctly
+        validated and normalized to the TradeAction enum.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_actions = [TradeAction.DIVIDEND, "DIVIDEND"]
+        for value in valid_actions:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=2,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.DIVIDEND],
+                    security=SecurityType.DIVIDEND,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=value,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.action, value)
+
+    def test_invalid_action_dividend(self):
+        """Tests the validation of invalid action types when security type is 'dividend' for TradeEntry.
+
+        Iterates through a list of invalid action inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the action type is invalid.
+        """
+        invalid_actions = ["Heather", "", None]
+        for value in invalid_actions:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    TradeEntry(
+                        trade_id=1,
+                        strategy_id=1,
+                        brokerage=Brokerage.ETRADE,
+                        account="TEST1234",
+                        strategy=[TradeStrategy.DIVIDEND],
+                        security=SecurityType.DIVIDEND,
+                        trade_date=date(2023, 10, 15),
+                        symbol="AAPL",
+                        action=value,
+                        quantity=100,
+                        fees=5.0
+                    )
+
+    def test_valid_action_stock_index(self):
+        """Tests the validation of action types where security type is 'stock' or 'index' for TradeEntry.
+
+        Iterates through a list of valid action inputs, including TradeAction enum values
+        and their string equivalents (case-insensitive), to ensure they are correctly
+        validated and normalized to the TradeAction enum.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_actions = [TradeAction.BOUGHT, TradeAction.SOLD, "BOUGHT", "SOLD"]
+        for value in valid_actions:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=2,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=value,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.action, value)
+
+    def test_invalid_action_stock_index(self):
+        """Tests the validation of invalid action types when security type is 'option' for TradeEntry.
+
+        Iterates through a list of invalid action inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the action type is invalid.
+        """
+        invalid_actions = ["Heather", "", None]
+        for value in invalid_actions:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    TradeEntry(
+                        trade_id=1,
+                        strategy_id=1,
+                        brokerage=Brokerage.ETRADE,
+                        account="TEST1234",
+                        strategy=[TradeStrategy.BASIC_TRADE],
+                        security=SecurityType.INDEX,
+                        trade_date=date(2023, 10, 15),
+                        symbol="AAPL",
+                        action=value,
+                        quantity=100,
+                        fees=5.0
+                    )
+
+    def test_valid_action_option(self):
+        """Tests the validation of action types where security type is 'option' for TradeEntry.
+
+        Iterates through a list of valid action inputs, including TradeAction enum values
+        and their string equivalents (case-insensitive), to ensure they are correctly
+        validated and normalized to the TradeAction enum.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_actions = [TradeAction.BOUGHT_COVER, TradeAction.OPTION_EXERCISED, TradeAction.SOLD_SHORT,
+                         "BOUGHT COVER", "OPTION ASSIGNED", "OPTION EXPIRED"]
+        for value in valid_actions:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=2,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.COVERED_CALL],
+                    security=SecurityType.OPTION,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=value,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.action, value)
+
+    def test_invalid_action_option(self):
+        """Tests the validation of invalid action types when security type is 'option' for TradeEntry.
+
+        Iterates through a list of invalid action inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the action type is invalid.
+        """
+        invalid_actions = ["Heather", "", None]
+        for value in invalid_actions:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    TradeEntry(
+                        trade_id=1,
+                        strategy_id=1,
+                        brokerage=Brokerage.ETRADE,
+                        account="TEST1234",
+                        strategy=[TradeStrategy.COVERED_CALL],
+                        security=SecurityType.OPTION,
+                        trade_date=date(2023, 10, 15),
+                        symbol="AAPL",
+                        action=value,
+                        quantity=100,
+                        fees=5.0
+                    )
 
 
 class TestQuantity(unittest.TestCase):
