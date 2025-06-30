@@ -277,8 +277,6 @@ class TestAccount(unittest.TestCase):
                     fees=5.0
                 )
 
-
-
 # ToDo: test strategy
 
 class TestSecurity(unittest.TestCase):
@@ -484,7 +482,75 @@ class TestSecurity(unittest.TestCase):
                         fees=5.0
                     )
 
-# ToDo: test trade date
+
+class TestTradeDate(unittest.TestCase):
+    """Unit tests for validating brokerage values in TradeEntry.
+
+    Valid Test Cases:
+        date object (date(2025,1,23))
+
+    Invalid Test Cases:
+        wrong format (year at end)
+        wrong format (date in middle)
+        empty string
+        random string
+        None
+
+    ToDo (More tests):
+        string with format "YYYY-MM-dd" (valid)
+
+    """
+    def test_valid_trade_date(self):
+        # valid_trade_dates = [date(2025,1,23), "2025-01-23"]
+        valid_trade_dates = [date(2025, 1, 23),]
+        for value in valid_trade_dates:
+            with self.subTest(value=value):
+                # Create a valid TradeEntry instance to test brokerage validation
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=value,
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=5.0
+                )
+                self.assertEqual(trade_entry.trade_date, value)
+
+
+    def test_invalid_trade_date(self):
+        """Tests the validation of invalid trade date values for TradeEntry.
+
+        Iterates through a list of invalid trade_date inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the trade_date value is invalid.
+        """
+        invalid_trade_dates = ["14-10-2014", "2022-14-09", "Heather", "", None]
+        for value in invalid_trade_dates:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    TradeEntry(
+                        trade_id=1,
+                        strategy_id=1,
+                        brokerage=Brokerage.ETRADE,
+                        account="TEST1234",
+                        strategy=[TradeStrategy.BASIC_TRADE],
+                        security=SecurityType.STOCK,
+                        trade_date=value,
+                        symbol="AAPL",
+                        action=TradeAction.BOUGHT,
+                        quantity=100,
+                        fees=5.0
+                    )
 
 
 class TestSymbol(unittest.TestCase):
@@ -549,7 +615,7 @@ class TestSymbol(unittest.TestCase):
 
 # ToDo: test action
 
-# ToDo: test quantity
+
 class TestQuantity(unittest.TestCase):
     """Unit tests for validating quantity values in TradeEntry.
 
