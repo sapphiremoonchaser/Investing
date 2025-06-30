@@ -601,8 +601,8 @@ class TestQuantity(unittest.TestCase):
         Raises:
             ValidationError: If the quantity is not a positive float.
         """
-        invalid_trade_ids = [-1, -0.5, 'a', None]
-        for value in invalid_trade_ids:
+        invalid_quantities = [-1, -0.5, 'a', None]
+        for value in invalid_quantities:
             with self.assertRaises(ValidationError):
                 TradeEntry(
                     trade_id=1,
@@ -618,7 +618,76 @@ class TestQuantity(unittest.TestCase):
                     fees=5.0
                 )
 
-# ToDo: test fees
+
+class TestFees(unittest.TestCase):
+    """Unit tests for validating fees values in TradeEntry.
+
+    Valid Test Cases:
+        positive integers
+        decimals
+        0
+
+    Invalid Test Cases:
+        negative integers
+        negative decimals
+        None
+    """
+    def test_valid_fees(self):
+        """Tests the validation of fees values for TradeEntry.
+
+        Iterates through a list of valid fees inputs, positive numbers.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_fees = [1, 0.51, 0]
+        for value in valid_fees:
+            with self.subTest(value=value):
+                trade_entry = TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=100,
+                    fees=value
+                )
+                self.assertEqual(trade_entry.fees, value)
+
+    def test_invalid_fees(self):
+        """Tests the validation of invalid fees values for TradeEntry.
+
+        Iterates through a list of invalid fees inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the fees is not a positive float.
+        """
+        invalid_fees = [-1, -0.5, 'a', None]
+        for value in invalid_fees:
+            with self.assertRaises(ValidationError):
+                TradeEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.BASIC_TRADE],
+                    security=SecurityType.STOCK,
+                    trade_date=date(2023, 10, 15),
+                    symbol="AAPL",
+                    action=TradeAction.BOUGHT,
+                    quantity=value,
+                    fees=5.0
+                )
+
+
 
 if __name__ == '__main__':
     unittest.main()
