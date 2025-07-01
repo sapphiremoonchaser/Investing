@@ -161,7 +161,82 @@ class TestStrike(unittest.TestCase):
                 )
 
 
-# ToDo: Test Premium
+class TestPremium(unittest.TestCase):
+    """Unit tests for validating premium in OptionEntry.
+
+    Valid Test Cases:
+        positive integers
+        positive decimals
+
+    Invalid Test Cases:
+        negative integers
+        negative decimals
+        non-numeric strings
+        None
+        0
+    """
+    def test_valid_premium(self):
+        """Tests the validation of premium values for TradeEntry.
+
+        Iterates through a list of valid premium inputs, positive numbers.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_premium = [1, 0.51]
+        for value in valid_premium:
+            with self.subTest(value=value):
+                option_entry = OptionEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.COVERED_CALL],
+                    security=SecurityType.OPTION,
+                    trade_date=date(2025, 1, 23),
+                    symbol="AAPL",
+                    action=TradeAction.OPTION_EXPIRED,
+                    quantity=100,
+                    fees=5.0,
+                    expiration_date=date(2025, 1, 30),
+                    strike=25,
+                    premium=value,
+                    subtype=OptionType.CALL
+                )
+                self.assertEqual(option_entry.premium, value)
+
+    def test_invalid_premium(self):
+        """Tests the validation of invalid premium values for TradeEntry.
+
+        Iterates through a list of invalid premium inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the premium is not a positive float.
+        """
+        invalid_premiums = [-1, -0.5, 0, 'a', None]
+        for value in invalid_premiums:
+            with self.assertRaises(ValidationError):
+                OptionEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.COVERED_CALL],
+                    security=SecurityType.OPTION,
+                    trade_date=date(2025, 1, 23),
+                    symbol="AAPL",
+                    action=TradeAction.OPTION_EXPIRED,
+                    quantity=100,
+                    fees=5.0,
+                    expiration_date=date(2025, 1, 30),
+                    strike=25,
+                    premium=value,
+                    subtype=OptionType.CALL
+                )
 
 
 # ToDo: Test Subtype
