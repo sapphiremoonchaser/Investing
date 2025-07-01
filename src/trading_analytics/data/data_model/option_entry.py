@@ -26,7 +26,7 @@ class OptionEntry(TradeEntry):
     expiration_date: date
     strike: float = Field(gt=0, frozen=True)
     premium: float = Field(gt=0, frozen=True)
-    subtype: OptionType = Field(frozen=True)
+    option_type: OptionType = Field(frozen=True)
 
     @field_validator("expiration_date", mode="before")
     def parse_expiration_date(cls, value):
@@ -50,7 +50,7 @@ class OptionEntry(TradeEntry):
             raise ValueError("Yo mama needs to get tha time, fool")
 
     # Normalize option type to uppercase
-    @field_validator('subtype', mode='before')
+    @field_validator('option_type', mode='before')
     def validate_option_type(cls, value: Union[str, OptionType]) -> OptionType:
         """Normalizes and validates the option type.
 

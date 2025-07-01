@@ -43,7 +43,7 @@ class TestExpirationDate(unittest.TestCase):
                     expiration_date=value,
                     strike=5,
                     premium=1,
-                    subtype=OptionType.CALL
+                    option_type=OptionType.CALL
                 )
                 self.assertEqual(option_entry.expiration_date, value)
 
@@ -79,7 +79,7 @@ class TestExpirationDate(unittest.TestCase):
                         expiration_date=value,
                         strike=5,
                         premium=1,
-                        subtype=OptionType.CALL
+                        option_type=OptionType.CALL
                     )
 
 
@@ -123,7 +123,7 @@ class TestStrike(unittest.TestCase):
                     expiration_date=date(2025, 1, 30),
                     strike=value,
                     premium=1,
-                    subtype=OptionType.CALL
+                    option_type=OptionType.CALL
                 )
                 self.assertEqual(option_entry.strike, value)
 
@@ -157,7 +157,7 @@ class TestStrike(unittest.TestCase):
                     expiration_date=date(2025, 1, 30),
                     strike=value,
                     premium=1,
-                    subtype=OptionType.CALL
+                    option_type=OptionType.CALL
                 )
 
 
@@ -201,7 +201,7 @@ class TestPremium(unittest.TestCase):
                     expiration_date=date(2025, 1, 30),
                     strike=25,
                     premium=value,
-                    subtype=OptionType.CALL
+                    option_type=OptionType.CALL
                 )
                 self.assertEqual(option_entry.premium, value)
 
@@ -235,12 +235,90 @@ class TestPremium(unittest.TestCase):
                     expiration_date=date(2025, 1, 30),
                     strike=25,
                     premium=value,
-                    subtype=OptionType.CALL
+                    option_type=OptionType.CALL
                 )
 
 
-# ToDo: Test Subtype
+class TestSubtype(unittest.TestCase):
+    """Unit tests for validating option type values in TradeEntry.
 
+    Valid Test Cases:
+        UPPERCASE valid subtype
+        lowercase valid suptype
+
+    Invalid Test Cases:
+        None,
+        invalid string
+
+    ToDo:
+        Enum Bokerage?
+
+    """
+    def test_valid_option_types(self):
+        """Tests the validation of option type values for TradeEntry.
+
+        Iterates through a list of valid option type inputs, including subtype enum values
+        and their string equivalents (case-insensitive), to ensure they are correctly
+        validated and normalized to the Brokerage enum.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_option_types = list(OptionType) + ["CALL", "put"]
+        for value in valid_option_types:
+            with self.subTest(value=value):
+                option_entry = OptionEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.COVERED_CALL],
+                    security=SecurityType.OPTION,
+                    trade_date=date(2025, 1, 23),
+                    symbol="AAPL",
+                    action=TradeAction.OPTION_EXPIRED,
+                    quantity=100,
+                    fees=5.0,
+                    expiration_date=date(2025, 1, 30),
+                    strike=25,
+                    premium=1,
+                    option_type=value
+                )
+                self.assertIn(option_entry.option_type, list(OptionType))
+
+    def test_invalid_option_type(self):
+        """Tests the validation of invalid option types values for TradeEntry.
+
+        Iterates through a list of invalid option types inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the option types value is invalid.
+        """
+        invalid_option_types = ["Heather", "", None]
+        for value in invalid_option_types:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    OptionEntry(
+                        trade_id=1,
+                        strategy_id=1,
+                        brokerage=Brokerage.ETRADE,
+                        account="TEST1234",
+                        strategy=[TradeStrategy.COVERED_CALL],
+                        security=SecurityType.OPTION,
+                        trade_date=date(2025, 1, 23),
+                        symbol="AAPL",
+                        action=TradeAction.OPTION_EXPIRED,
+                        quantity=100,
+                        fees=5.0,
+                        expiration_date=date(2025, 1, 30),
+                        strike=25,
+                        premium=1,
+                        option_type=value
+                    )
 
 
 if __name__ == '__main__':
