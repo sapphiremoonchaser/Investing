@@ -2,8 +2,6 @@ import unittest
 
 from trading_analytics.data.data_model.trade_entry import Brokerage, TradeEntry, SecurityType, TradeAction, TradeStrategy
 from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
-
-OptionType
 from datetime import date
 from pydantic import ValidationError
 
@@ -84,3 +82,91 @@ class TestExpirationDate(unittest.TestCase):
                         subtype=OptionType.CALL
                     )
 
+
+class TestStrike(unittest.TestCase):
+    """Unit tests for validating strike price in OptionEntry.
+
+    Valid Test Cases:
+        positive integers
+        positive decimals
+
+    Invalid Test Cases:
+        negative integers
+        negative decimals
+        non-numeric strings
+        None
+        0
+    """
+    def test_valid_strike(self):
+        """Tests the validation of strike values for TradeEntry.
+
+        Iterates through a list of valid strike inputs, positive numbers.
+
+        Args:
+            self: The test case instance.
+        """
+        valid_strike = [1, 0.51]
+        for value in valid_strike:
+            with self.subTest(value=value):
+                option_entry = OptionEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.COVERED_CALL],
+                    security=SecurityType.OPTION,
+                    trade_date=date(2025, 1, 23),
+                    symbol="AAPL",
+                    action=TradeAction.OPTION_EXPIRED,
+                    quantity=100,
+                    fees=5.0,
+                    expiration_date=date(2025, 1, 30),
+                    strike=value,
+                    premium=1,
+                    subtype=OptionType.CALL
+                )
+                self.assertEqual(option_entry.strike, value)
+
+    def test_invalid_strike(self):
+        """Tests the validation of invalid strike values for TradeEntry.
+
+        Iterates through a list of invalid strike inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the strike is not a positive float.
+        """
+        invalid_strikes = [-1, -0.5, 0, 'a', None]
+        for value in invalid_strikes:
+            with self.assertRaises(ValidationError):
+                OptionEntry(
+                    trade_id=1,
+                    strategy_id=1,
+                    brokerage=Brokerage.ETRADE,
+                    account="TEST1234",
+                    strategy=[TradeStrategy.COVERED_CALL],
+                    security=SecurityType.OPTION,
+                    trade_date=date(2025, 1, 23),
+                    symbol="AAPL",
+                    action=TradeAction.OPTION_EXPIRED,
+                    quantity=100,
+                    fees=5.0,
+                    expiration_date=date(2025, 1, 30),
+                    strike=value,
+                    premium=1,
+                    subtype=OptionType.CALL
+                )
+
+
+# ToDo: Test Premium
+
+
+# ToDo: Test Subtype
+
+
+
+if __name__ == '__main__':
+    unittest.main()
