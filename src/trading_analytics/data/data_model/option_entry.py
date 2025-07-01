@@ -23,12 +23,12 @@ class OptionType(str, Enum):
     PUT = 'PUT'
 
 class OptionEntry(TradeEntry):
-    expiration: date
+    expiration_date: date
     strike: float = Field(gt=0, frozen=True)
     premium: float = Field(gt=0, frozen=True)
     subtype: OptionType = Field(frozen=True)
 
-    @field_validator("expiration", mode="before")
+    @field_validator("expiration_date", mode="before")
     def parse_expiration_date(cls, value):
         """Parses and validates the expiration date.
 
@@ -90,8 +90,8 @@ class OptionEntry(TradeEntry):
         """
         if self.security != SecurityType.OPTION:
             raise ValueError(f"OptionEntry must have security {SecurityType.OPTION}, got {self.security}")
-        if self.expiration <= self.trade_date:
-            raise ValueError(f"Expiration date {self.expiration} must be after trade date {self.trade_date}.")
+        if self.expiration_date <= self.trade_date:
+            raise ValueError(f"Expiration date {self.expiration_date} must be after trade date {self.trade_date}.")
 
         return self
 

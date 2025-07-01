@@ -473,7 +473,7 @@ class TestSecurity(unittest.TestCase):
 
 
 class TestTradeDate(unittest.TestCase):
-    """Unit tests for validating brokerage values in TradeEntry.
+    """Unit tests for validating trade date values in TradeEntry.
 
     Valid Test Cases:
         date object (date(2025,1,23))
