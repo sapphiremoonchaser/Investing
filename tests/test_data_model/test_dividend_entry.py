@@ -17,6 +17,7 @@ class TestDividendAmount(unittest.TestCase):
     Invalid Test Cases:
         negative integers
         negative decimals
+        non-numeric strings
         None
     """
     def test_valid_dividend_amount(self):
@@ -47,22 +48,22 @@ class TestDividendAmount(unittest.TestCase):
                 )
                 self.assertEqual(dividend_entry.dividend_amount, value)
 
-    def test_invalid_fees(self):
-        """Tests the validation of invalid fees values for TradeEntry.
+    def test_invalid_dividend_amount(self):
+        """Tests the validation of invalid dividend amount values for TradeEntry.
 
-        Iterates through a list of invalid fees inputs to ensure they raise a ValidationError
+        Iterates through a list of invalid dividend amount inputs to ensure they raise a ValidationError
         when used in a TradeEntry instance.
 
         Args:
             self: The test case instance.
 
         Raises:
-            ValidationError: If the fees is not a positive float.
+            ValidationError: If the dividend amount is not a positive float.
         """
-        invalid_fees = [-1, -0.5, 'a', None]
-        for value in invalid_fees:
+        invalid_dividend_amounts = [-1, -0.5, 'a', None]
+        for value in invalid_dividend_amounts:
             with self.assertRaises(ValidationError):
-                TradeEntry(
+                DividendEntry(
                     trade_id=1,
                     strategy_id=1,
                     brokerage=Brokerage.ETRADE,
@@ -72,8 +73,9 @@ class TestDividendAmount(unittest.TestCase):
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
                     action=TradeAction.BOUGHT,
-                    quantity=value,
-                    fees=5.0
+                    quantity=100,
+                    fees=5.0,
+                    dividend_amount=value
                 )
 
 
