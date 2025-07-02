@@ -73,8 +73,3 @@ def load_trades_from_excel(file_path: str) -> list:
             continue
 
     return trades
-
-file_path = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx"
-trades = load_trades_from_excel(file_path)
-
-x = 1

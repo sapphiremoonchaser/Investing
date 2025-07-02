@@ -150,9 +150,3 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         results["by_strategy"][strategy][symbol]["option_qty"] += option_qty
 
     return results
-
-
-
-
-
-
