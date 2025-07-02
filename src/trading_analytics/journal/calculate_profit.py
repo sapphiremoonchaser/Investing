@@ -124,10 +124,9 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         results["by_symbol"][symbol]["option_qty"] += option_qty
 
         # Aggregate profit, stock_qty, and option_qty for each strategy
-        for strategy in strategies:
-            results["by_strategy"][strategy]["profit"] += profit
-            results["by_strategy"][strategy]["stock_qty"] += stock_qty
-            results["by_strategy"][strategy]["option_qty"] += option_qty
+        results["by_strategy"][strategy]["profit"] += profit
+        results["by_strategy"][strategy]["stock_qty"] += stock_qty
+        results["by_strategy"][strategy]["option_qty"] += option_qty
 
     return results
 
