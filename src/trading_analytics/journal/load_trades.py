@@ -1,13 +1,15 @@
 from multiprocessing.connection import default_family
 
 import pandas as pd
-import setuptools.command.bdist_egg
-
 from trading_analytics.data.data_model.trade_entry import Brokerage, SecurityType, TradeAction, TradeStrategy
 from trading_analytics.data.data_model.stock_entry import StockEntry
 from trading_analytics.data.data_model.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
-from datetime import date
+import logging
+
+# Configure logging to a file
+logging_file_path = "C:/Users/viole/dev/Investing-logging/loading_trade_errors.log"
+logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def load_trades_from_excel(file_path: str) -> list:
     # Read excel file
