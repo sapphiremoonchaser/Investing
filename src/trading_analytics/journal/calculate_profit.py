@@ -5,20 +5,24 @@ from trading_analytics.data.data_model.trade_entry import TradeEntry, SecurityTy
 from trading_analytics.data.data_model.stock_entry import StockEntry
 from trading_analytics.data.data_model.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
+import logging
+
+# Configure logging for error handling
+logging.basicConfig(level=logging.WARNING)
 
 
 def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     # Initialize a dict to store aggregated profit/loss results
     results = {
-        "by_symbol": {},
-        "by_strategy": {}
+        "by_symbol": {}, # {symbol: {"profit": float, "stock_qty": float, "option_qty": float}}
+        "by_strategy": {} # {strategy: {"profit": float, "stock_qty": float, "option_qty": float}}
     }
 
     # Iterate through each trade to calculate and aggregate profit/loss
     for trade in trades:
         # Assign symbol and strategies
         symbol = trade.symbol
-        strategies = [s for str in trade.strategies]
+        strategies = [s for s in trade.strategies]
 
         # Initialize Dictionaries for new strategies and symbols
         # If the symbol isn't in the results yet, add it to results
@@ -42,8 +46,8 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                 option_qty = 0
                 profit = trade.price_per_share * trade.quantity - trade.fees
             else:
-                # Handle unexpected actions
-                # ToDo: exception or some kind of error?
+                # Log warning for unexpected actions and treat as no impact
+                logging.warning(f"Unexpected action {trade.action} for StockEntry trade_id {trade.trade_id}")
                 stock_qty = 0
                 option_qty = 0
                 profit = 0
@@ -53,13 +57,13 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
             # For dividends, profit is the dividend amount, minus fees
             stock_qty = 0
             option_qty = 0
-            profit = trade.dividend_price - trade.fees
+            profit = trade.dividend_amount - trade.fees
 
         # Options
         elif isinstance(trade, OptionEntry):
             # Sold Calls
             if trade.option_type == OptionType.CALL:
-                if trade.action in [TradeAction.SOLD, TradeAction.SOLD_CLOSE]:
+                if trade.action in [TradeAction.SOLD_SHORT, TradeAction.SOLD_CLOSE]:
                     stock_qty = 0
                     option_qty = -trade.quantity
                     profit = trade.premium * trade.quantity * 100 - trade.fees
@@ -76,8 +80,8 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                     option_qty = -trade.quantity
                     profit = trade.quantity * trade.strike * 100 - trade.fees
                 else:
-                    # Handle unexpected errors
-                    # ToDo: Exception or some kind of error?
+                    # Log warning for unexpected actions
+                    logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
                     stock_qty = 0
                     option_qty = 0
                     profit = 0
@@ -96,8 +100,9 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                     option_qty = -trade.quantity
                     profit = 0
                 else:
-                    # Handle unexpected errors
-                    # ToDo: Exception or some kind of error?
+                    # Log warning for unexpected actions
+                    logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
+                    stock_qty = 0
                     stock_qty = 0
                     option_qty = 0
 
