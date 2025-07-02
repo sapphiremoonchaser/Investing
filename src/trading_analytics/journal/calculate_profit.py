@@ -8,8 +8,9 @@ from trading_analytics.data.data_model.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
 import logging
 
-# Configure logging for error handling
-logging.basicConfig(level=logging.WARNING)
+# Configure logging to a file
+logging_file_path = "C:/Users/viole/dev/Investing-logging/trade_errors.log"
+logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:

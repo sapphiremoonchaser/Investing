@@ -16,7 +16,7 @@ except Exception as e:
 results = calculate_qty_and_profit(trades)
 
 # Save results to excel file for manual inspection
-by_symbol_df = pd.DataFrame(results).from_dict(resultss['by_symbol'], orient='index')
+by_symbol_df = pd.DataFrame(results).from_dict(results['by_symbol'], orient='index')
 save_to_file_path = "C:/Users/viole/dev/Investing-data/trades/profit_by_symbol.xlsx"
 by_symbol_df.to_excel(save_to_file_path)
 print(f"\nSaved results as {save_to_file_path}.")
