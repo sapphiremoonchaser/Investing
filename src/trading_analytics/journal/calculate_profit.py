@@ -38,13 +38,13 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         if isinstance(trade, StockEntry):
             # For stock trades, profit/loss depends on the action
             if trade.action == TradeAction.BOUGHT:
-                stock_qty = trade.quantity
+                stock_qty = trade.quantity # Positive for buying shares
                 option_qty = 0
-                profit = -trade.price_per_share * trade.quantity - trade.fees
+                profit = -trade.price_per_share * trade.quantity - trade.fees # Cash Outflow
             elif trade.action == TradeAction.SOLD:
-                stock_qty = -trade.quantity
+                stock_qty = -trade.quantity # Negative for selling shares
                 option_qty = 0
-                profit = trade.price_per_share * trade.quantity - trade.fees
+                profit = trade.price_per_share * trade.quantity - trade.fees # Cash Inflow
             else:
                 # Log warning for unexpected actions and treat as no impact
                 logging.warning(f"Unexpected action {trade.action} for StockEntry trade_id {trade.trade_id}")
@@ -65,20 +65,24 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
             if trade.option_type == OptionType.CALL:
                 if trade.action in [TradeAction.SOLD_SHORT, TradeAction.SOLD_CLOSE]:
                     stock_qty = 0
-                    option_qty = -trade.quantity
-                    profit = trade.premium * trade.quantity * 100 - trade.fees
+                    option_qty = -trade.quantity # Negative for selling contracts
+                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
                 elif trade.action in [TradeAction.BOUGHT_OPEN, TradeAction.BOUGHT_COVER]:
                     stock_qty = 0
-                    option_qty = trade.quantity
-                    profit = -trade.premium * trade.quantity * 100 - trade.fees
+                    option_qty = trade.quantity # Positive for buying contracts
+                    profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
                 elif trade.action == TradeAction.OPTION_EXPIRED:
                     stock_qty = 0
-                    option_qty = -trade.quantity
-                    profit = 0
+                    option_qty = -trade.quantity # Remove sold contracts
+                    profit = 0 # No profit/loss for expiration
                 elif trade.action == TradeAction.OPTION_ASSIGNED:
-                    stock_qty = -trade.quantity * 100
-                    option_qty = -trade.quantity
-                    profit = trade.quantity * trade.strike * 100 - trade.fees
+                    stock_qty = -trade.quantity * 100 # Buying shares to deliver
+                    option_qty = -trade.quantity # Remove assigned contract
+                    profit = trade.quantity * trade.strike * 100 - trade.fees # Shares sold at strike
+                elif trade.action == TradeAction.OPTION_EXERCISED:
+                    stock_qty = trade.quantity * 100 # Receive shares
+                    option_qty = -trade.quantity # Remove exercised contract
+                    profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
                 else:
                     # Log warning for unexpected actions
                     logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
@@ -89,16 +93,20 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
             elif trade.option_type == OptionType.PUT:
                 if trade.action == TradeAction.BOUGHT_OPEN:
                     stock_qty = 0
-                    option_qty = trade.quantity
-                    profit = -trade.premium * trade.quantity * 100 - trade.fees
+                    option_qty = trade.quantity # Positive for buying contracts
+                    profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
                 elif trade.action == TradeAction.SOLD_CLOSE:
                     stock_qty = 0
-                    option_qty = -trade.quantity
-                    profit = trade.premium * trade.quantity * 100 - trade.fees
+                    option_qty = -trade.quantity # Negative for selling contracts
+                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
                 elif trade.action == TradeAction.OPTION_EXPIRED:
                     stock_qty = 0
-                    option_qty = -trade.quantity
+                    option_qty = -trade.quantity # Remove sold contacts
                     profit = 0
+                elif trade.action == TradeAction.OPTION_ASSIGNED:
+                    stock_qty = trade.quantity * 100 # Receive shares (100 per contract)
+                    option_qty = -trade.quantity # Remove assigned contracts
+                    profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
                 else:
                     # Log warning for unexpected actions
                     logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
