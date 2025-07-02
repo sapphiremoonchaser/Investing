@@ -1,4 +1,5 @@
 # Imports
+from operator import ifloordiv
 from typing import List
 from datetime import date, timedelta
 from trading_analytics.data.data_model.trade_entry import TradeEntry, SecurityType, TradeAction
@@ -34,23 +35,24 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     # Initialize a dict to store aggregated profit/loss results
     results = {
         "by_symbol": {}, # {symbol: {"profit": float, "stock_qty": float, "option_qty": float}}
-        "by_strategy": {} # {strategy: {"profit": float, "stock_qty": float, "option_qty": float}}
+        "by_strategy": {} # {strategy: {symbol: {"profit": float, "stock_qty": float, "option_qty": float}}}
     }
 
     # Iterate through each trade to calculate and aggregate profit/loss
     for trade in trades:
-        # Assign symbol and strategies
+        # Extract symbol and strategies
         symbol = trade.symbol
-        strategies = [s for s in trade.strategies]
+        strategy = trade.strategy[0].value
 
-        # Initialize Dictionaries for new strategies and symbols
-        # If the symbol isn't in the results yet, add it to results
+        # Initialize dict for new symbol
         if symbol not in results["by_symbol"]:
-            results["by_symbol"][symbol] = 0
-        # For each strategy in the trade, add it to the results if not present
-        for strategy in strategies:
-            if strategy not in results["by_strategy"]:
-                results["by_strategy"][strategy] = 0
+            results["by_symbol"][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
+
+        # Initialize dict for new strategy and symbol
+        if strategy not in results["by_strategy"]:
+            results["by_strategy"][strategy] = {}
+        if symbol not in results["by_strategy"][strategy]:
+            results["by_strategy"][strategy][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
 
         # Calculate profit/loss based on teh trade type
         # Stock
@@ -143,9 +145,9 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         results["by_symbol"][symbol]["option_qty"] += option_qty
 
         # Aggregate profit, stock_qty, and option_qty for each strategy
-        results["by_strategy"][strategy]["profit"] += profit
-        results["by_strategy"][strategy]["stock_qty"] += stock_qty
-        results["by_strategy"][strategy]["option_qty"] += option_qty
+        results["by_strategy"][strategy][symbol]["profit"] += profit
+        results["by_strategy"][strategy][symbol]["stock_qty"] += stock_qty
+        results["by_strategy"][strategy][symbol]["option_qty"] += option_qty
 
     return results
 
