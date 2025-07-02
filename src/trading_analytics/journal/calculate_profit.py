@@ -114,10 +114,20 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                     stock_qty = 0
                     option_qty = 0
 
-        # Aggregate the quantities and profits at symbol and strategy levels
-        results["by_symbol"][symbol] += profit
+        else:
+            # Log warning for unexpected trade types
+            logging.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
+
+        # Aggregate profit, stock_qty, and option_qty for symbol
+        results["by_symbol"][symbol]["profit"] += profit
+        results["by_symbol"][symbol]["stock_qty"] += stock_qty
+        results["by_symbol"][symbol]["option_qty"] += option_qty
+
+        # Aggregate profit, stock_qty, and option_qty for each strategy
         for strategy in strategies:
-            results["by_strategy"][strategy] += profit
+            results["by_strategy"][strategy]["profit"] += profit
+            results["by_strategy"][strategy]["stock_qty"] += stock_qty
+            results["by_strategy"][strategy]["option_qty"] += option_qty
 
     return results
 
