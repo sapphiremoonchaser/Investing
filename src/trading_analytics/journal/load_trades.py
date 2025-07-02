@@ -1,6 +1,3 @@
-from multiprocessing.connection import default_family
-from operator import index
-
 import pandas as pd
 from trading_analytics.data.data_model.trade_entry import Brokerage, SecurityType, TradeAction, TradeStrategy
 from trading_analytics.data.data_model.stock_entry import StockEntry
@@ -52,7 +49,7 @@ def load_trades_from_excel(file_path: str) -> list:
                 "fees": float(row["fees"]),
             }
         except (KeyError, ValueError, TypeError) as e:
-            logging.error(f"Failed to parse row {index + 2}: (trade_id={row.get('trade_id', 'unknown')}): {e}")
+            logging.error(f"Failed to parse row for (trade_id={row.get('trade_id', 'unknown')}): {e}")
 
         # Create appropriate entry based on security type
         try:
@@ -75,13 +72,13 @@ def load_trades_from_excel(file_path: str) -> list:
                     option_type=OptionType[row["option_type"].upper()] if row.get("option_type") else None
                 )
             else:
-                logging.error(f"Invalid security type in row {index + 2} (trade_id={row['trade_id']}): {common_fields['security']}")
+                logging.error(f"Invalid security type for (trade_id={row['trade_id']}): {common_fields['security']}")
                 continue
 
             trades.append(trade)
 
         except (KeyError, ValueError, TypeError) as e:
-            logging.error(f"Error creating trade entry in row {index + 2}: (trade_id={row['trade_id']}): {e}")
+            logging.error(f"Error creating trade entry for (trade_id={row['trade_id']}): {e}")
             continue
 
     return trades

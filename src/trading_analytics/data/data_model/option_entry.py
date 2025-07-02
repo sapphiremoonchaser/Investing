@@ -24,8 +24,8 @@ class OptionType(str, Enum):
 
 class OptionEntry(TradeEntry):
     expiration_date: date
-    strike: float = Field(gt=0, frozen=True)
-    premium: float = Field(gt=0, frozen=True)
+    strike: float = Field(ge=0, frozen=True)
+    premium: float = Field(ge=0, frozen=True)
     option_type: OptionType = Field(frozen=True)
 
     @field_validator("expiration_date", mode="before")
