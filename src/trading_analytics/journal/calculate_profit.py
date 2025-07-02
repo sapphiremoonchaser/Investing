@@ -12,6 +12,25 @@ logging.basicConfig(level=logging.WARNING)
 
 
 def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
+    """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
+
+    Processes a list of TradeEntry instances, categorizing results by symbol and strategy.
+    Handles stock, dividend, and option trades, calculating profit/loss based on trade actions
+    and updating quantities accordingly.
+
+    Args:
+        trades (List[TradeEntry]): List of trade entries to process.
+
+    Returns:
+        dict: A dictionary with two keys:
+            - by_symbol (dict): Aggregated results by symbol, with sub-dictionaries containing
+                profit (float), stock_qty (float), and option_qty (float).
+            - by_strategy (dict): Aggregated results by strategy, with sub-dictionaries containing
+                profit (float), stock_qty (float), and option_qty (float).
+
+    Raises:
+        None: Logs warnings for unexpected trade types or actions without raising exceptions.
+    """
     # Initialize a dict to store aggregated profit/loss results
     results = {
         "by_symbol": {}, # {symbol: {"profit": float, "stock_qty": float, "option_qty": float}}
