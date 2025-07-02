@@ -90,7 +90,7 @@ class OptionEntry(TradeEntry):
         """
         if self.security != SecurityType.OPTION:
             raise ValueError(f"OptionEntry must have security {SecurityType.OPTION}, got {self.security}")
-        if self.expiration_date <= self.trade_date:
+        if self.expiration_date < self.trade_date:
             raise ValueError(f"Expiration date {self.expiration_date} must be after trade date {self.trade_date}.")
 
         return self

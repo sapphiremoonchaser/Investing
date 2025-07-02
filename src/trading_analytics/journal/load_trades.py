@@ -64,13 +64,17 @@ def load_trades_from_excel(file_path: str) -> list:
                     dividend_amount=float(row.get("dividend_amount", 0.0))
                 )
             elif common_fields['security'] == SecurityType.OPTION:
-                trade = OptionEntry(
-                    **common_fields,
-                    expiration_date=pd.to_datetime(row["expiration_date"]).date() if not pd.isna(row.get("expiration_date")) else None,
-                    strike=float(row.get("strike", 0.0)),
-                    premium=float(row.get("premium", 0.0)),
-                    option_type=OptionType[row["option_type"].upper()] if row.get("option_type") else None
-                )
+                try:
+                    trade = OptionEntry(
+                        **common_fields,
+                        expiration_date=pd.to_datetime(row["expiration_date"]).date() if not pd.isna(row.get("expiration_date")) else None,
+                        strike=float(row.get("strike", 0.0)),
+                        premium=float(row.get("premium", 0.0)),
+                        option_type=OptionType[row["option_type"].upper()] if row.get("option_type") else None
+                    )
+                except Exception as e:
+                    x = 1
+                    raise ValueError(f"Failed to parse row for (trade_id={row.get('trade_id')}): {e}")
             else:
                 logging.error(f"Invalid security type for (trade_id={row['trade_id']}): {common_fields['security']}")
                 continue
