@@ -3,12 +3,17 @@ from pydantic import Field, model_validator
 from data.data_model.trade_entry import TradeEntry, SecurityType
 
 class DividendEntry(TradeEntry):
+    """A model representing a dividend entry with relevant details.
+
+    Attributes:
+        dividend_amount (float): The amount received from the dividend.
+    """
     dividend_amount: float = Field(ge=0, frozen=True)
 
     # Add a model validator to ensure security is 'DIVIDEND'
     @model_validator(mode='after')
     def check_dividend_security(self):
-        """Validates that the security type is either 'DIVIDEND.
+        """Validates that the security type is 'DIVIDEND.
 
         We already validated the action in TradeEntry.
 
