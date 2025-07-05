@@ -3,6 +3,11 @@ from pydantic import Field, model_validator
 from data.data_model.trade_entry import TradeEntry, SecurityType
 
 class StockEntry(TradeEntry):
+    """A model representing a stock entry with relevant details.
+
+    Attributes:
+        price_per_share (float): The price per share of the stock.
+    """
     price_per_share: float = Field(ge=0, frozen=True)
 
     # Add a model validator to ensure security is 'STOCK' or 'INDEX'
