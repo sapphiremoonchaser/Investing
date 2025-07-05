@@ -7,9 +7,12 @@ from trading_analytics.data.data_model.stock_entry import StockEntry
 from trading_analytics.data.data_model.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
 import logging
+from pathlib import Path
 
 # Configure logging to a file
-logging_file_path = "C:/Users/viole/dev/Investing-logging/trade_errors.log"
+# project_root = Path(__file__).resolve()
+# logging_file_path = "C:/Users/viole/dev/Investing-logging/trade_errors.log"
+logging_file_path = "C:/dev/Investing/Investing-Logging/trading_analytics/logs/trading_analytics.log"
 logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
