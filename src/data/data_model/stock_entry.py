@@ -1,5 +1,3 @@
-# Dataclass for Stocks
-
 # Imports
 from pydantic import Field, model_validator
 from data.data_model.trade_entry import TradeEntry, SecurityType

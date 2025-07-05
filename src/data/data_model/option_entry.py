@@ -1,26 +1,12 @@
-# Dataclass for Options
-
 # Imports
 from enum import Enum
 from datetime import date, datetime
 from typing import Union
 
 from pydantic import Field, field_validator, model_validator
-from data.data_model.trade_entry import TradeEntry, SecurityType
-
-# Enum for valid option subtypes
-class OptionType(str, Enum):
-    """Enum class for valid option subtypes.
-
-    This class defines a set of valid option subtypes as string enumerations.
-    Each subtype represents a specific type of option contract.
-
-    Attributes:
-        CALL (str): Call option subtype.
-        PUT (str): Put option subtype.
-    """
-    CALL = 'CALL'
-    PUT = 'PUT'
+from data.data_model.trade_entry import TradeEntry
+from src.data.enum.security_type import SecurityType
+from src.data.enum.option_type import OptionType
 
 class OptionEntry(TradeEntry):
     expiration_date: date
