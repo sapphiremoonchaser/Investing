@@ -6,7 +6,7 @@ from datetime import date, datetime
 from typing import Union
 
 from pydantic import Field, field_validator, model_validator
-from src.trading_analytics.data.data_model.trade_entry import TradeEntry, SecurityType
+from data.data_model.trade_entry import TradeEntry, SecurityType
 
 # Enum for valid option subtypes
 class OptionType(str, Enum):

@@ -1,9 +1,10 @@
+# Imports
 from dataclasses import Field
 from datetime import date, datetime
 from enum import Enum
-
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, Union
+
 
 
 # Enum for valid security types

@@ -1,7 +1,7 @@
 import unittest
 
-from trading_analytics.data.data_model.trade_entry import Brokerage, TradeEntry, SecurityType, TradeAction, TradeStrategy
-from trading_analytics.data.data_model.stock_entry import StockEntry
+from data.data_model import Brokerage, SecurityType, TradeAction, TradeStrategy
+from data.data_model.stock_entry import StockEntry
 from datetime import date
 from pydantic import ValidationError
 

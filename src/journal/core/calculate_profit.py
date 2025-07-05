@@ -1,13 +1,10 @@
 # Imports
-from operator import ifloordiv
 from typing import List
-from datetime import date, timedelta
-from trading_analytics.data.data_model.trade_entry import TradeEntry, SecurityType, TradeAction
-from trading_analytics.data.data_model.stock_entry import StockEntry
-from trading_analytics.data.data_model.dividend_entry import DividendEntry
-from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
+from data.data_model import TradeEntry, TradeAction
+from data.data_model.stock_entry import StockEntry
+from data.data_model import DividendEntry
+from data.data_model.option_entry import OptionEntry, OptionType
 import logging
-from pathlib import Path
 
 # Configure logging to a file
 # project_root = Path(__file__).resolve()

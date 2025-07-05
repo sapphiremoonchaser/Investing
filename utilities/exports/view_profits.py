@@ -1,5 +1,5 @@
-from load_trades import load_trades_from_excel
-from calculate_profit import calculate_qty_and_profit
+from utilities.imports_exports.load_trades import load_trades_from_excel
+from journal.core.calculate_profit import calculate_qty_and_profit
 import pandas as pd
 
 file_path = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx"

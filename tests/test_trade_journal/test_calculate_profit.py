@@ -1,11 +1,11 @@
 # Imports
 import unittest
 from datetime import date
-from trading_analytics.data.data_model.trade_entry import Brokerage, SecurityType, TradeAction, TradeStrategy
-from trading_analytics.data.data_model.stock_entry import StockEntry
-from trading_analytics.data.data_model.dividend_entry import DividendEntry
-from trading_analytics.data.data_model.option_entry import OptionEntry, OptionType
-from trading_analytics.journal.calculate_profit import calculate_qty_and_profit
+from data.data_model import Brokerage, SecurityType, TradeAction, TradeStrategy
+from data.data_model.stock_entry import StockEntry
+from data.data_model import DividendEntry
+from data.data_model.option_entry import OptionEntry, OptionType
+from journal import calculate_qty_and_profit
 
 class TestCalculateProfit(unittest.TestCase):
     def setUp(self):

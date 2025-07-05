@@ -2,7 +2,7 @@
 
 # Imports
 from pydantic import Field, model_validator
-from src.trading_analytics.data.data_model.trade_entry import TradeEntry, SecurityType
+from data.data_model.trade_entry import TradeEntry, SecurityType
 
 class StockEntry(TradeEntry):
     price_per_share: float = Field(ge=0, frozen=True)
