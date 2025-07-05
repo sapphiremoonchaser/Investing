@@ -1,5 +1,4 @@
 # Imports
-from enum import Enum
 from datetime import date, datetime
 from typing import Union
 
@@ -9,6 +8,14 @@ from src.data.enum.security_type import SecurityType
 from src.data.enum.option_type import OptionType
 
 class OptionEntry(TradeEntry):
+    """A model representing an option entry with relevant details.
+
+    Attributes:
+        expiration_date (date): The expiration date of the option.
+        strike (float): The strike price of the option.
+        premium (float): The price of the option contract.
+        option_type (OptionType): The type of the option.
+    """
     expiration_date: date
     strike: float = Field(ge=0, frozen=True)
     premium: float = Field(ge=0, frozen=True)
