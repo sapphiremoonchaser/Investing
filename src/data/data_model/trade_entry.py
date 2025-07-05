@@ -5,88 +5,10 @@ from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional, Union
 
-
-
-# Enum for valid security types
-# Enum is used to define a set of named constant values
-# Advantages: readability, type safe, maintainable, iterability, immutable
-class SecurityType(str, Enum):
-    """An enumeration of valid trade types.
-
-    Attributes:
-        STOCK (str): Represents a stock trade.
-        INDEX (str): Represents an index trade.
-        OPTION (str): Represents an option trade.
-        DIVIDEND (str): Represents a dividend trade.
-    """
-    STOCK = 'STOCK'
-    INDEX = 'INDEX'
-    OPTION = 'OPTION'
-    DIVIDEND = 'DIVIDEND'
-
-# Enum for valid trade actions
-class TradeAction(str, Enum):
-    """Enum class for valid trade actions.
-
-    This class defines a set of valid trade actions as string enumerations.
-    Each action represents a specific type of trading activity.
-
-    Attributes:
-        BOUGHT (str): Standard purchase of a security.
-        BOUGHT_COVER (str): Purchase to cover a short position.
-        BOUGHT_OPEN (str): Purchase to open a position, typically for options.
-        DIVIDEND (str): Dividend payment received.
-        OPTION_EXPIRED (str): Option contract expired.
-        OPTION_ASSIGNED (str): Option contract assigned.
-        OPTION_EXERCISED (str): Option contract exercised.
-        SOLD (str): Standard sale of a security.
-        SOLD_SHORT (str): Sale to open a short position.
-        SOLD_CLOSE (str): Sale to close a position, typically for options.
-    """
-    BOUGHT = 'BOUGHT'
-    BOUGHT_COVER = 'BOUGHT COVER'
-    BOUGHT_OPEN = 'BOUGHT OPEN'
-    DIVIDEND = 'DIVIDEND'
-    OPTION_EXPIRED = 'OPTION EXPIRED'
-    OPTION_ASSIGNED = 'OPTION ASSIGNED'
-    OPTION_EXERCISED = 'OPTION EXERCISED'
-    SOLD = 'SOLD'
-    SOLD_SHORT = 'SOLD SHORT'
-    SOLD_CLOSE = 'SOLD CLOSE'
-
-# Enum for valid strategies
-class TradeStrategy(str, Enum):
-    """Enum class for valid trading strategies.
-
-    This class defines a set of valid trading strategies as string enumerations.
-    Each strategy represents a specific type of trading approach.
-
-    Attributes:
-        DIVIDEND (str): Dividend-based trading strategy.
-        ETF (str): Exchange-traded fund trading strategy.
-        BASIC_TRADE (str): Standard stock trading strategy.
-        BASIC_OPTION (str): Basic options trading strategy.
-        COVERED_CALL (str): Covered call options trading strategy.
-        SPREAD (str): Spread-based options trading strategy.
-    """
-    DIVIDEND = 'DIVIDEND'
-    ETF = 'ETF'
-    BASIC_TRADE = 'BASIC TRADE'
-    BASIC_OPTION = 'BASIC OPTION'
-    COVERED_CALL = 'COVERED CALL'
-    SPREAD = 'SPREAD'
-
-# Enum for brokerage
-class Brokerage(str, Enum):
-    """Enum class for valid brokerage names.
-
-        This class defines a set of valid brokerage names as string enumerations.
-        Each value represents a specific brokerage platform.
-
-        Attributes:
-            ETRADE (str): E*TRADE brokerage platform.
-        """
-    ETRADE = 'ETRADE'
+from src.data.enum.security_type import SecurityType
+from src.data.enum.trade_action import TradeAction
+from src.data.enum.trade_strategy import TradeStrategy
+from src.data.enum.brokerage import Brokerage
 
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
