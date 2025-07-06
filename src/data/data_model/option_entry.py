@@ -22,7 +22,7 @@ class OptionEntry(TradeEntry):
     option_type: OptionType = Field(frozen=True)
 
     @field_validator("expiration_date", mode="before")
-    def parse_expiration_date(cls, value):
+    def parse_expiration_date(cls, value) -> date:
         """Parses and validates the expiration date.
 
         Args:
@@ -44,7 +44,7 @@ class OptionEntry(TradeEntry):
 
     # Normalize option type to uppercase
     @field_validator('option_type', mode='before')
-    def validate_option_type(cls, value: Union[str, OptionType]) -> OptionType:
+    def validate_option_type(cls, value: Union[str, OptionType]) -> Union[OptionType, str]:
         """Normalizes and validates the option type.
 
         Args:

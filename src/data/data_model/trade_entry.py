@@ -1,9 +1,7 @@
 # Imports
-from dataclasses import Field
 from datetime import date, datetime
-from enum import Enum
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import Optional, Union
+from typing import Union
 
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
@@ -40,7 +38,7 @@ class TradeEntry(BaseModel):
 
     # Normalize brokerage to uppercase
     @field_validator('brokerage', mode='before')
-    def validate_brokerage(cls, value: Union[str, Brokerage]) -> Brokerage:
+    def validate_brokerage(cls, value: Union[str, Brokerage]) -> Union[Brokerage, None]:
         """Validates and normalizes the brokerage name.
 
             Args:
@@ -87,7 +85,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
-    def validate_security(cls, value: Union[str, SecurityType]) -> SecurityType:
+    def validate_security(cls, value: Union[str, SecurityType]) -> Union[SecurityType, None]:
         """Normalizes and validates the trade type.
 
             Args:
@@ -134,7 +132,7 @@ class TradeEntry(BaseModel):
 
     # Convert date to format YYYY-mm-dd
     @field_validator("trade_date", mode="before")
-    def parse_trade_date(cls, value):
+    def parse_trade_date(cls, value) -> date:
         """Parses a date from a string or returns an existing date object.
 
         Args:
@@ -156,7 +154,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'action' to uppercase
     @field_validator('action', mode='before')
-    def validate_action(cls, value: Union[str, TradeAction]) -> TradeAction:
+    def validate_action(cls, value: Union[str, TradeAction]) -> Union[TradeAction, None]:
         """Normalizes and validates the trade action.
 
             Args:
