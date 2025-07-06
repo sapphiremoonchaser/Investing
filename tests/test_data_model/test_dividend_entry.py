@@ -1,9 +1,13 @@
+# Imports
 import unittest
-
-from data.data_model import Brokerage, SecurityType, TradeAction, TradeStrategy
-from data.data_model import DividendEntry
 from datetime import date
 from pydantic import ValidationError
+
+from data.enum.brokerage import Brokerage
+from data.enum.security_type import SecurityType
+from data.enum.trade_action import TradeAction
+from data.enum.trade_strategy import TradeStrategy
+from data.data_model.dividend_entry import DividendEntry
 
 
 class TestDividendAmount(unittest.TestCase):

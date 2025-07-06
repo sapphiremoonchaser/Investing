@@ -1,6 +1,7 @@
 # Imports
 from pydantic import Field, model_validator
-from data.data_model.trade_entry import TradeEntry, SecurityType
+from data.data_model.trade_entry import TradeEntry
+from data.enum.security_type import SecurityType
 
 class DividendEntry(TradeEntry):
     """A model representing a dividend entry with relevant details.

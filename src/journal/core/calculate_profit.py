@@ -1,10 +1,13 @@
 # Imports
 from typing import List
-from data.data_model import TradeEntry, TradeAction
-from data.data_model.stock_entry import StockEntry
-from data.data_model import DividendEntry
-from data.data_model.option_entry import OptionEntry, OptionType
 import logging
+
+from data.data_model.trade_entry import TradeEntry
+from data.data_model.dividend_entry import DividendEntry
+from data.data_model.stock_entry import StockEntry
+from data.data_model.option_entry import OptionEntry
+from data.enum.option_type import OptionType
+from data.enum.trade_action import TradeAction
 
 # Configure logging to a file
 # project_root = Path(__file__).resolve()
