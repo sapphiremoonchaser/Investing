@@ -12,8 +12,9 @@ from data.enum.trade_action import TradeAction
 # Configure logging to a file
 # project_root = Path(__file__).resolve()
 # logging_file_path = "C:/Users/viole/dev/Investing-logging/trade_errors.log"
-logging_file_path = "C:/dev/Investing/Investing-Logging/logs/calculate_profit_errors.log"
-logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging_file_path = "C:/dev/Investing/Investing-Logging/logs/calculate_profit_errors.log"
+# logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
@@ -74,7 +75,7 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                 profit = trade.price_per_share * trade.quantity - trade.fees # Cash Inflow
             else:
                 # Log warning for unexpected actions and treat as no impact
-                logging.warning(f"Unexpected action {trade.action} for StockEntry trade_id {trade.trade_id}")
+                logger.warning(f"Unexpected action {trade.action} for StockEntry trade_id {trade.trade_id}")
                 stock_qty = 0
                 option_qty = 0
                 profit = 0
@@ -136,14 +137,14 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                     profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
                 else:
                     # Log warning for unexpected actions
-                    logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
+                    logger.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
                     stock_qty = 0
                     stock_qty = 0
                     option_qty = 0
 
         else:
             # Log warning for unexpected trade types
-            logging.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
+            logger.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
 
         # Aggregate profit, stock_qty, and option_qty for symbol
         results["by_symbol"][symbol]["profit"] += profit

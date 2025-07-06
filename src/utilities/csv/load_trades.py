@@ -12,15 +12,16 @@ from data.data_model.entry.dividend_entry import DividendEntry
 from data.data_model.entry.option_entry import OptionEntry
 
 # Configure logging to a file
-logging_file_path = "C:/Users/viole/dev/Investing-logging/loading_trade_errors.log"
-logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging_file_path = "C:/Users/viole/dev/Investing-logging/loading_trade_errors.log"
+# logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 def load_trades_from_excel(file_path: str) -> list:
     # Read excel file
     try:
         df = pd.read_excel(file_path)
     except Exception as e:
-        logging.error(f"Failed to read Excel file {file_path}. {e}")
+        logger.error(f"Failed to read Excel file {file_path}. {e}")
 
     trades = []
     for _, row in df.iterrows():
@@ -55,7 +56,7 @@ def load_trades_from_excel(file_path: str) -> list:
                 "fees": float(row["fees"]),
             }
         except (KeyError, ValueError, TypeError) as e:
-            logging.error(f"Failed to parse row for (trade_id={row.get('trade_id', 'unknown')}): {e}")
+            logger.error(f"Failed to parse row for (trade_id={row.get('trade_id', 'unknown')}): {e}")
 
         # Create appropriate entry based on security type
         try:
@@ -82,13 +83,13 @@ def load_trades_from_excel(file_path: str) -> list:
                     x = 1
                     raise ValueError(f"Failed to parse row for (trade_id={row.get('trade_id')}): {e}")
             else:
-                logging.error(f"Invalid security type for (trade_id={row['trade_id']}): {common_fields['security']}")
+                logger.error(f"Invalid security type for (trade_id={row['trade_id']}): {common_fields['security']}")
                 continue
 
             trades.append(trade)
 
         except (KeyError, ValueError, TypeError) as e:
-            logging.error(f"Error creating trade entry for (trade_id={row['trade_id']}): {e}")
+            logger.error(f"Error creating trade entry for (trade_id={row['trade_id']}): {e}")
             continue
 
     return trades
