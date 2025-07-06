@@ -2,10 +2,10 @@
 from typing import List
 import logging
 
-from data.data_model.trade_entry import TradeEntry
-from data.data_model.dividend_entry import DividendEntry
-from data.data_model.stock_entry import StockEntry
-from data.data_model.option_entry import OptionEntry
+from data.data_model.entry.trade_entry import TradeEntry
+from data.data_model.entry.dividend_entry import DividendEntry
+from data.data_model.entry.stock_entry import StockEntry
+from data.data_model.entry.option_entry import OptionEntry
 from data.enum.option_type import OptionType
 from data.enum.trade_action import TradeAction
 

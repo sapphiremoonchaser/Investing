@@ -2,9 +2,9 @@
 import unittest
 from datetime import date
 from data.data_model import Brokerage, SecurityType, TradeAction, TradeStrategy
-from data.data_model.stock_entry import StockEntry
+from data.data_model.entry.stock_entry import StockEntry
 from data.data_model import DividendEntry
-from data.data_model.option_entry import OptionEntry, OptionType
+from data.data_model.entry.option_entry import OptionEntry, OptionType
 from journal import calculate_qty_and_profit
 
 class TestCalculateProfit(unittest.TestCase):

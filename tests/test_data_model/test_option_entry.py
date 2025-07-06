@@ -8,7 +8,7 @@ from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.option_type import OptionType
-from data.data_model.option_entry import OptionEntry
+from data.data_model.entry.option_entry import OptionEntry
 
 class TestExpirationDate(unittest.TestCase):
     """Unit tests for validating expiration date values in TradeEntry.

@@ -7,7 +7,7 @@ from data.enum.brokerage import Brokerage
 from data.enum.security_type import SecurityType
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.trade_action import TradeAction
-from data.data_model.stock_entry import StockEntry
+from data.data_model.entry.stock_entry import StockEntry
 
 class TestPricePerShare(unittest.TestCase):
     """Unit tests for validating stock/index price per share in StockEntry.

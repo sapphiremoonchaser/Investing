@@ -7,9 +7,9 @@ from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.option_type import OptionType
-from data.data_model.stock_entry import StockEntry
-from data.data_model.dividend_entry import DividendEntry
-from data.data_model.option_entry import OptionEntry
+from data.data_model.entry.stock_entry import StockEntry
+from data.data_model.entry.dividend_entry import DividendEntry
+from data.data_model.entry.option_entry import OptionEntry
 
 # Configure logging to a file
 logging_file_path = "C:/Users/viole/dev/Investing-logging/loading_trade_errors.log"

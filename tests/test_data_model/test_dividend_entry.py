@@ -7,7 +7,7 @@ from data.enum.brokerage import Brokerage
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.trade_strategy import TradeStrategy
-from data.data_model.dividend_entry import DividendEntry
+from data.data_model.entry.dividend_entry import DividendEntry
 
 
 class TestDividendAmount(unittest.TestCase):

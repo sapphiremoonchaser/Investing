@@ -7,7 +7,7 @@ from data.enum.brokerage import Brokerage
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
-from data.data_model.trade_entry import TradeEntry
+from data.data_model.entry.trade_entry import TradeEntry
 
 
 class TestTradeId(unittest.TestCase):

@@ -3,7 +3,7 @@ from datetime import date, datetime
 from typing import Union
 
 from pydantic import Field, field_validator, model_validator
-from data.data_model.trade_entry import TradeEntry
+from data.data_model.entry.trade_entry import TradeEntry
 from src.data.enum.security_type import SecurityType
 from src.data.enum.option_type import OptionType
 
