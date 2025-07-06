@@ -44,7 +44,7 @@ class OptionEntry(TradeEntry):
 
     # Normalize option type to uppercase
     @field_validator('option_type', mode='before')
-    def validate_option_type(cls, value: Union[str, OptionType]) -> Union[OptionType, str]:
+    def validate_option_type(cls, value: Union[str, OptionType]) -> OptionType:
         """Normalizes and validates the option type.
 
         Args:

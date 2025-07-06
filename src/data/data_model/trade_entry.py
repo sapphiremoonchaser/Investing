@@ -38,7 +38,7 @@ class TradeEntry(BaseModel):
 
     # Normalize brokerage to uppercase
     @field_validator('brokerage', mode='before')
-    def validate_brokerage(cls, value: Union[str, Brokerage]) -> Union[Brokerage, None]:
+    def validate_brokerage(cls, value: Union[str, Brokerage]) -> Brokerage:
         """Validates and normalizes the brokerage name.
 
             Args:
@@ -85,7 +85,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
-    def validate_security(cls, value: Union[str, SecurityType]) -> Union[SecurityType, None]:
+    def validate_security(cls, value: Union[str, SecurityType]) -> SecurityType:
         """Normalizes and validates the trade type.
 
             Args:
@@ -154,7 +154,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'action' to uppercase
     @field_validator('action', mode='before')
-    def validate_action(cls, value: Union[str, TradeAction]) -> Union[TradeAction, None]:
+    def validate_action(cls, value: Union[str, TradeAction]) -> TradeAction:
         """Normalizes and validates the trade action.
 
             Args:
