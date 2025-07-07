@@ -27,7 +27,7 @@ class StockEntry(TradeEntry):
         Raises:
             ValueError: If the security type is not 'STOCK' or 'INDEX'.
         """
-        valid_securities = {SecurityType.STOCK, SecurityType.INDEX}
+        valid_securities = {SecurityType.STOCK, SecurityType.ETF}
         if self.security not in valid_securities:
             raise ValueError(f"StockEntry must have security type in {valid_securities}. Got {type(self.security)}")
 

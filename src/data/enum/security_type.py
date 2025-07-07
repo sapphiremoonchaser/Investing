@@ -9,11 +9,11 @@ class SecurityType(str, Enum):
 
     Attributes:
         STOCK (str): Represents a stock trade.
-        INDEX (str): Represents an index trade.
+        ETF (str): Represents an index trade.
         OPTION (str): Represents an option trade.
         DIVIDEND (str): Represents a dividend trade.
     """
     STOCK = 'STOCK'
-    INDEX = 'INDEX'
+    ETF = 'ETF'
     OPTION = 'OPTION'
     DIVIDEND = 'DIVIDEND'

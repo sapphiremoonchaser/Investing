@@ -60,7 +60,7 @@ def load_trades_from_excel(file_path: str) -> list:
 
         # Create appropriate entry based on security type
         try:
-            if common_fields['security'] == SecurityType.STOCK:
+            if common_fields['security'] in [SecurityType.STOCK, SecurityType.ETF]:
                 trade = StockEntry(
                     **common_fields,
                     price_per_share=float(row.get("price_per_share", 0.0))

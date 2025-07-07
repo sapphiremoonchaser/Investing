@@ -196,7 +196,7 @@ class TradeEntry(BaseModel):
         # Define mapping of actions to type
         valid_action_map = {
             SecurityType.STOCK: {TradeAction.BOUGHT, TradeAction.SOLD},
-            SecurityType.INDEX: {TradeAction.BOUGHT, TradeAction.SOLD},
+            SecurityType.ETF: {TradeAction.BOUGHT, TradeAction.SOLD},
             SecurityType.DIVIDEND: {TradeAction.DIVIDEND},
             SecurityType.OPTION: {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
                                   TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,

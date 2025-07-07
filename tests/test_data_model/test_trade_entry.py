@@ -310,7 +310,7 @@ class TestSecurity(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_securities = [SecurityType.STOCK, SecurityType.INDEX, 'STOCK', 'index']
+        valid_securities = [SecurityType.STOCK, SecurityType.ETF, 'STOCK', 'index']
         for value in valid_securities:
             with self.subTest(value=value):
                 # Create a valid TradeEntry instance to test security validate
@@ -400,7 +400,7 @@ class TestSecurity(unittest.TestCase):
         Raises:
             ValidationError: If the security type is invalid for a dividend action.
         """
-        invalid_securities = [SecurityType.OPTION, SecurityType.INDEX, SecurityType.STOCK, "Heather", "", None]
+        invalid_securities = [SecurityType.OPTION, SecurityType.ETF, SecurityType.STOCK, "Heather", "", None]
         for value in invalid_securities:
             with self.subTest(value=value):
                 with self.assertRaises(ValidationError):
@@ -458,7 +458,7 @@ class TestSecurity(unittest.TestCase):
         Raises:
             ValidationError: If the security type is invalid for an option action.
         """
-        invalid_securities = [SecurityType.DIVIDEND, SecurityType.INDEX, SecurityType.STOCK, "Heather", "", None]
+        invalid_securities = [SecurityType.DIVIDEND, SecurityType.ETF, SecurityType.STOCK, "Heather", "", None]
         for value in invalid_securities:
             with self.subTest(value=value):
                 with self.assertRaises(ValidationError):
@@ -731,7 +731,7 @@ class TestAction(unittest.TestCase):
                         brokerage=Brokerage.ETRADE,
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
-                        security=SecurityType.INDEX,
+                        security=SecurityType.ETF,
                         trade_date=date(2023, 10, 15),
                         symbol="AAPL",
                         action=value,

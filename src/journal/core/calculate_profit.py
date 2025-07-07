@@ -91,14 +91,22 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         elif isinstance(trade, OptionEntry):
             # Sold Calls
             if trade.option_type == OptionType.CALL:
-                if trade.action in [TradeAction.SOLD_SHORT, TradeAction.SOLD_CLOSE]:
+                if trade.action == TradeAction.SOLD_SHORT:
                     stock_qty = 0
-                    option_qty = -trade.quantity # Negative for selling contracts
+                    option_qty = trade.quantity # Positive for contract added to portfolio
                     profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
-                elif trade.action in [TradeAction.BOUGHT_OPEN, TradeAction.BOUGHT_COVER]:
+                elif trade.action == TradeAction.SOLD_CLOSE:
                     stock_qty = 0
-                    option_qty = trade.quantity # Positive for buying contracts
+                    option_qty = -trade.quantity # Negative because closing position
+                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                elif trade.action == TradeAction.BOUGHT_OPEN:
+                    stock_qty = 0
+                    option_qty = trade.quantity # Positive for contract added to portfolio
                     profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
+                elif trade.action == TradeAction.BOUGHT_COVER:
+                    stock_qty = 0
+                    option_qty = -trade.quantity # Negative because closing position
+                    profit = -trade.premium * trade.quantity * 100 - trade.fees
                 elif trade.action == TradeAction.OPTION_EXPIRED:
                     stock_qty = 0
                     option_qty = -trade.quantity # Remove sold contracts
