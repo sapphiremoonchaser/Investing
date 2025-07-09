@@ -3,7 +3,6 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.brokerage import Brokerage
 from data.enum.security_type import SecurityType
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.trade_action import TradeAction
@@ -37,7 +36,7 @@ class TestPricePerShare(unittest.TestCase):
                 stock_entry = StockEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -68,7 +67,7 @@ class TestPricePerShare(unittest.TestCase):
                 StockEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
