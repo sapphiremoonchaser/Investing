@@ -2,7 +2,6 @@
 import pandas as pd
 import logging
 
-from data.enum.brokerage import Brokerage
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.trade_strategy import TradeStrategy
@@ -12,8 +11,6 @@ from data.data_model.entry.dividend_entry import DividendEntry
 from data.data_model.entry.option_entry import OptionEntry
 
 # Configure logging to a file
-# logging_file_path = "C:/Users/viole/dev/Investing-logging/loading_trade_errors.log"
-# logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 def load_trades_from_excel(file_path: str) -> list:
@@ -45,7 +42,7 @@ def load_trades_from_excel(file_path: str) -> list:
             common_fields = {
                 "trade_id": int(row["trade_id"]),
                 "strategy_id": int(row["strategy_id"]),
-                "brokerage": Brokerage(row["brokerage"]),
+                "brokerage": str(row["brokerage"]),
                 "account": str(row["account"]),
                 "strategy": strategies,
                 "security": SecurityType(row["security_type"]),
