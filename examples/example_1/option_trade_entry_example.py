@@ -22,8 +22,6 @@ def __main(json_file_path: str) -> None:
             OptionEntry(**entry)
         )
 
-    x = 1
-
 
 if __name__ == "__main__":
     __main(
