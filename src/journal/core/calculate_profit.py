@@ -10,10 +10,6 @@ from data.enum.option_type import OptionType
 from data.enum.trade_action import TradeAction
 
 # Configure logging to a file
-# project_root = Path(__file__).resolve()
-# logging_file_path = "C:/Users/viole/dev/Investing-logging/trade_errors.log"
-# logging_file_path = "C:/dev/Investing/Investing-Logging/logs/calculate_profit_errors.log"
-# logging.basicConfig(filename=logging_file_path, level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 

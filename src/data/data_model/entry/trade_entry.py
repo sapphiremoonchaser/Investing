@@ -8,6 +8,8 @@ from src.data.enum.trade_action import TradeAction
 from src.data.enum.trade_strategy import TradeStrategy
 from src.data.enum.brokerage import Brokerage
 
+from src.data.data_model.market.stock_data import CurrentStockData
+
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
 
@@ -19,7 +21,7 @@ class TradeEntry(BaseModel):
         strategy (str): The trading strategy used (e.g., 'swing', 'day').
         security (str): Type of security (STOCK, DIVIDEND, OPTION).
         trade_date (date): The date the trade was executed.
-        symbol (str): The stock or asset symbol (e.g., AAPL).
+        symbol (Union[str, CurrentStockData]): The stock or asset symbol (e.g., AAPL) or a CurrentStockData instance.
         action (str): The trade action (e.g., 'buy' or 'sell').
         quantity (int): The number of shares or units traded.
         fees (float): The transaction fees associated with the trade.
@@ -110,7 +112,7 @@ class TradeEntry(BaseModel):
 
     # Convert symbol to a string
     @field_validator('symbol', mode='before')
-    def validate_symbol(cls, value: Union[str, int]) -> str:
+    def validate_symbol(cls, value: Union[str, int, CurrentStockData]) -> str:
         """Converts and validates the symbol field to a string.
 
         Args:
@@ -123,6 +125,8 @@ class TradeEntry(BaseModel):
         Raises:
             ValueError: If the symbol value cannot be converted to a string.
         """
+        if isinstance(value, CurrentStockData):
+            return value.symbol # Extract symbol from CurrentStockData
         if isinstance(value, str):
             return value
         try:
@@ -150,7 +154,7 @@ class TradeEntry(BaseModel):
         try:
             return datetime.strptime(value, "%Y-%m-%d").date()
         except Exception as e:
-            raise ValueError("Yo mama needs to get tha time, fool")
+            raise ValueError(f"Invalid date format: {value}. Use 'YYYY-MM-DD' format.")
 
     # Normalize 'action' to uppercase
     @field_validator('action', mode='before')
