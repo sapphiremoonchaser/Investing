@@ -3,7 +3,6 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.brokerage import Brokerage
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.trade_strategy import TradeStrategy
@@ -39,7 +38,7 @@ class TestDividendAmount(unittest.TestCase):
                 dividend_entry = DividendEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.DIVIDEND],
                     security=SecurityType.DIVIDEND,
@@ -70,7 +69,7 @@ class TestDividendAmount(unittest.TestCase):
                 DividendEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
