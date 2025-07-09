@@ -3,7 +3,6 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.brokerage import Brokerage
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
@@ -36,7 +35,7 @@ class TestTradeId(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=value,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -66,7 +65,7 @@ class TestTradeId(unittest.TestCase):
                 TradeEntry(
                     trade_id=value,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='Vanguard',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -104,7 +103,7 @@ class TestStrategyId(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=value,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='Robinhood',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -134,7 +133,7 @@ class TestStrategyId(unittest.TestCase):
                 TradeEntry(
                     trade_id=1,
                     strategy_id=value,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='Tastyworks',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -156,10 +155,6 @@ class TestBrokerage(unittest.TestCase):
     Invalid Test Cases:
         None,
         invalid string
-
-    ToDo:
-        Enum Bokerage?
-
     """
     def test_valid_brokerage(self):
         """Tests the validation of brokerage values for TradeEntry.
@@ -171,7 +166,7 @@ class TestBrokerage(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_brokerages = list(Brokerage) + ["ETRADE", "etrade"]
+        valid_brokerages = ["ETRADE", "etrade"]
         for value in valid_brokerages:
             with self.subTest(value=value):
                 # Create a valid TradeEntry instance to test brokerage validation
@@ -188,7 +183,7 @@ class TestBrokerage(unittest.TestCase):
                     quantity=100,
                     fees=5.0
                 )
-                self.assertIn(trade_entry.brokerage, list(Brokerage))
+                self.assertEqual(trade_entry.brokerage, value.upper())
 
     def test_invalid_brokerage(self):
         """Tests the validation of invalid brokerage values for TradeEntry.

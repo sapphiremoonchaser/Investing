@@ -38,7 +38,7 @@ class TradeEntry(BaseModel):
     fees: float = Field(ge=0, frozen=True)
 
     # Normalize brokerage to uppercase
-    @field_validator('brokerage', mode='before')
+    @field_validator('brokerage', mode='before)
     def validate_brokerage(cls, value: str) -> str:
         """Validates and normalizes the brokerage name.
 
