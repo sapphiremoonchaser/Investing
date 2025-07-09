@@ -38,8 +38,8 @@ class TradeEntry(BaseModel):
     fees: float = Field(ge=0, frozen=True)
 
     # Normalize brokerage to uppercase
-    @field_validator('brokerage', mode='before)
-    def validate_brokerage(cls, value: str) -> str:
+    @field_validator('brokerage', mode='before')
+    def normalize_brokerage(cls, value: str) -> str:
         """Validates and normalizes the brokerage name.
 
             Args:
@@ -52,8 +52,6 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the provided brokerage name is not valid.
             """
-        # Don't need this if using my csv file but might need later
-        # This is case for csv file
         if isinstance(value, str):
             try:
                 return value.upper()

@@ -166,7 +166,7 @@ class TestBrokerage(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_brokerages = ["ETRADE", "etrade"]
+        valid_brokerages = ["ETRADE", "vanguard"]
         for value in valid_brokerages:
             with self.subTest(value=value):
                 # Create a valid TradeEntry instance to test brokerage validation
