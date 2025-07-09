@@ -166,7 +166,7 @@ class TestBrokerage(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_brokerages = ["ETRADE", "etrade"]
+        valid_brokerages = ["ETRADE", "vanguard"]
         for value in valid_brokerages:
             with self.subTest(value=value):
                 # Create a valid TradeEntry instance to test brokerage validation
@@ -185,35 +185,35 @@ class TestBrokerage(unittest.TestCase):
                 )
                 self.assertEqual(trade_entry.brokerage, value.upper())
 
-    # def test_invalid_brokerage(self):
-    #     """Tests the validation of invalid brokerage values for TradeEntry.
-    #
-    #     Iterates through a list of invalid brokerage inputs to ensure they raise a ValidationError
-    #     when used in a TradeEntry instance.
-    #
-    #     Args:
-    #         self: The test case instance.
-    #
-    #     Raises:
-    #         ValidationError: If the brokerage value is invalid.
-    #     """
-    #     invalid_brokerages = ["", None]
-    #     for value in invalid_brokerages:
-    #         with self.subTest(value=value):
-    #             with self.assertRaises(ValidationError):
-    #                 TradeEntry(
-    #                     trade_id=1,
-    #                     strategy_id=1,
-    #                     brokerage=value,
-    #                     account="TEST1234",
-    #                     strategy=[TradeStrategy.BASIC_TRADE],
-    #                     security=SecurityType.STOCK,
-    #                     trade_date=date(2023, 10, 15),
-    #                     symbol="AAPL",
-    #                     action=TradeAction.BOUGHT,
-    #                     quantity=100,
-    #                     fees=5.0
-    #                 )
+    def test_invalid_brokerage(self):
+        """Tests the validation of invalid brokerage values for TradeEntry.
+
+        Iterates through a list of invalid brokerage inputs to ensure they raise a ValidationError
+        when used in a TradeEntry instance.
+
+        Args:
+            self: The test case instance.
+
+        Raises:
+            ValidationError: If the brokerage value is invalid.
+        """
+        invalid_brokerages = ["", None]
+        for value in invalid_brokerages:
+            with self.subTest(value=value):
+                with self.assertRaises(ValidationError):
+                    TradeEntry(
+                        trade_id=1,
+                        strategy_id=1,
+                        brokerage=value,
+                        account="TEST1234",
+                        strategy=[TradeStrategy.BASIC_TRADE],
+                        security=SecurityType.STOCK,
+                        trade_date=date(2023, 10, 15),
+                        symbol="AAPL",
+                        action=TradeAction.BOUGHT,
+                        quantity=100,
+                        fees=5.0
+                    )
 
 
 class TestAccount(unittest.TestCase):

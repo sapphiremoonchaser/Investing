@@ -6,7 +6,6 @@ from typing import Union
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
 from src.data.enum.trade_strategy import TradeStrategy
-
 from src.data.data_model.market.stock_data import CurrentStockData
 
 class TradeEntry(BaseModel):
@@ -56,7 +55,7 @@ class TradeEntry(BaseModel):
             try:
                 return value.upper()
             except Exception:
-                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
+                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name. Biotch")
 
     # Convert account to string
     @field_validator('account', mode='before')
