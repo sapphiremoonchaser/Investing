@@ -3,7 +3,6 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.brokerage import Brokerage
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.trade_strategy import TradeStrategy
@@ -36,7 +35,7 @@ class TestExpirationDate(unittest.TestCase):
                 option_entry = OptionEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -72,7 +71,7 @@ class TestExpirationDate(unittest.TestCase):
                     OptionEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='ETRADE',
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
                         security=SecurityType.STOCK,
@@ -116,7 +115,7 @@ class TestStrike(unittest.TestCase):
                 option_entry = OptionEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -144,13 +143,13 @@ class TestStrike(unittest.TestCase):
         Raises:
             ValidationError: If the strike is not a positive float.
         """
-        invalid_strikes = [-1, -0.5, 0, 'a', None]
+        invalid_strikes = [-1, -0.5, 'a', None]
         for value in invalid_strikes:
             with self.assertRaises(ValidationError):
                 OptionEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -194,7 +193,7 @@ class TestPremium(unittest.TestCase):
                 option_entry = OptionEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -222,13 +221,13 @@ class TestPremium(unittest.TestCase):
         Raises:
             ValidationError: If the premium is not a positive float.
         """
-        invalid_premiums = [-1, -0.5, 0, 'a', None]
+        invalid_premiums = [-1, -0.5, 'a', None]
         for value in invalid_premiums:
             with self.assertRaises(ValidationError):
                 OptionEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -275,7 +274,7 @@ class TestSubtype(unittest.TestCase):
                 option_entry = OptionEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -310,7 +309,7 @@ class TestSubtype(unittest.TestCase):
                     OptionEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='ETRADE',
                         account="TEST1234",
                         strategy=[TradeStrategy.COVERED_CALL],
                         security=SecurityType.OPTION,

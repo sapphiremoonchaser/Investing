@@ -3,7 +3,6 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.brokerage import Brokerage
 from data.enum.trade_strategy import TradeStrategy
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
@@ -36,7 +35,7 @@ class TestTradeId(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=value,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -66,7 +65,7 @@ class TestTradeId(unittest.TestCase):
                 TradeEntry(
                     trade_id=value,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -104,7 +103,7 @@ class TestStrategyId(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=value,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -134,7 +133,7 @@ class TestStrategyId(unittest.TestCase):
                 TradeEntry(
                     trade_id=1,
                     strategy_id=value,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -156,10 +155,6 @@ class TestBrokerage(unittest.TestCase):
     Invalid Test Cases:
         None,
         invalid string
-
-    ToDo:
-        Enum Bokerage?
-
     """
     def test_valid_brokerage(self):
         """Tests the validation of brokerage values for TradeEntry.
@@ -171,7 +166,7 @@ class TestBrokerage(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_brokerages = list(Brokerage) + ["ETRADE", "etrade"]
+        valid_brokerages = ["ETRADE", "vanguard"]
         for value in valid_brokerages:
             with self.subTest(value=value):
                 # Create a valid TradeEntry instance to test brokerage validation
@@ -188,7 +183,7 @@ class TestBrokerage(unittest.TestCase):
                     quantity=100,
                     fees=5.0
                 )
-                self.assertIn(trade_entry.brokerage, list(Brokerage))
+                self.assertEqual(trade_entry.brokerage, value.upper())
 
     def test_invalid_brokerage(self):
         """Tests the validation of invalid brokerage values for TradeEntry.
@@ -202,7 +197,7 @@ class TestBrokerage(unittest.TestCase):
         Raises:
             ValidationError: If the brokerage value is invalid.
         """
-        invalid_brokerages = ["Heather", "", None]
+        invalid_brokerages = ["", None]
         for value in invalid_brokerages:
             with self.subTest(value=value):
                 with self.assertRaises(ValidationError):
@@ -244,7 +239,7 @@ class TestAccount(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account=value,
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -271,7 +266,7 @@ class TestAccount(unittest.TestCase):
                 TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account=value,
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -310,14 +305,14 @@ class TestSecurity(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_securities = [SecurityType.STOCK, SecurityType.ETF, 'STOCK', 'index']
+        valid_securities = [SecurityType.STOCK, SecurityType.ETF, 'STOCK', 'ETF']
         for value in valid_securities:
             with self.subTest(value=value):
                 # Create a valid TradeEntry instance to test security validate
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=value,
@@ -348,7 +343,7 @@ class TestSecurity(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='etrade',
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
                         security=value,
@@ -376,7 +371,7 @@ class TestSecurity(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=value,
@@ -407,7 +402,7 @@ class TestSecurity(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='etrade',
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
                         security=value,
@@ -434,7 +429,7 @@ class TestSecurity(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=value,
@@ -465,7 +460,7 @@ class TestSecurity(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='etrade',
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
                         security=value,
@@ -503,7 +498,7 @@ class TestTradeDate(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -535,7 +530,7 @@ class TestTradeDate(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='ETRADE',
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
                         security=SecurityType.STOCK,
@@ -568,7 +563,7 @@ class TestSymbol(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account='1234',
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -595,7 +590,7 @@ class TestSymbol(unittest.TestCase):
                 TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='ETRADE',
                     account='1234',
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -639,7 +634,7 @@ class TestAction(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=2,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.DIVIDEND],
                     security=SecurityType.DIVIDEND,
@@ -670,7 +665,7 @@ class TestAction(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='etrade',
                         account="TEST1234",
                         strategy=[TradeStrategy.DIVIDEND],
                         security=SecurityType.DIVIDEND,
@@ -697,7 +692,7 @@ class TestAction(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=2,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -728,7 +723,7 @@ class TestAction(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='etrade',
                         account="TEST1234",
                         strategy=[TradeStrategy.BASIC_TRADE],
                         security=SecurityType.ETF,
@@ -756,7 +751,7 @@ class TestAction(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=2,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.COVERED_CALL],
                     security=SecurityType.OPTION,
@@ -787,7 +782,7 @@ class TestAction(unittest.TestCase):
                     TradeEntry(
                         trade_id=1,
                         strategy_id=1,
-                        brokerage=Brokerage.ETRADE,
+                        brokerage='etrade',
                         account="TEST1234",
                         strategy=[TradeStrategy.COVERED_CALL],
                         security=SecurityType.OPTION,
@@ -826,7 +821,7 @@ class TestQuantity(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -856,7 +851,7 @@ class TestQuantity(unittest.TestCase):
                 TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -895,7 +890,7 @@ class TestFees(unittest.TestCase):
                 trade_entry = TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,
@@ -925,7 +920,7 @@ class TestFees(unittest.TestCase):
                 TradeEntry(
                     trade_id=1,
                     strategy_id=1,
-                    brokerage=Brokerage.ETRADE,
+                    brokerage='etrade',
                     account="TEST1234",
                     strategy=[TradeStrategy.BASIC_TRADE],
                     security=SecurityType.STOCK,

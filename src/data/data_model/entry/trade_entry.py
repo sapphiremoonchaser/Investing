@@ -6,8 +6,6 @@ from typing import Union
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
 from src.data.enum.trade_strategy import TradeStrategy
-from src.data.enum.brokerage import Brokerage
-
 from src.data.data_model.market.stock_data import CurrentStockData
 
 class TradeEntry(BaseModel):
@@ -28,7 +26,7 @@ class TradeEntry(BaseModel):
     """
     trade_id: int = Field(gt=0, frozen=True)
     strategy_id: int = Field(gt=0, frozen=True)
-    brokerage: Brokerage = Field(frozen=True)
+    brokerage: str = Field(min_length=1, frozen=True)
     account: str = Field(min_length=4, frozen=True)
     strategy: list[TradeStrategy] = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
@@ -40,28 +38,24 @@ class TradeEntry(BaseModel):
 
     # Normalize brokerage to uppercase
     @field_validator('brokerage', mode='before')
-    def validate_brokerage(cls, value: Union[str, Brokerage]) -> Brokerage:
+    def normalize_brokerage(cls, value: str) -> str:
         """Validates and normalizes the brokerage name.
 
             Args:
                 cls: The class being validated.
-                value (Union[str, Brokerage]): The brokerage value to validate, either a string or Brokerage enum.
+                value (str): The brokerage value to validate.
 
             Returns:
-                Brokerage: The validated Brokerage enum value.
+                Brokerage: The validated string value for brokerage name.
 
             Raises:
                 ValueError: If the provided brokerage name is not valid.
             """
-        # Don't need this if using my csv file but might need later
-        if isinstance(value, Brokerage):
-            return value
-        # This is case for csv file
         if isinstance(value, str):
             try:
-                return Brokerage(value.upper())
+                return value.upper()
             except Exception:
-                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
+                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name. Biotch")
 
     # Convert account to string
     @field_validator('account', mode='before')
