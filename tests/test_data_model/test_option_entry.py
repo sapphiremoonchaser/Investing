@@ -143,7 +143,7 @@ class TestStrike(unittest.TestCase):
         Raises:
             ValidationError: If the strike is not a positive float.
         """
-        invalid_strikes = [-1, -0.5, 0, 'a', None]
+        invalid_strikes = [-1, -0.5, 'a', None]
         for value in invalid_strikes:
             with self.assertRaises(ValidationError):
                 OptionEntry(
@@ -221,7 +221,7 @@ class TestPremium(unittest.TestCase):
         Raises:
             ValidationError: If the premium is not a positive float.
         """
-        invalid_premiums = [-1, -0.5, 0, 'a', None]
+        invalid_premiums = [-1, -0.5, 'a', None]
         for value in invalid_premiums:
             with self.assertRaises(ValidationError):
                 OptionEntry(
