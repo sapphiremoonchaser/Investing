@@ -8,6 +8,7 @@ from src.data.enum.trade_action import TradeAction
 from src.data.enum.trade_strategy import TradeStrategy
 from src.data.data_model.market.stock_data import CurrentStockData
 
+
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
 
