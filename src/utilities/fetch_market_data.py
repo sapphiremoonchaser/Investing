@@ -4,14 +4,6 @@ from typing import Dict, List, Optional
 
 from data.data_model.market.stock_data import CurrentStockData
 
-# Configure logging
-logging_file_path = "C:/dev/Investing/Investing-Logging/logs/market_data_errors.log"
-logging.basicConfig(
-    filename=logging_file_path,
-    level=logging.ERROR,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
-
 def fetch_current_stock_price(symbol: str) -> CurrentStockData:
     """Fetches the current stock price for a given symbol.
 
@@ -24,7 +16,7 @@ def fetch_current_stock_price(symbol: str) -> CurrentStockData:
 
         # Fetch the current price (using regularMarketPrice)
         price_data = ticker.info
-        current_price = price_data.get('regularMarketPrice')
+        current_price = price_data.get('regularMarketPreviousClose')
 
         if current_price is None:
             raise ValueError(f"No current price data available for {symbol}")
