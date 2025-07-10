@@ -1,7 +1,9 @@
 # Imports
 from datetime import date, datetime
+
+from pandas.conftest import rand_series_with_duplicate_datetimeindex
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import Union
+from typing import Union, List
 
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
@@ -28,7 +30,7 @@ class TradeEntry(BaseModel):
     strategy_id: int = Field(gt=0, frozen=True)
     brokerage: str = Field(min_length=1, frozen=True)
     account: str = Field(min_length=4, frozen=True)
-    strategy: str = Field(frozen=True)
+    strategy: List[str] = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
@@ -79,14 +81,14 @@ class TradeEntry(BaseModel):
         except Exception as e:
             raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
 
-    # Normalize strategy to lowercase
+    # Normalize strategy to lowercase and parse string to list
     @field_validator('strategy', mode='before')
-    def normalize_strategy(cls, value: str) -> str:
-        """Validates and normalizes the strategy string.
+    def parse_and_normalize_strategy(cls, value: Union[List[str], str]) -> List[str]:
+        """Parse the string into a list of strategies and normalizes the strategies to lowercase.
 
             Args:
                 cls: The class being validated.
-                value (str): The strategy description value to validate.
+                value (Union[List[str], str]): The strategy description value to validate.
 
             Returns:
                 Brokerage: The validated string value for the strategy.
@@ -96,9 +98,20 @@ class TradeEntry(BaseModel):
             """
         if isinstance(value, str):
             try:
-                return value.lower()
+                # Split comma-separated string and strip whitespace
+                # Filter out empty strings
+                return [strategy.strip for strategy in value.lower().split(",") if strategy.strip()]
             except Exception:
-                raise ValueError(f"Strategy '{value}' is not a valid strategy name.")
+                raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
+
+        elif isinstance(value, list):
+            try:
+                # Make sure all elements are strings and strip whitespace
+                return [str(strategy.strip()) for strategy in value if str(strategy).strip()]
+            except Exception:
+                raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
+
+        raise ValeError(f"Strategy descriptions must be a comma-separated list. You provided {value}.")
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')

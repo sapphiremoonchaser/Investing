@@ -4,7 +4,6 @@ import logging
 
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
-from data.enum.trade_strategy import TradeStrategy
 from data.enum.option_type import OptionType
 from data.data_model.entry.stock_entry import StockEntry
 from data.data_model.entry.dividend_entry import DividendEntry
@@ -26,7 +25,7 @@ def load_trades_from_excel(file_path: str) -> list:
         strategy_str = row["strategy"]
         if pd.isna(strategy_str):
             # default if strategy is empty in excel
-            strategies = [TradeStrategy.BASIC_TRADE]
+            strategies = ['basic trade']
         else:
             # Split comma-separated strategies and convert to enums
             strategy_list = [s.strip().upper().replace(" ", "_") for s in strategy_str.split(",")]
