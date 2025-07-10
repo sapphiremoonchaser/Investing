@@ -30,7 +30,7 @@ class TradeEntry(BaseModel):
     strategy_id: int = Field(gt=0, frozen=True)
     brokerage: str = Field(min_length=1, frozen=True)
     account: str = Field(min_length=4, frozen=True)
-    strategy: List[str] = Field(frozen=True)
+    strategy: Union[List[str], None] = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
@@ -96,7 +96,9 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the provided strategy description is not valid.
             """
-        if isinstance(value, str):
+        if isinstance(value, None):
+            return ['basic trade']
+        elif isinstance(value, str):
             try:
                 # Split comma-separated string and strip whitespace
                 # Filter out empty strings
@@ -110,8 +112,6 @@ class TradeEntry(BaseModel):
                 return [str(strategy.strip()) for strategy in value if str(strategy).strip()]
             except Exception:
                 raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
-
-        raise ValeError(f"Strategy descriptions must be a comma-separated list. You provided {value}.")
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')

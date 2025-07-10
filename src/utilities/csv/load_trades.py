@@ -26,14 +26,15 @@ def load_trades_from_excel(file_path: str) -> list:
         if pd.isna(strategy_str):
             # default if strategy is empty in excel
             strategies = ['basic trade']
-        else:
-            # Split comma-separated strategies and convert to enums
-            strategy_list = [s.strip().upper().replace(" ", "_") for s in strategy_str.split(",")]
-            try:
-                strategies = [TradeStrategy[s] for s in strategy_list]
-            except KeyError as e:
-                print(f"Invalid strategy in row {row}: {e}")
-                continue
+            continue
+        # else:
+        #     # Split comma-separated strategies and convert to enums
+        #     strategy_list = [s.strip().lower().replace(" ", "_") for s in strategy_str.split(",")]
+        #     try:
+        #         strategies = [TradeStrategy[s] for s in strategy_list]
+        #     except KeyError as e:
+        #         print(f"Invalid strategy in row {row}: {e}")
+        #         continue
 
 
         # Common fields for all trade types
