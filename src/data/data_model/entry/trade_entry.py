@@ -1,7 +1,5 @@
 # Imports
 from datetime import date, datetime
-
-from pandas.conftest import rand_series_with_duplicate_datetimeindex
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Union, List
 
@@ -30,7 +28,7 @@ class TradeEntry(BaseModel):
     strategy_id: int = Field(gt=0, frozen=True)
     brokerage: str = Field(min_length=1, frozen=True)
     account: str = Field(min_length=4, frozen=True)
-    strategy: Union[List[str], None] = Field(frozen=True)
+    strategy: List[str] = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
@@ -81,7 +79,7 @@ class TradeEntry(BaseModel):
         except Exception as e:
             raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
 
-    # Normalize strategy to lowercase and parse string to list
+    # comma-separated string to a list of strings
     @field_validator('strategy', mode='before')
     def parse_and_normalize_strategy(cls, value: Union[List[str], str]) -> List[str]:
         """Parse the string into a list of strategies and normalizes the strategies to lowercase.
@@ -96,20 +94,18 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the provided strategy description is not valid.
             """
-        if isinstance(value, None):
-            return ['basic trade']
-        elif isinstance(value, str):
+        if isinstance(value, str):
             try:
                 # Split comma-separated string and strip whitespace
                 # Filter out empty strings
-                return [strategy.strip for strategy in value.lower().split(",") if strategy.strip()]
+                return [strategy.strip() for strategy in value.lower().split(",") if strategy.strip()]
             except Exception:
                 raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
 
         elif isinstance(value, list):
             try:
                 # Make sure all elements are strings and strip whitespace
-                return [str(strategy.strip()) for strategy in value if str(strategy).strip()]
+                return [str(strategy.strip()) for strategy in value if strategy.strip()]
             except Exception:
                 raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
 

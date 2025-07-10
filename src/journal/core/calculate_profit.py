@@ -45,7 +45,7 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     for trade in trades:
         # Extract symbol and strategies
         symbol = trade.symbol
-        strategy = trade.strategy[0].value
+        strategy = trade.strategy[0]
 
         # Initialize dict for new symbol
         if symbol not in results["by_symbol"]:
