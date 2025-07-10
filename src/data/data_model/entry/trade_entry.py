@@ -82,7 +82,18 @@ class TradeEntry(BaseModel):
     # Normalize strategy to lowercase
     @field_validator('strategy', mode='before')
     def normalize_strategy(cls, value: str) -> str:
+        """Validates and normalizes the strategy string.
 
+            Args:
+                cls: The class being validated.
+                value (str): The strategy description value to validate.
+
+            Returns:
+                Brokerage: The validated string value for the strategy.
+
+            Raises:
+                ValueError: If the provided strategy description is not valid.
+            """
         if isinstance(value, str):
             try:
                 return value.lower()
