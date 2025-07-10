@@ -1,10 +1,10 @@
 # Imports
 import pandas as pd
 import logging
+from typing import List
 
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
-from data.enum.trade_strategy import TradeStrategy
 from data.enum.option_type import OptionType
 from data.data_model.entry.stock_entry import StockEntry
 from data.data_model.entry.dividend_entry import DividendEntry
@@ -22,29 +22,13 @@ def load_trades_from_excel(file_path: str) -> list:
 
     trades = []
     for _, row in df.iterrows():
-        # Parse strategy as a list of TradeStrategy enums
-        strategy_str = row["strategy"]
-        if pd.isna(strategy_str):
-            # default if strategy is empty in excel
-            strategies = [TradeStrategy.BASIC_TRADE]
-        else:
-            # Split comma-separated strategies and convert to enums
-            strategy_list = [s.strip().upper().replace(" ", "_") for s in strategy_str.split(",")]
-            try:
-                strategies = [TradeStrategy[s] for s in strategy_list]
-            except KeyError as e:
-                print(f"Invalid strategy in row {row}: {e}")
-                continue
-
-
-        # Common fields for all trade types
         try:
             common_fields = {
                 "trade_id": int(row["trade_id"]),
                 "strategy_id": int(row["strategy_id"]),
                 "brokerage": str(row["brokerage"]),
                 "account": str(row["account"]),
-                "strategy": strategies,
+                "strategy": str(row["strategy"]),
                 "security": SecurityType(row["security_type"]),
                 "trade_date": pd.to_datetime(row["trade_date"]).date(),
                 "symbol": str(row["symbol"]),

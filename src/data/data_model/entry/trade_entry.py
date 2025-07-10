@@ -1,12 +1,12 @@
 # Imports
 from datetime import date, datetime
 from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import Union
+from typing import Union, List
 
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
-from src.data.enum.trade_strategy import TradeStrategy
 from src.data.data_model.market.stock_data import CurrentStockData
+
 
 class TradeEntry(BaseModel):
     """A model representing a trade entry with relevant details.
@@ -28,7 +28,7 @@ class TradeEntry(BaseModel):
     strategy_id: int = Field(gt=0, frozen=True)
     brokerage: str = Field(min_length=1, frozen=True)
     account: str = Field(min_length=4, frozen=True)
-    strategy: list[TradeStrategy] = Field(frozen=True)
+    strategy: List[str] = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
@@ -55,7 +55,7 @@ class TradeEntry(BaseModel):
             try:
                 return value.upper()
             except Exception:
-                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name. Biotch")
+                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
 
     # Convert account to string
     @field_validator('account', mode='before')
@@ -79,9 +79,39 @@ class TradeEntry(BaseModel):
         except Exception as e:
             raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
 
+    # comma-separated string to a list of strings
+    @field_validator('strategy', mode='before')
+    def parse_and_normalize_strategy(cls, value: Union[List[str], str]) -> List[str]:
+        """Parse the string into a list of strategies and normalizes the strategies to lowercase.
+
+            Args:
+                cls: The class being validated.
+                value (Union[List[str], str]): The strategy description value to validate.
+
+            Returns:
+                Brokerage: The validated string value for the strategy.
+
+            Raises:
+                ValueError: If the provided strategy description is not valid.
+            """
+        if isinstance(value, str):
+            try:
+                # Split comma-separated string and strip whitespace
+                # Filter out empty strings
+                return [strategy.strip() for strategy in value.lower().split(",") if strategy.strip()]
+            except Exception:
+                raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
+
+        elif isinstance(value, list):
+            try:
+                # Make sure all elements are strings and strip whitespace
+                return [str(strategy.strip()) for strategy in value if strategy.strip()]
+            except Exception:
+                raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
+
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
-    def validate_security(cls, value: Union[str, SecurityType]) -> SecurityType:
+    def normalize_security(cls, value: Union[str, SecurityType]) -> SecurityType:
         """Normalizes and validates the trade type.
 
             Args:
@@ -152,7 +182,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'action' to uppercase
     @field_validator('action', mode='before')
-    def validate_action(cls, value: Union[str, TradeAction]) -> TradeAction:
+    def normalize_action(cls, value: Union[str, TradeAction]) -> TradeAction:
         """Normalizes and validates the trade action.
 
             Args:
