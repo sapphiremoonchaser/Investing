@@ -5,7 +5,6 @@ from typing import Union
 
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
-from src.data.enum.trade_strategy import TradeStrategy
 from src.data.data_model.market.stock_data import CurrentStockData
 
 
@@ -29,7 +28,7 @@ class TradeEntry(BaseModel):
     strategy_id: int = Field(gt=0, frozen=True)
     brokerage: str = Field(min_length=1, frozen=True)
     account: str = Field(min_length=4, frozen=True)
-    strategy: list[TradeStrategy] = Field(frozen=True)
+    strategy: str = Field(frozen=True)
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
@@ -82,7 +81,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
-    def validate_security(cls, value: Union[str, SecurityType]) -> SecurityType:
+    def normalize_security(cls, value: Union[str, SecurityType]) -> SecurityType:
         """Normalizes and validates the trade type.
 
             Args:
@@ -153,7 +152,7 @@ class TradeEntry(BaseModel):
 
     # Normalize 'action' to uppercase
     @field_validator('action', mode='before')
-    def validate_action(cls, value: Union[str, TradeAction]) -> TradeAction:
+    def normalize_action(cls, value: Union[str, TradeAction]) -> TradeAction:
         """Normalizes and validates the trade action.
 
             Args:
