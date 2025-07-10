@@ -55,7 +55,7 @@ class TradeEntry(BaseModel):
             try:
                 return value.upper()
             except Exception:
-                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name. Biotch")
+                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
 
     # Convert account to string
     @field_validator('account', mode='before')
@@ -78,6 +78,16 @@ class TradeEntry(BaseModel):
             return f"{value}"
         except Exception as e:
             raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
+
+    # Normalize strategy to lowercase
+    @field_validator('strategy', mode='before')
+    def normalize_strategy(cls, value: str) -> str:
+
+        if isinstance(value, str):
+            try:
+                return value.lower()
+            except Exception:
+                raise ValueError(f"Strategy '{value}' is not a valid strategy name.")
 
     # Normalize 'security' to uppercase
     @field_validator('security', mode='before')
