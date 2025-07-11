@@ -5,6 +5,7 @@ from typing import List
 
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
+from data.enum.sub_action import TradeSubAction
 from data.enum.option_type import OptionType
 from data.data_model.entry.stock_entry import StockEntry
 from data.data_model.entry.dividend_entry import DividendEntry
@@ -33,6 +34,7 @@ def load_trades_from_excel(file_path: str) -> list:
                 "trade_date": pd.to_datetime(row["trade_date"]).date(),
                 "symbol": str(row["symbol"]),
                 "action": TradeAction(row["action"]),
+                "sub_action": TradeSubAction(row["sub_action"]),
                 "quantity": float(row["quantity"]),
                 "fees": float(row["fees"]),
             }

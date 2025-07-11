@@ -8,6 +8,7 @@ from data.data_model.entry.stock_entry import StockEntry
 from data.data_model.entry.option_entry import OptionEntry
 from data.enum.option_type import OptionType
 from data.enum.trade_action import TradeAction
+from data.enum.sub_action import TradeSubAction
 
 # Configure logging to a file
 logger = logging.getLogger(__name__)
@@ -61,11 +62,11 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         # Stock
         if isinstance(trade, StockEntry):
             # For stock trades, profit/loss depends on the action
-            if trade.action == TradeAction.BOUGHT:
+            if trade.action == TradeAction.BUY:
                 stock_qty = trade.quantity # Positive for buying shares
                 option_qty = 0
                 profit = -trade.price_per_share * trade.quantity - trade.fees # Cash Outflow
-            elif trade.action == TradeAction.SOLD:
+            elif trade.action == TradeAction.SELL:
                 stock_qty = -trade.quantity # Negative for selling shares
                 option_qty = 0
                 profit = trade.price_per_share * trade.quantity - trade.fees # Cash Inflow
@@ -87,19 +88,19 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         elif isinstance(trade, OptionEntry):
             # Sold Calls
             if trade.option_type == OptionType.CALL:
-                if trade.action == TradeAction.SOLD_SHORT:
+                if trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.OPEN:
                     stock_qty = 0
                     option_qty = trade.quantity # Positive for contract added to portfolio
                     profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
-                elif trade.action == TradeAction.SOLD_CLOSE:
+                elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
                     stock_qty = 0
                     option_qty = -trade.quantity # Negative because closing position
                     profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
-                elif trade.action == TradeAction.BOUGHT_OPEN:
+                elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
                     stock_qty = 0
                     option_qty = trade.quantity # Positive for contract added to portfolio
                     profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
-                elif trade.action == TradeAction.BOUGHT_COVER:
+                elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.CLOSE:
                     stock_qty = 0
                     option_qty = -trade.quantity # Negative because closing position
                     profit = -trade.premium * trade.quantity * 100 - trade.fees
@@ -123,11 +124,11 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                     profit = 0
 
             elif trade.option_type == OptionType.PUT:
-                if trade.action == TradeAction.BOUGHT_OPEN:
+                if trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
                     stock_qty = 0
                     option_qty = trade.quantity # Positive for buying contracts
                     profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
-                elif trade.action == TradeAction.SOLD_CLOSE:
+                elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
                     stock_qty = 0
                     option_qty = -trade.quantity # Negative for selling contracts
                     profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
