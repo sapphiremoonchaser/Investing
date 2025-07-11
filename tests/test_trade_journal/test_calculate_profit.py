@@ -7,7 +7,7 @@ from data.enum.option_type import OptionType
 from data.data_model.entry.stock_entry import StockEntry
 from data.data_model.entry.dividend_entry import DividendEntry
 from data.data_model.entry.option_entry import OptionEntry
-from journal.core.calculate_profit import calculate_qty_and_profit
+from journal.core.calculate_profit import calculate_qty_and_profit_by_symbol
 
 class TestCalculateProfit(unittest.TestCase):
     def setUp(self):
@@ -134,7 +134,7 @@ class TestCalculateProfit(unittest.TestCase):
         ]
 
     def test_aggregate_by_symbol_and_strategy(self):
-        results = calculate_qty_and_profit(self.trades)
+        results = calculate_qty_and_profit_by_symbol(self.trades)
 
         # Buy Symbol
         # Verify buy STOCK, sell STOCK, receive DIVIDEND, buy CALL (by symbol)

@@ -14,7 +14,7 @@ from data.enum.sub_action import TradeSubAction
 logger = logging.getLogger(__name__)
 
 
-def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
+def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
     """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
 
     Processes a list of TradeEntry instances, categorizing results by symbol and strategy.
@@ -34,29 +34,31 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     Raises:
         None: Logs warnings for unexpected trade types or actions without raising exceptions.
     """
-    # Initialize a dict to store aggregated profit/loss results
-    results = {
-        # {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}
-        "by_symbol": {},
-        # {strategy: {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}}
-        "by_strategy": {}
-    }
+    # # Initialize a dict to store aggregated profit/loss results
+    # results = {
+    #     # {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}
+    #     "by_symbol": {},
+    #     # {strategy: {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}}
+    #     "by_strategy": {}
+    # }
+    # Initialize aggregated profit/loss, stock quantity, and option quantity by symbol
+    results = {}
 
     # Iterate through each trade to calculate and aggregate profit/loss
     for trade in trades:
         # Extract symbol and strategies
         symbol = trade.symbol
-        strategy = trade.strategy[0]
+        # strategy = trade.strategy[0]
 
         # Initialize dict for new symbol
-        if symbol not in results["by_symbol"]:
-            results["by_symbol"][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
+        if symbol not in results.keys():
+            results[symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
 
-        # Initialize dict for new strategy and symbol
-        if strategy not in results["by_strategy"]:
-            results["by_strategy"][strategy] = {}
-        if symbol not in results["by_strategy"][strategy]:
-            results["by_strategy"][strategy][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
+        # # Initialize dict for new strategy and symbol
+        # if strategy not in results["by_strategy"]:
+        #     results["by_strategy"][strategy] = {}
+        # if symbol not in results["by_strategy"][strategy]:
+        #     results["by_strategy"][strategy][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
 
         # Calculate profit/loss based on teh trade type
         # Stock
@@ -152,9 +154,9 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
             logger.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
 
         # Aggregate profit, stock_qty, and option_qty for symbol
-        results["by_symbol"][symbol]["profit"] += profit
-        results["by_symbol"][symbol]["stock_qty"] += stock_qty
-        results["by_symbol"][symbol]["option_qty"] += option_qty
+        results[symbol]["profit"] += profit
+        results[symbol]["stock_qty"] += stock_qty
+        results[symbol]["option_qty"] += option_qty
 
         # # Aggregate profit, stock_qty, and option_qty for each strategy
         # results["by_strategy"][strategy][symbol]["profit"] += profit
@@ -162,3 +164,5 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         # results["by_strategy"][strategy][symbol]["option_qty"] += option_qty
 
     return results
+
+
