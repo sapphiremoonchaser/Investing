@@ -5,6 +5,7 @@ from typing import Union, List
 
 from src.data.enum.security_type import SecurityType
 from src.data.enum.trade_action import TradeAction
+from src.data.enum.sub_action import TradeSubAction
 from src.data.data_model.market.stock_data import CurrentStockData
 
 
@@ -33,6 +34,7 @@ class TradeEntry(BaseModel):
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
     action: TradeAction = Field(frozen=True)
+    sub_action: TradeSubAction = Field(frozen=True)
     quantity: float = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
 
@@ -204,6 +206,29 @@ class TradeEntry(BaseModel):
             except Exception:
                 raise ValueError(f"Trade action '{value}' is invalid.")
 
+    # Normalize 'sub_action' to uppercase
+    @field_validator('sub_action', mode='before')
+    def normalize_sub_action(cls, value: Union[str, TradeSubAction]) -> TradeSubAction:
+        """Normalizes and validates the trade sub action.
+
+            Args:
+                cls: The class being validated.
+                value (str): The trade sub action value to validate.
+
+            Returns:
+                str: The normalized (uppercase) trade sub action value.
+
+            Raises:
+                ValueError: If the trade sub action is not one of the valid types.
+            """
+        if isinstance(value, TradeSubAction):
+            return value
+        if isinstance(value, str):
+            try:
+                return TradeSubAction(value.upper())
+            except Exception:
+                raise ValueError(f"Trade sub action '{value}' is invalid.")
+
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
     @model_validator(mode='after')
@@ -223,12 +248,12 @@ class TradeEntry(BaseModel):
 
         # Define mapping of actions to type
         valid_action_map = {
-            SecurityType.STOCK: {TradeAction.BOUGHT, TradeAction.SOLD},
-            SecurityType.ETF: {TradeAction.BOUGHT, TradeAction.SOLD},
+            SecurityType.STOCK: {TradeAction.BUY, TradeAction.SELL},
+            SecurityType.ETF: {TradeAction.BUY, TradeAction.SELL},
             SecurityType.DIVIDEND: {TradeAction.DIVIDEND},
-            SecurityType.OPTION: {TradeAction.BOUGHT_COVER, TradeAction.BOUGHT_OPEN,
+            SecurityType.OPTION: {TradeAction.BUY,
                                   TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
-                                  TradeAction.SOLD_CLOSE, TradeAction.SOLD_SHORT}
+                                  TradeAction.SELL}
         }
 
         valid_actions = valid_action_map.get(security, set())
