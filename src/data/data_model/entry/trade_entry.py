@@ -236,3 +236,4 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Action '{action}' is not valid for security type, '{security}'. Valid actions: {valid_actions}")
 
         return self
+
