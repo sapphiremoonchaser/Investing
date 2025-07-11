@@ -31,3 +31,4 @@ def _test(file_path: str = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx
 
 if __name__ == '__main__':
     _test()
+
