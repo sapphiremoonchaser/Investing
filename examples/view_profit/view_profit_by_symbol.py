@@ -3,7 +3,7 @@ import pandas as pd
 import logging
 
 from utilities.csv.load_trades import load_trades_from_excel
-from journal.core.calculate_profit import calculate_qty_and_profit
+from journal.core.calc_portfolio_metrics import calculate_qty_and_profit
 
 logging.basicConfig(
     level=logging.INFO,
