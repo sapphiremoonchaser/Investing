@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
-    """Calculates aggregated value/loss, stock quantity, and option quantity for a list of trades.
+    """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
 
     Processes a list of TradeEntry instances, categorizing results by symbol and strategy.
     Handles stock, dividend, and option trades, the quantity of shares, options contracts,
-    and the current value by symbol.
+    and the current profit by symbol.
 
     Args:
         trades (List[TradeEntry]): List of trade entries to process.
@@ -27,20 +27,22 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     Returns:
         dict: A dictionary with two keys:
             - by_symbol (dict): Aggregated results by symbol, with sub-dictionaries containing
-                value (float), stock_qty (float), and option_qty (float).
+                profit (float), stock_qty (float), and option_qty (float).
             - by_strategy (dict): Aggregated results by strategy, with sub-dictionaries containing
-                value (float), stock_qty (float), and option_qty (float).
+                profit (float), stock_qty (float), and option_qty (float).
 
     Raises:
         None: Logs warnings for unexpected trade types or actions without raising exceptions.
     """
-    # Initialize a dict to store aggregated value/loss results
+    # Initialize a dict to store aggregated profit/loss results
     results = {
-        "by_symbol": {}, # {symbol: {"value": float, "stock_qty": float, "option_qty": float}}
-        "by_strategy": {} # {strategy: {symbol: {"value": float, "stock_qty": float, "option_qty": float}}}
+        # {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}
+        "by_symbol": {},
+        # {strategy: {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}}
+        "by_strategy": {}
     }
 
-    # Iterate through each trade to calculate and aggregate value/loss
+    # Iterate through each trade to calculate and aggregate profit/loss
     for trade in trades:
         # Extract symbol and strategies
         symbol = trade.symbol
@@ -48,39 +50,39 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
 
         # Initialize dict for new symbol
         if symbol not in results["by_symbol"]:
-            results["by_symbol"][symbol] = {"value": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
+            results["by_symbol"][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
 
         # Initialize dict for new strategy and symbol
         if strategy not in results["by_strategy"]:
             results["by_strategy"][strategy] = {}
         if symbol not in results["by_strategy"][strategy]:
-            results["by_strategy"][strategy][symbol] = {"value": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
+            results["by_strategy"][strategy][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
 
-        # Calculate value/loss based on teh trade type
+        # Calculate profit/loss based on teh trade type
         # Stock
         if isinstance(trade, StockEntry):
-            # For stock trades, value/loss depends on the action
+            # For stock trades, profit/loss depends on the action
             if trade.action == TradeAction.BUY:
                 stock_qty = trade.quantity # Positive for buying shares
                 option_qty = 0
-                value = -trade.price_per_share * trade.quantity - trade.fees # Cash Outflow
+                profit = -trade.price_per_share * trade.quantity - trade.fees # Cash Outflow
             elif trade.action == TradeAction.SELL:
                 stock_qty = -trade.quantity # Negative for selling shares
                 option_qty = 0
-                value = trade.price_per_share * trade.quantity - trade.fees # Cash Inflow
+                profit = trade.price_per_share * trade.quantity - trade.fees # Cash Inflow
             else:
                 # Log warning for unexpected actions and treat as no impact
                 logger.warning(f"Unexpected action {trade.action} for StockEntry trade_id {trade.trade_id}")
                 stock_qty = 0
                 option_qty = 0
-                value = 0
+                profit = 0
 
         # Dividend
         elif isinstance(trade, DividendEntry):
-            # For dividends, value is the dividend amount, minus fees
+            # For dividends, profit is the dividend amount, minus fees
             stock_qty = 0
             option_qty = 0
-            value = trade.dividend_amount - trade.fees
+            profit = trade.dividend_amount - trade.fees
 
         # Options
         elif isinstance(trade, OptionEntry):
@@ -89,55 +91,55 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
                 if trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.OPEN:
                     stock_qty = 0
                     option_qty = trade.quantity # Positive for contract added to portfolio
-                    value = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
                 elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
                     stock_qty = 0
                     option_qty = -trade.quantity # Negative because closing position
-                    value = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
                 elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
                     stock_qty = 0
                     option_qty = trade.quantity # Positive for contract added to portfolio
-                    value = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
+                    profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
                 elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.CLOSE:
                     stock_qty = 0
                     option_qty = -trade.quantity # Negative because closing position
-                    value = -trade.premium * trade.quantity * 100 - trade.fees
+                    profit = -trade.premium * trade.quantity * 100 - trade.fees
                 elif trade.action == TradeAction.OPTION_EXPIRED:
                     stock_qty = 0
                     option_qty = -trade.quantity # Remove sold contracts
-                    value = 0 # No value/loss for expiration
+                    profit = 0 # No profit/loss for expiration
                 elif trade.action == TradeAction.OPTION_ASSIGNED:
                     stock_qty = -trade.quantity * 100 # Buying shares to deliver
                     option_qty = -trade.quantity # Remove assigned contract
-                    value = trade.quantity * trade.strike * 100 - trade.fees # Shares sold at strike
+                    profit = trade.quantity * trade.strike * 100 - trade.fees # Shares sold at strike
                 elif trade.action == TradeAction.OPTION_EXERCISED:
                     stock_qty = trade.quantity * 100 # Receive shares
                     option_qty = -trade.quantity # Remove exercised contract
-                    value = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
+                    profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
                 else:
                     # Log warning for unexpected actions
                     logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
                     stock_qty = 0
                     option_qty = 0
-                    value = 0
+                    profit = 0
 
             elif trade.option_type == OptionType.PUT:
                 if trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
                     stock_qty = 0
                     option_qty = trade.quantity # Positive for buying contracts
-                    value = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
+                    profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
                 elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
                     stock_qty = 0
                     option_qty = -trade.quantity # Negative for selling contracts
-                    value = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
                 elif trade.action == TradeAction.OPTION_EXPIRED:
                     stock_qty = 0
                     option_qty = -trade.quantity # Remove sold contacts
-                    value = 0
+                    profit = 0
                 elif trade.action == TradeAction.OPTION_ASSIGNED:
                     stock_qty = trade.quantity * 100 # Receive shares (100 per contract)
                     option_qty = -trade.quantity # Remove assigned contracts
-                    value = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
+                    profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
                 else:
                     # Log warning for unexpected actions
                     logger.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
@@ -149,14 +151,14 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
             # Log warning for unexpected trade types
             logger.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
 
-        # Aggregate value, stock_qty, and option_qty for symbol
-        results["by_symbol"][symbol]["value"] += value
+        # Aggregate profit, stock_qty, and option_qty for symbol
+        results["by_symbol"][symbol]["profit"] += profit
         results["by_symbol"][symbol]["stock_qty"] += stock_qty
         results["by_symbol"][symbol]["option_qty"] += option_qty
 
-        # Aggregate value, stock_qty, and option_qty for each strategy
-        results["by_strategy"][strategy][symbol]["value"] += value
-        results["by_strategy"][strategy][symbol]["stock_qty"] += stock_qty
-        results["by_strategy"][strategy][symbol]["option_qty"] += option_qty
+        # # Aggregate profit, stock_qty, and option_qty for each strategy
+        # results["by_strategy"][strategy][symbol]["profit"] += profit
+        # results["by_strategy"][strategy][symbol]["stock_qty"] += stock_qty
+        # results["by_strategy"][strategy][symbol]["option_qty"] += option_qty
 
     return results
