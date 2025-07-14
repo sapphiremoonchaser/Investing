@@ -1,6 +1,7 @@
 # Imports
 from typing import List
 import logging
+import pandas as pd
 
 from data.data_model.entry.trade_entry import TradeEntry
 from data.data_model.entry.dividend_entry import DividendEntry
@@ -34,31 +35,16 @@ def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
     Raises:
         None: Logs warnings for unexpected trade types or actions without raising exceptions.
     """
-    # # Initialize a dict to store aggregated profit/loss results
-    # results = {
-    #     # {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}
-    #     "by_symbol": {},
-    #     # {strategy: {symbol: {"stock_qty": float, "option_qty": float, "profit": float, "original_buy_in": float, "adjusted_buy_in": float, "profit": float}}}
-    #     "by_strategy": {}
-    # }
     # Initialize aggregated profit/loss, stock quantity, and option quantity by symbol
     results = {}
 
     # Iterate through each trade to calculate and aggregate profit/loss
     for trade in trades:
-        # Extract symbol and strategies
         symbol = trade.symbol
-        # strategy = trade.strategy[0]
 
         # Initialize dict for new symbol
         if symbol not in results.keys():
             results[symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
-
-        # # Initialize dict for new strategy and symbol
-        # if strategy not in results["by_strategy"]:
-        #     results["by_strategy"][strategy] = {}
-        # if symbol not in results["by_strategy"][strategy]:
-        #     results["by_strategy"][strategy][symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
 
         # Calculate profit/loss based on teh trade type
         # Stock
@@ -158,11 +144,15 @@ def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
         results[symbol]["stock_qty"] += stock_qty
         results[symbol]["option_qty"] += option_qty
 
-        # # Aggregate profit, stock_qty, and option_qty for each strategy
-        # results["by_strategy"][strategy][symbol]["profit"] += profit
-        # results["by_strategy"][strategy][symbol]["stock_qty"] += stock_qty
-        # results["by_strategy"][strategy][symbol]["option_qty"] += option_qty
-
     return results
 
+
+def get_current_assets(results: dict) -> dict:
+    active_positions = {
+        symbol: data
+        for symbol, data in results.items()
+        if data['stock_qty'] != 0 or data['option_qty'] != 0
+    }
+
+    return non_zero_positions
 
