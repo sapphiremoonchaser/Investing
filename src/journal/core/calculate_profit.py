@@ -2,6 +2,7 @@
 from typing import List
 import logging
 import pandas as pd
+from pycparser.ply.yacc import resultlimit
 
 from data.data_model.entry.trade_entry import TradeEntry
 from data.data_model.entry.dividend_entry import DividendEntry
@@ -148,11 +149,70 @@ def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
 
 
 def get_current_assets(results: dict) -> dict:
+    """Filters symbols with non-zero stock or option quantities from the results dictionary.
+
+    Args:
+        results (dict): Dictionary from calculate_qty_and_profit_by_symbol, with symbols as keys
+                       and sub-dictionaries containing 'profit', 'stock_qty', and 'option_qty'.
+
+    Returns:
+        dict: A filtered dictionary containing only symbols where stock_qty or option_qty is not zero.
+    """
     active_positions = {
         symbol: data
         for symbol, data in results.items()
         if data['stock_qty'] != 0 or data['option_qty'] != 0
     }
 
-    return non_zero_positions
+    return active_positions
 
+
+def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
+    """Calculates the average buy-in price per share for STOCK and ETF trades by symbol.
+
+    Processes a list of TradeEntry instances, considering only buy trades (TradeAction.BUY)
+    for securities with type 'STOCK' or 'ETF'. Computes the average price per share by
+    dividing the total cost (price_per_share * quantity + fees) by the total quantity
+    of shares purchased.
+
+    Args:
+        trades (List[TradeEntry]): List of trade entries to process.
+
+    Returns:
+        dict: A dictionary with symbols as keys and the average buy-in price per share (float)
+              as values. Symbols with no buy trades or zero total quantity are excluded.
+
+    Raises:
+        None: Logs warnings for unexpected trade types, actions, or zero quantities without
+              raising exceptions.
+    """
+    buy_in_data = {}
+
+    for trade in trades:
+        symbol = trade.symbol
+
+        # Initialize dict for new symbols
+        if symbol not in buy_in_data:
+            buy_in_data[symbol] = {"total_cost": 0, "total_quantity": 0}
+
+            # Process only STOCK or ETF trades with BUY action
+            if (
+                hasattr(trade, "security_type")
+                and trade.security_type in ["STOCK", "ETF"]
+                and trade.action == TradeAction.BUY
+                and isinstance(trade, StockEntry)
+            ):
+                total_cost = trade.price_per_share * trade.quantity + trade.fees
+                buy_in_data[symbol]["total_cost"] += total_cost
+                buy_in_data[symbol]["total_quantity"] += trade.quantity
+
+    # Calculate average buy-in price per share by symbol
+    result = {}
+    for symbol, data in buy_in_data.items():
+        if data["total_quantity"] > 0:
+            avg_price = data["total_cost"] / data["total_quantity"]
+            result[symbol] = avg_price
+        else:
+            logger.warning(f"No valid buy quantity for {symbol}")
+
+    return result
