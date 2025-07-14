@@ -15,6 +15,34 @@ from data.enum.sub_action import TradeSubAction
 # Configure logging to a file
 logger = logging.getLogger(__name__)
 
+def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> None:
+    """Helper function to process STOCK and ETF buy trades and update the data dictionary.
+
+    Args:
+        trades (List[TradeEntry]): List of trade entries to process.
+        data_dict (dict): Dictionary to store total_cost and total_quantity by symbol.
+
+    Modifies:
+        data_dict: Updates with total_cost and total_quantity for STOCK/ETF buy trades.
+    """
+    for trade in trades:
+        symbol = trade.symbol
+
+        # Initialize dit for new symbol is not already there
+        if symbol not in data_dict:
+            data_dict[symbol] = {"total_cost": 0.0, "total_quantity": 0.0}
+
+        # Process STOCK or ETF trades with BUY action
+        if (
+            hasattr(trade, "security_type")
+            and trade.security_type in ["STOCK", "ETF"]
+            and trade.action == TradeAction.BUY
+            and isinstance(trade, StockEntry)
+        ):
+            total_cost = trade.price_per_share * trade.quantity + trade.fees
+            data_dict[symbol]["total_cost"] += total_cost
+            data_dict[symbol]["total_quantity"] += trade.quantity
+
 
 def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
     """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
@@ -187,24 +215,7 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
               raising exceptions.
     """
     buy_in_data = {}
-
-    for trade in trades:
-        symbol = trade.symbol
-
-        # Initialize dict for new symbols
-        if symbol not in buy_in_data:
-            buy_in_data[symbol] = {"total_cost": 0, "total_quantity": 0}
-
-            # Process only STOCK or ETF trades with BUY action
-            if (
-                hasattr(trade, "security_type")
-                and trade.security_type in ["STOCK", "ETF"]
-                and trade.action == TradeAction.BUY
-                and isinstance(trade, StockEntry)
-            ):
-                total_cost = trade.price_per_share * trade.quantity + trade.fees
-                buy_in_data[symbol]["total_cost"] += total_cost
-                buy_in_data[symbol]["total_quantity"] += trade.quantity
+    _process_stock_etf_buy_trades(trades, buy_in_data)
 
     # Calculate average buy-in price per share by symbol
     result = {}
@@ -238,6 +249,7 @@ def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
               raising exceptions.
     """
     adjusted_data = {}
+    _process_stock_etf_buy_trades(trades, adjusted_data)
 
     for trade in trades:
         symbol = trade.symbol
@@ -251,27 +263,15 @@ def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
                 "total_dividends": 0.0
             }
 
-        # Stock/ETF Buy Trades
-        # Stock/ETF Buy Trades
-        if (
-            hasattr(trade, "security_type")
-            and trade.security_type in ["STOCK", "ETF"]
-            and trade.action == TradeAction.BUY
-            and isinstance(trade, StockEntry)
-        ):
-            total_cost = trade.price_per_share * trade.quantity + trade.fees
-            adjusted_data[symbol]["total_cost"] += total_cost
-            adjusted_data[symbol]["total_quantity"] += trade.quantity
-
         # Option Trades (premiums)
-        elif isinstance(trade, OptionEntry):
+        if isinstance(trade, OptionEntry):
             if trade.option_type in [OptionType.CALL, OptionType.PUT]:
                 if (
                     trade.action == TradeAction.SELL
                     and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
                 ):
-                    premim = trade.premium  * trade.quantity * 100 - trade.fees
-                    adjusted_data[symbol]["net_option_premiums"] += premim
+                    premium = trade.premium  * trade.quantity * 100 - trade.fees
+                    adjusted_data[symbol]["net_option_premiums"] += premium
 
                 elif (
                         trade.action == TradeAction.BUY
@@ -287,7 +287,6 @@ def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
 
     # Calculate adjusted buy-in price per share buy symbol
     result = {}
-
     for symbol, data in adjusted_data.items():
         if data["total_quantity"] > 0:
             adjusted_cost = (
