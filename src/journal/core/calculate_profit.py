@@ -176,7 +176,7 @@ def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
     return results
 
 
-def get_current_assets(results: dict) -> dict:
+def get_current_positions(results: dict) -> dict:
     """Filters symbols with non-zero stock or option quantities from the results dictionary.
 
     Args:
@@ -227,6 +227,7 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
             logger.warning(f"No valid buy quantity for {symbol}")
 
     return result
+
 
 def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
     """Calculates the adjusted buy-in price per share for STOCK and ETF trades by symbol.
