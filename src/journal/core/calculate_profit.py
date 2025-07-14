@@ -216,3 +216,86 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
             logger.warning(f"No valid buy quantity for {symbol}")
 
     return result
+
+def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
+    """Calculates the adjusted buy-in price per share for STOCK and ETF trades by symbol.
+
+    Processes a list of TradeEntry instances, considering buy trades (TradeAction.BUY) for
+    securities with type 'STOCK' or 'ETF', option trades (premiums bought or sold), and
+    dividend trades. The adjusted buy-in price accounts for the total cost of stock/ETF buys,
+    net option premiums (received minus paid), and dividends received, divided by the total
+    quantity of shares purchased.
+
+    Args:
+        trades (List[TradeEntry]): List of trade entries to process.
+
+    Returns:
+        dict: A dictionary with symbols as keys and the adjusted buy-in price per share (float)
+              as values. Symbols with no buy trades or zero total quantity are excluded.
+
+    Raises:
+        None: Logs warnings for unexpected trade types, actions, or zero quantities without
+              raising exceptions.
+    """
+    adjusted_data = {}
+
+    for trade in trades:
+        symbol = trade.symbol
+
+        # Initialize dict for new symbols
+        if symbol not in adjusted_data:
+            adjusted_data[symbol] = {
+                "total_cost": 0.0,
+                "total_quantity": 0.0,
+                "net_option_premiums": 0.0,
+                "total_dividends": 0.0
+            }
+
+        # Stock/ETF Buy Trades
+        # Stock/ETF Buy Trades
+        if (
+            hasattr(trade, "security_type")
+            and trade.security_type in ["STOCK", "ETF"]
+            and trade.action == TradeAction.BUY
+            and isinstance(trade, StockEntry)
+        ):
+            total_cost = trade.price_per_share * trade.quantity + trade.fees
+            adjusted_data[symbol]["total_cost"] += total_cost
+            adjusted_data[symbol]["total_quantity"] += trade.quantity
+
+        # Option Trades (premiums)
+        elif isinstance(trade, OptionEntry):
+            if trade.option_type in [OptionType.CALL, OptionType.PUT]:
+                if (
+                    trade.action == TradeAction.SELL
+                    and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
+                ):
+                    premim = trade.premium  * trade.quantity * 100 - trade.fees
+                    adjusted_data[symbol]["net_option_premiums"] += premim
+
+                elif (
+                        trade.action == TradeAction.BUY
+                    and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
+                ):
+                    premium = -trade.premium * trade.quantity * 100 - trade.fees
+                    adjusted_data[symbol]["net_option_premiums"] += premium
+
+        # Dividend Trades
+        elif isinstance(trade, DividendEntry):
+            dividend = trade.dividend_amount - trade.fees
+            adjusted_data[symbol]["total_dividends"] += dividend
+
+    # Calculate adjusted buy-in price per share buy symbol
+    result = {}
+
+    for symbol, data in adjusted_data.items():
+        if data["total_quantity"] > 0:
+            adjusted_cost = (
+                data["total_cost"]
+                - data["net_option_premiums"]
+                - data["total_dividends"]
+            )
+            avg_price = adjusted_cost / data["total_quantity"]
+            result[symbol] = avg_price
+
+    return result
