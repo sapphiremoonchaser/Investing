@@ -44,7 +44,7 @@ def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> 
             data_dict[symbol]["total_quantity"] += trade.quantity
 
 
-def calculate_qty_and_profit_by_symbol(trades: List[TradeEntry]) -> dict:
+def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
 
     Processes a list of TradeEntry instances, categorizing results by symbol and strategy.
@@ -215,7 +215,37 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
               raising exceptions.
     """
     buy_in_data = {}
-    _process_stock_etf_buy_trades(trades, buy_in_data)
+    # _process_stock_etf_buy_trades(trades, buy_in_data)
+
+    for trade in trades:
+        symbol = trade.symbol
+        if symbol not in buy_in_data:
+            buy_in_data[symbol] = {"total_cost": 0.0, "total_quantity": 0.0}
+
+        # Log trade details
+        logger.info(f"Trade: symbol={symbol}, type={type(trade).__name__}, "
+                    f"security_type={getattr(trade, 'security_type', None)}, "
+                    f"action={getattr(trade, 'action', None)}, "
+                    f"action_type={type(getattr(trade, 'action', None)).__name__}, "
+                    f"quantity={getattr(trade, 'quantity', None)}")
+
+        # Check conditions
+        if not isinstance(trade, StockEntry):
+            logger.warning(f"Trade {trade.trade_id} skipped: not a StockEntry, type={type(trade).__name__}")
+            continue
+        # Fallback: Assume STOCK if  security_type is None
+        security_type = getattr(trade, 'security_type', 'STOCK')
+        if security_type not in ["STOCK", "ETF"]:
+            logger.warning(f"Trade {trade.trade_id} skipped: invalid security_type={security_type}")
+            continue
+        if trade.action != TradeAction.BUY:
+            logger.warning(f"Trade {trade.trade_id} skipped: action={trade.action} is not BUY")
+            continue
+
+        total_cost = trade.price_per_share * trade.quantity + trade.fees
+        buy_in_data[symbol]["total_cost"] += total_cost
+        buy_in_data[symbol]["total_quantity"] += trade.quantity
+        logger.info(f"Trade {trade.trade_id} processed: cost={total_cost}, qty={trade.quantity}")
 
     # Calculate average buy-in price per share by symbol
     result = {}
@@ -224,7 +254,7 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
             avg_price = data["total_cost"] / data["total_quantity"]
             result[symbol] = avg_price
         else:
-            logger.warning(f"No valid buy quantity for {symbol}")
+            logger.warning(f"No valid buy quantity {data['total_quantity']} for {symbol}")
 
     return result
 

@@ -2,7 +2,7 @@
 import logging
 
 from utilities.csv.load_trades import load_trades_from_excel
-from journal.core.calculate_profit import calculate_qty_and_profit_by_symbol, get_current_positions
+from journal.core.calculate_profit import calculate_qty_and_profit, get_current_positions
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,7 +23,7 @@ def _test(file_path: str = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx
 
     # Calculate quantities and profits
     try:
-        results = calculate_qty_and_profit_by_symbol(trades)
+        results = calculate_qty_and_profit(trades)
         logger.info("Calculated quantities and profits")
     except Exception as e:
         logger.error(f"Error calculating quantities and profits: {e}")
