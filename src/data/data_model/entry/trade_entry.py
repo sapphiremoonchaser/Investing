@@ -39,8 +39,14 @@ class TradeEntry(BaseModel):
     fees: float = Field(ge=0, frozen=True)
 
     # Normalize brokerage to uppercase
-    @field_validator('brokerage', mode='before')
-    def normalize_brokerage(cls, value: str) -> str:
+    @field_validator(
+        'brokerage',
+        mode='before'
+    )
+    def normalize_brokerage(
+            cls,
+            value: str
+    ) -> str:
         """Validates and normalizes the brokerage name.
 
             Args:
@@ -60,8 +66,14 @@ class TradeEntry(BaseModel):
                 raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
 
     # Convert account to string
-    @field_validator('account', mode='before')
-    def convert_account_to_string(cls, value: Union[str, int]) -> str:
+    @field_validator(
+        'account',
+        mode='before'
+    )
+    def convert_account_to_string(
+            cls,
+            value: Union[str, int]
+    ) -> str:
         """Converts and validates the account field to a string.
 
         Args:
@@ -82,8 +94,14 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
 
     # comma-separated string to a list of strings
-    @field_validator('strategy', mode='before')
-    def parse_and_normalize_strategy(cls, value: Union[List[str], str]) -> List[str]:
+    @field_validator(
+        'strategy',
+        mode='before'
+    )
+    def parse_and_normalize_strategy(
+            cls,
+            value: Union[List[str], str]
+    ) -> List[str]:
         """Parse the string into a list of strategies and normalizes the strategies to lowercase.
 
             Args:
@@ -112,8 +130,14 @@ class TradeEntry(BaseModel):
                 raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
 
     # Normalize 'security' to uppercase
-    @field_validator('security', mode='before')
-    def normalize_security(cls, value: Union[str, SecurityType]) -> SecurityType:
+    @field_validator(
+        'security',
+        mode='before'
+    )
+    def normalize_security(
+            cls,
+            value: Union[str, SecurityType]
+    ) -> SecurityType:
         """Normalizes and validates the trade type.
 
             Args:
@@ -137,8 +161,14 @@ class TradeEntry(BaseModel):
                 raise ValueError(f"Security type {value} is invalid.")
 
     # Convert symbol to a string
-    @field_validator('symbol', mode='before')
-    def validate_symbol(cls, value: Union[str, int, CurrentStockData]) -> str:
+    @field_validator(
+        'symbol',
+        mode='before'
+    )
+    def validate_symbol(
+            cls,
+            value: Union[str, int, CurrentStockData]
+    ) -> str:
         """Converts and validates the symbol field to a string.
 
         Args:
@@ -161,8 +191,14 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1?")
 
     # Convert date to format YYYY-mm-dd
-    @field_validator("trade_date", mode="before")
-    def parse_trade_date(cls, value) -> date:
+    @field_validator(
+        "trade_date",
+        mode="before"
+    )
+    def parse_trade_date(
+            cls,
+            value
+    ) -> date:
         """Parses a date from a string or returns an existing date object.
 
         Args:
@@ -183,8 +219,14 @@ class TradeEntry(BaseModel):
             raise ValueError(f"Invalid date format: {value}. Use 'YYYY-MM-DD' format.")
 
     # Normalize 'action' to uppercase
-    @field_validator('action', mode='before')
-    def normalize_action(cls, value: Union[str, TradeAction]) -> TradeAction:
+    @field_validator(
+        'action',
+        mode='before'
+    )
+    def normalize_action(
+            cls,
+            value: Union[str, TradeAction]
+    ) -> TradeAction:
         """Normalizes and validates the trade action.
 
             Args:
@@ -207,8 +249,14 @@ class TradeEntry(BaseModel):
                 raise ValueError(f"Trade action '{value}' is invalid.")
 
     # Normalize 'sub_action' to uppercase
-    @field_validator('sub_action', mode='before')
-    def normalize_sub_action(cls, value: Union[str, TradeSubAction]) -> TradeSubAction:
+    @field_validator(
+        'sub_action',
+        mode='before'
+    )
+    def normalize_sub_action(
+            cls,
+            value: Union[str, TradeSubAction]
+    ) -> TradeSubAction:
         """Normalizes and validates the trade sub action.
 
             Args:

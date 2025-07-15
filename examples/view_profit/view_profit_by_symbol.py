@@ -3,7 +3,7 @@ import pandas as pd
 import logging
 
 from utilities.csv.load_trades import load_trades_from_excel
-from journal.core.calc_portfolio_metrics import calculate_qty_and_profit
+from journal.core.calculate_profit import calculate_qty_and_profit
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,11 +24,10 @@ def _test(file_path: str = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx
     results = calculate_qty_and_profit(trades)
 
     # Save results to excel file for manual inspection
-    by_symbol_df = pd.DataFrame(results).from_dict(results['by_symbol'], orient='index')
+    by_symbol_df = pd.DataFrame(results).from_dict({k: v.profit for k, v in results.items()}, orient='index', columns=['profit'])
     save_to_file_path = "C:/Users/viole/dev/Investing-data/trades/profit_by_symbol.xlsx"
     by_symbol_df.to_excel(save_to_file_path)
     print(f"\nSaved results as {save_to_file_path}.")
 
 if __name__ == '__main__':
     _test()
-

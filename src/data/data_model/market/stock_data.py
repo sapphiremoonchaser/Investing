@@ -13,8 +13,14 @@ class CurrentStockData(BaseModel):
     current_price: float = Field(ge=0)
 
     # Convert symbol to a string
-    @field_validator('symbol', mode='before')
-    def validate_symbol(cls, value: Union[str, int]) -> str:
+    @field_validator(
+        'symbol',
+        mode='before'
+    )
+    def validate_symbol(
+            cls,
+            value: Union[str, int]
+    ) -> str:
         """Converts and validates the symbol field to a string.
 
         Args:

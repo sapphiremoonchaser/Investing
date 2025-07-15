@@ -4,7 +4,9 @@ from typing import Dict, List, Optional
 
 from data.data_model.market.stock_data import CurrentStockData
 
-def fetch_current_stock_price(symbol: str) -> CurrentStockData:
+def fetch_current_stock_price(
+        symbol: str
+) -> CurrentStockData:
     """Fetches the current stock price for a given symbol.
 
     :param symbol: The stock symbol
