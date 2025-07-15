@@ -42,14 +42,9 @@ def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> 
     for trade in trades:
         symbol = trade.symbol
 
-        # Initialize dit for new symbol is not already there
+        # Initialize dict for new symbol is not already there
         if symbol not in data_dict:
-            data_dict[symbol] = {
-                "total_cost": 0.0,
-                "total_quantity": 0.0,
-                "net_option_premiums": 0.0,
-                "total_dividends": 0.0
-            }
+            data_dict[symbol] = BuyInData()
 
         # Process STOCK or ETF trades with BUY action
         if (
@@ -59,8 +54,8 @@ def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> 
             and isinstance(trade, StockEntry)
         ):
             total_cost = trade.price_per_share * trade.quantity + trade.fees
-            data_dict[symbol]["total_cost"] += total_cost
-            data_dict[symbol]["total_quantity"] += trade.quantity
+            data_dict[symbol].total_cost += total_cost
+            data_dict[symbol].total_quantity += trade.quantity
 
 
 def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
@@ -84,7 +79,7 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         None: Logs warnings for unexpected trade types or actions without raising exceptions.
     """
     # Initialize aggregated profit/loss, stock quantity, and option quantity by symbol
-    results = {}
+    results: Dict[str, SymbolResult] = {}
 
     # Iterate through each trade to calculate and aggregate profit/loss
     for trade in trades:
@@ -92,7 +87,7 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
 
         # Initialize dict for new symbol
         if symbol not in results.keys():
-            results[symbol] = {"profit": 0.0, "stock_qty": 0.0, "option_qty": 0.0}
+            results[symbol] = SymbolResult()
 
         # Calculate profit/loss based on teh trade type
         # Stock
@@ -186,11 +181,14 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
         else:
             # Log warning for unexpected trade types
             logger.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
+            stock_qty = 0.0
+            option_qty = 0.0
+            profit = 0.0
 
         # Aggregate profit, stock_qty, and option_qty for symbol
-        results[symbol]["profit"] += profit
-        results[symbol]["stock_qty"] += stock_qty
-        results[symbol]["option_qty"] += option_qty
+        results[symbol].profit += profit
+        results[symbol].stock_qty += stock_qty
+        results[symbol].option_qty += option_qty
 
     return results
 
@@ -208,7 +206,7 @@ def get_current_positions(results: dict) -> dict:
     active_positions = {
         symbol: data
         for symbol, data in results.items()
-        if data['stock_qty'] != 0 or data['option_qty'] != 0
+        if data.stock_qty != 0 or data.option_qty != 0
     }
 
     return active_positions
@@ -233,17 +231,16 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
         None: Logs warnings for unexpected trade types, actions, or zero quantities without
               raising exceptions.
     """
-    buy_in_data = {}
+    buy_in_data: Dict[str, BuyInData] = {}
     _process_stock_etf_buy_trades(trades, buy_in_data)
 
     # Calculate average buy-in price per share by symbol
     result = {}
     for symbol, data in buy_in_data.items():
-        if data["total_quantity"] > 0:
-            avg_price = data["total_cost"] / data["total_quantity"]
-            result[symbol] = avg_price
+        if data.total_quantity > 0:
+            result[symbol] = data.total_cost / data.total_quantity
         else:
-            logger.warning(f"No valid buy quantity {data['total_quantity']} for {symbol}")
+            logger.warning(f"No valid buy quantity {data.total_quantity} for {symbol}")
 
     return result
 
@@ -268,7 +265,7 @@ def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
         None: Logs warnings for unexpected trade types, actions, or zero quantities without
               raising exceptions.
     """
-    adjusted_data = {}
+    adjusted_data: Dict[str, BuyInData] = {}
     _process_stock_etf_buy_trades(trades, adjusted_data)
 
     for trade in trades:
@@ -276,45 +273,43 @@ def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
 
         # Initialize dict for new symbols
         if symbol not in adjusted_data:
-            adjusted_data[symbol] = {
-                "total_cost": 0.0,
-                "total_quantity": 0.0,
-                "net_option_premiums": 0.0,
-                "total_dividends": 0.0
-            }
+            adjusted_data[symbol] = BuyInData()
 
-        # Option Trades (premiums)
-        if isinstance(trade, OptionEntry):
-            if trade.option_type in [OptionType.CALL, OptionType.PUT]:
-                if (
-                    trade.action == TradeAction.SELL
-                    and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
-                ):
-                    premium = trade.premium  * trade.quantity * 100 - trade.fees
-                    adjusted_data[symbol]["net_option_premiums"] += premium
+        try:
+            # Option Trades (premiums)
+            if isinstance(trade, OptionEntry):
+                if trade.option_type in [OptionType.CALL, OptionType.PUT]:
+                    if (
+                        trade.action == TradeAction.SELL
+                        and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
+                    ):
+                        premium = trade.premium  * trade.quantity * 100 - trade.fees
+                        adjusted_data[symbol].net_option_premiums += premium
 
-                elif (
-                        trade.action == TradeAction.BUY
-                    and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
-                ):
-                    premium = -trade.premium * trade.quantity * 100 - trade.fees
-                    adjusted_data[symbol]["net_option_premiums"] += premium
+                    elif (
+                            trade.action == TradeAction.BUY
+                        and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
+                    ):
+                        premium = -trade.premium * trade.quantity * 100 - trade.fees
+                        adjusted_data[symbol].net_option_premiums += premium
 
-        # Dividend Trades
-        elif isinstance(trade, DividendEntry):
-            dividend = trade.dividend_amount - trade.fees
-            adjusted_data[symbol]["total_dividends"] += dividend
+            # Dividend Trades
+            elif isinstance(trade, DividendEntry):
+                dividend = trade.dividend_amount - trade.fees
+                adjusted_data[symbol].total_dividends += dividend
+
+        except ValueError as e:
+            logger.error(f"Validation error for trade_id {trade.trade_id}: {e}")
 
     # Calculate adjusted buy-in price per share buy symbol
     result = {}
     for symbol, data in adjusted_data.items():
-        if data["total_quantity"] > 0:
+        if data.total_quantity > 0:
             adjusted_cost = (
-                data["total_cost"]
-                - data["net_option_premiums"]
-                - data["total_dividends"]
+                data.total_cost
+                - data.net_option_premiums
+                - data.total_dividends
             )
-            avg_price = adjusted_cost / data["total_quantity"]
-            result[symbol] = avg_price
+            result[symbol] = adjusted_cost / data.total_quantity
 
     return result
