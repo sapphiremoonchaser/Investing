@@ -35,9 +35,9 @@ def _test(file_path: str = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx
         logger.info("\n=== Non-Zero Positions ===")
         for symbol, data in positions.items():
             print(f"Symbol: {symbol}")
-            print(f"  Profit: ${data['profit']:.2f}")
-            print(f"  Stock Quantity: {data['stock_qty']}")
-            print(f"  Option Quantity: {data['option_qty']}")
+            print(f"  Profit: ${data.profit:.2f}")
+            print(f"  Stock Quantity: {data.stock_qty}")
+            print(f"  Option Quantity: {data.option_qty}")
             print()
     except Exception as e:
         logger.error(f"Error getting current assets: {e}")
