@@ -29,7 +29,10 @@ class BuyInData(BaseModel):
     total_dividends: float = Field(default=0.0)
 
 
-def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> None:
+def _process_stock_etf_buy_trades(
+        trades: List[TradeEntry],
+        data_dict: dict
+) -> None:
     """Helper function to process trades where SecurityType is STOCK or ETF and action is BUY.
 
     Args:
@@ -58,7 +61,9 @@ def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> 
             data_dict[symbol].total_quantity += trade.quantity
 
 
-def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
+def calculate_qty_and_profit(
+        trades: List[TradeEntry]
+) -> dict:
     """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
 
     Processes a list of TradeEntry instances, categorizing results by symbol and strategy.
@@ -193,7 +198,9 @@ def calculate_qty_and_profit(trades: List[TradeEntry]) -> dict:
     return results
 
 
-def get_current_positions(results: dict) -> dict:
+def get_current_positions(
+        results: dict
+) -> dict:
     """Filters symbols with non-zero stock or option quantities from the results dictionary.
 
     Args:
@@ -212,7 +219,9 @@ def get_current_positions(results: dict) -> dict:
     return active_positions
 
 
-def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
+def calculate_original_buy_in(
+        trades: List[TradeEntry]
+) -> dict:
     """Calculates the average buy-in price per share for STOCK and ETF trades by symbol.
 
     Processes a list of TradeEntry instances, considering only buy trades (TradeAction.BUY)
@@ -245,7 +254,9 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
     return result
 
 
-def calculate_adjusted_buy_in(trades: List[TradeEntry]) -> dict:
+def calculate_adjusted_buy_in(
+        trades: List[TradeEntry]
+) -> dict:
     """Calculates the adjusted buy-in price per share for STOCK and ETF trades by symbol.
 
     Processes a list of TradeEntry instances, considering buy trades (TradeAction.BUY) for

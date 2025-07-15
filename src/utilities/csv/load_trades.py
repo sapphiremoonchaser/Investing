@@ -14,7 +14,9 @@ from data.data_model.entry.option_entry import OptionEntry
 # Configure logging to a file
 logger = logging.getLogger(__name__)
 
-def load_trades_from_excel(file_path: str) -> list:
+def load_trades_from_excel(
+        file_path: str
+) -> list:
     # Read excel file
     try:
         df = pd.read_excel(file_path)

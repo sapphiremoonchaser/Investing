@@ -65,25 +65,3 @@ class PortfolioWindow(QMainWindow):
         # Populate table with sample data
         self.populate_table()
 
-    def populate_table(self):
-        # Sample data with options details
-        # ToDo: replace with my data sources
-        sample_data = [
-            {
-                "main": ("Broker1", "Main", "AAPL", 150.25, 120.50, 125.75, 100, 2, 2975.00),
-                "options": [
-                    ("2025-12-20", 155.00, 1),
-                    ("2026-01-17", 160.00, 1)
-                ]
-            },
-            {
-                "main": ("Broker2", "Retirement", "MSFT", 280.10, 200.00, 210.50, 50, 0, 4025.00),
-                "options": []
-            },
-            {
-                "main": ("Broker1", "Main", "TSLA", 700.00, 600.00, 610.00, 20, 1, 2000.00),
-                "options": [("2025-11-15", 710.00, 1)]
-            }
-        ]
-
-

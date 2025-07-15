@@ -32,10 +32,21 @@ def _test(file_path: str = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx
 
     # Save results to excel file for manual inspection
     try:
-        df = pd.DataFrame.from_dict(results, orient='index', columns=['avg_buy_in_price'])
+        df = pd.DataFrame.from_dict(
+            results,
+            orient='index',
+            columns=['avg_buy_in_price']
+        )
+
         save_to_file_path = "C:/Users/viole/dev/Investing-data/trades/org_buy_in_by_symbol.xlsx"
-        df.to_excel(save_to_file_path, index_label='symbol')
+
+        df.to_excel(
+            save_to_file_path,
+            index_label='symbol'
+        )
+
         logger.info(f"Saved results to {save_to_file_path}")
+
     except Exception as e:
         logger.error(f"Error saving to Excel: {e}")
         raise
