@@ -1,8 +1,7 @@
 # Imports
-from typing import List
+from typing import List, Dict
 import logging
-import pandas as pd
-from pycparser.ply.yacc import resultlimit
+from pydantic import BaseModel, Field, ValidationError
 
 from data.data_model.entry.trade_entry import TradeEntry
 from data.data_model.entry.dividend_entry import DividendEntry
@@ -15,6 +14,20 @@ from data.enum.sub_action import TradeSubAction
 
 # Configure logging to a file
 logger = logging.getLogger(__name__)
+
+# Pydantic Models
+class SymbolResult(BaseModel):
+    profit: float = Field(default=0.0)
+    stock_qty: float = Field(default=0.0)
+    option_qty: float = Field(default=0.0)
+
+
+class BuyInData(BaseModel):
+    total_cost: float = Field(default=0.0)
+    total_quantity: float = Field(default=0.0)
+    net_option_premiums: float = Field(default=0.0)
+    total_dividends: float = Field(default=0.0)
+
 
 def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> None:
     """Helper function to process trades where SecurityType is STOCK or ETF and action is BUY.
