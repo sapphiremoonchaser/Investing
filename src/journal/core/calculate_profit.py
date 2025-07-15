@@ -9,6 +9,7 @@ from data.data_model.entry.dividend_entry import DividendEntry
 from data.data_model.entry.stock_entry import StockEntry
 from data.data_model.entry.option_entry import OptionEntry
 from data.enum.option_type import OptionType
+from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
 from data.enum.sub_action import TradeSubAction
 
@@ -16,7 +17,7 @@ from data.enum.sub_action import TradeSubAction
 logger = logging.getLogger(__name__)
 
 def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> None:
-    """Helper function to process STOCK and ETF buy trades and update the data dictionary.
+    """Helper function to process trades where SecurityType is STOCK or ETF and action is BUY.
 
     Args:
         trades (List[TradeEntry]): List of trade entries to process.
@@ -30,12 +31,17 @@ def _process_stock_etf_buy_trades(trades: List[TradeEntry], data_dict: dict) -> 
 
         # Initialize dit for new symbol is not already there
         if symbol not in data_dict:
-            data_dict[symbol] = {"total_cost": 0.0, "total_quantity": 0.0}
+            data_dict[symbol] = {
+                "total_cost": 0.0,
+                "total_quantity": 0.0,
+                "net_option_premiums": 0.0,
+                "total_dividends": 0.0
+            }
 
         # Process STOCK or ETF trades with BUY action
         if (
-            hasattr(trade, "security_type")
-            and trade.security_type in ["STOCK", "ETF"]
+            hasattr(trade, "security")
+            and trade.security in SecurityType._member_names_
             and trade.action == TradeAction.BUY
             and isinstance(trade, StockEntry)
         ):
@@ -215,37 +221,7 @@ def calculate_original_buy_in(trades: List[TradeEntry]) -> dict:
               raising exceptions.
     """
     buy_in_data = {}
-    # _process_stock_etf_buy_trades(trades, buy_in_data)
-
-    for trade in trades:
-        symbol = trade.symbol
-        if symbol not in buy_in_data:
-            buy_in_data[symbol] = {"total_cost": 0.0, "total_quantity": 0.0}
-
-        # Log trade details
-        logger.info(f"Trade: symbol={symbol}, type={type(trade).__name__}, "
-                    f"security_type={getattr(trade, 'security_type', None)}, "
-                    f"action={getattr(trade, 'action', None)}, "
-                    f"action_type={type(getattr(trade, 'action', None)).__name__}, "
-                    f"quantity={getattr(trade, 'quantity', None)}")
-
-        # Check conditions
-        if not isinstance(trade, StockEntry):
-            logger.warning(f"Trade {trade.trade_id} skipped: not a StockEntry, type={type(trade).__name__}")
-            continue
-        # Fallback: Assume STOCK if  security_type is None
-        security_type = getattr(trade, 'security_type', 'STOCK')
-        if security_type not in ["STOCK", "ETF"]:
-            logger.warning(f"Trade {trade.trade_id} skipped: invalid security_type={security_type}")
-            continue
-        if trade.action != TradeAction.BUY:
-            logger.warning(f"Trade {trade.trade_id} skipped: action={trade.action} is not BUY")
-            continue
-
-        total_cost = trade.price_per_share * trade.quantity + trade.fees
-        buy_in_data[symbol]["total_cost"] += total_cost
-        buy_in_data[symbol]["total_quantity"] += trade.quantity
-        logger.info(f"Trade {trade.trade_id} processed: cost={total_cost}, qty={trade.quantity}")
+    _process_stock_etf_buy_trades(trades, buy_in_data)
 
     # Calculate average buy-in price per share by symbol
     result = {}
