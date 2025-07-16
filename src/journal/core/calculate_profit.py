@@ -1,6 +1,8 @@
 # Imports
-from typing import List, Dict
+from typing import List, Dict, Union
 import logging
+import pandas as pd
+from pandas.core.dtypes.inference import iterable_not_string
 from pydantic import BaseModel, Field, ValidationError
 
 from data.data_model.entry.trade_entry import TradeEntry
@@ -217,6 +219,29 @@ def get_current_positions(
     }
 
     return active_positions
+
+
+def iterate_current_position_types(
+        current_positions: Union[list, dict, pd.DataFrame],
+) -> None:
+    """Iterate through possible current position types to deal with enumerating current_positions.
+
+    Args:
+        current_positions (UNION[list, dict pd.DataFrame): List of trade entries to process.
+    """
+    if isinstance(current_positions, list):
+        iterable = enumerate(current_positions)
+    elif isinstance(current_positions, dict):
+        iterable = current_positions.items()
+    elif isinstance(current_positions, pd.DataFrame):
+        iterable = current_positions.iterrows()
+    else:
+        raise TypeError(f"Unexpected type {type(current_positions)}")
+
+    for row_idx, row_data in iterable:
+        if isinstance(current_positions, pd.DataFrame):
+            row_data[]
+        yield row_idx, row_data
 
 
 def calculate_original_buy_in(
