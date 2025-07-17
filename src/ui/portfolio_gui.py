@@ -19,7 +19,9 @@ from src.utilities.fetch_market_data import fetch_current_stock_price, fetch_opt
 from src.journal.core.calculate_profit import (
     get_current_positions,
     calculate_qty_and_profit,
-    iterate_current_position_types
+    iterate_current_position_types,
+    calculate_original_buy_in,
+    calculate_adjusted_buy_in
 )
 from src.utilities.csv.load_trades import load_trades_from_excel
 
@@ -103,6 +105,7 @@ class PortfolioWindow(QMainWindow):
             # Get current positions
             try:
                 current_positions = get_current_positions(quantity_dict)
+                current_symbols = list(current_positions.keys())
             except Exception as e:
                 print(f"Error calculating quantities and profits: {e}")
                 raise
@@ -121,36 +124,52 @@ class PortfolioWindow(QMainWindow):
             self.table.setRowCount(len(current_positions) if isinstance(current_positions, pd.DataFrame) else len(current_positions))
 
             # Populate table
-            for idx, stock_data in iterate_current_position_types(current_positions):
-                if isinstance(current_positions, pd.DataFrame):
-                    row_data = row_data[1]  # Extract the row data from DataFrame iterator
-                # Use get() to handle missing 'Symbol' column
-                symbol = row_data.get('Symbol', 'N/A')
-                # Fetch current price for the symbol, skip if symbol is missing or invalid
+            for symbol, stock_data in iterate_current_position_types(current_positions):
+                # symbol
+                symbol = symbol
+
+                # current price
                 current_price = None
                 if symbol != 'N/A' and isinstance(symbol, str):
-                    stock_data = fetch_current_stock_price(symbol)
-                    if stock_data.is_valid:
-                        current_price = stock_data.current_price
+                    current_stock_data = fetch_current_stock_price(symbol)
+                    if current_stock_data:
+                        current_price = current_stock_data.current_price
                     else:
                         print(f"Stock {symbol} is likely delisted or invalid.")
                         current_price = None  # Keep as None for delisted stocks
 
+
+                # original buy-in
+                current_trades = []
+                for trade in trades:
+                    if trade.symbol in current_symbols:
+                        current_trades.append(trade)
+                original_buy_in = calculate_original_buy_in(current_trades)
+
+                # adjusted buy-in
+                adjusted_buy_in = calculate_adjusted_buy_in(current_trades)
+
+                # qty_shares
+                quantity_shares = stock_data.get('stock_qty')
+
+                # qty_options
+
+
+                # profit
+
                 # Calculate profit (if needed)
-                original_buy_in = float(row_data.get('Original Buy-In', 0.0))
-                quantity_shares = float(row_data.get('Quantity (Shares)', 0.0))
                 profit = (current_price - original_buy_in) * quantity_shares if current_price else 0.0
 
                 # Insert data into table
-                self.table.setItem(row_idx, 0, QTableWidgetItem(str(row_data.get('brokerage', ''))))
-                self.table.setItem(row_idx, 1, QTableWidgetItem(str(row_data.get('account', ''))))
-                self.table.setItem(row_idx, 2, QTableWidgetItem(str(row_data.get('symbol', ''))))
-                self.table.setItem(row_idx, 3, QTableWidgetItem(f"{current_price:.2f}" if current_price else "N/A"))
-                self.table.setItem(row_idx, 4, QTableWidgetItem(f"{original_buy_in:.2f}"))
-                self.table.setItem(row_idx, 5, QTableWidgetItem(str(row_data.get('Adjusted Buy-In', '0.0'))))
-                self.table.setItem(row_idx, 6, QTableWidgetItem(str(row_data.get('Quantity (Shares)', '0'))))
-                self.table.setItem(row_idx, 7, QTableWidgetItem(str(row_data.get('Quantity (Options)', '0'))))
-                self.table.setItem(row_idx, 8, QTableWidgetItem(f"{profit:.2f}"))
+                self.table.setItem(symbol, 0, QTableWidgetItem(str(stock_data.get('brokerage', ''))))
+                self.table.setItem(symbol, 1, QTableWidgetItem(str(stock_data.get('account', ''))))
+                self.table.setItem(symbol, 2, QTableWidgetItem(str(stock_data.get('symbol', ''))))
+                self.table.setItem(symbol, 3, QTableWidgetItem(f"{current_price:.2f}" if current_price else "N/A"))
+                self.table.setItem(symbol, 4, QTableWidgetItem(f"{original_buy_in:.2f}"))
+                self.table.setItem(symbol, 5, QTableWidgetItem(str(stock_data.get('Adjusted Buy-In', '0.0'))))
+                self.table.setItem(symbol, 6, QTableWidgetItem(str(stock_data.get('Quantity (Shares)', '0'))))
+                self.table.setItem(symbol, 7, QTableWidgetItem(str(stock_data.get('Quantity (Options)', '0'))))
+                self.table.setItem(symbol, 8, QTableWidgetItem(f"{profit:.2f}"))
 
         except FileNotFoundError:
             print(f"CSV file {file_path} not found.")

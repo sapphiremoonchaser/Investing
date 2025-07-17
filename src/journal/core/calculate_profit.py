@@ -240,7 +240,7 @@ def iterate_current_position_types(
 
     for row_idx, row_data in iterable:
         if isinstance(current_positions, pd.DataFrame):
-            row_data[]
+            row_data = row_data[1]
         yield row_idx, row_data
 
 
