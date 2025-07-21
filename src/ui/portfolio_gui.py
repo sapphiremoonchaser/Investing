@@ -1,9 +1,7 @@
 import logging
 import sys
 
-import openpyxl
 import pandas as pd
-import os
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -11,10 +9,8 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
-    QTableWidget,
-    QAbstractItemView
+    QTableWidget
 )
-from PySide6.QtCore import Qt
 from src.utilities.fetch_market_data import fetch_current_stock_price, fetch_options_data
 from src.journal.core.calculate_profit import (
     get_current_positions,
@@ -150,12 +146,10 @@ class PortfolioWindow(QMainWindow):
                 adjusted_buy_in = calculate_adjusted_buy_in(current_trades)
 
                 # qty_shares
-                quantity_shares = stock_data.get('stock_qty')
+                quantity_shares = stock_data.stock_qty
 
                 # qty_options
-
-
-                # profit
+                quantity_options = stock_data.option_qty
 
                 # Calculate profit (if needed)
                 profit = (current_price - original_buy_in) * quantity_shares if current_price else 0.0
