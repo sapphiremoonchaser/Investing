@@ -81,6 +81,7 @@ class PortfolioWindow(QMainWindow):
         # Path to your CSV file (update this to your actual file path)
         file_path = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx"
 
+        # What am I trying here?
         try:
             # Load trades from Excel
             try:
@@ -106,6 +107,7 @@ class PortfolioWindow(QMainWindow):
                 print(f"Error calculating quantities and profits: {e}")
                 raise
 
+            # Case where there are no current positions
             if (current_positions is None
                     or (isinstance(current_positions, pd.DataFrame) and current_positions.empty)
                     or (isinstance(current_positions, pd.Series) and current_positions.empty)
@@ -122,13 +124,16 @@ class PortfolioWindow(QMainWindow):
             # Populate table
             for symbol, stock_data in iterate_current_position_types(current_positions):
                 # symbol
+                # str
                 symbol = symbol
 
                 # current price
                 current_price = None
                 if symbol != 'N/A' and isinstance(symbol, str):
+                    # CurrentStockData(symbol='DSX', current_price=1.6)
                     current_stock_data = fetch_current_stock_price(symbol)
                     if current_stock_data:
+                        # float, 1.6
                         current_price = current_stock_data.current_price
                     else:
                         print(f"Stock {symbol} is likely delisted or invalid.")
@@ -140,19 +145,25 @@ class PortfolioWindow(QMainWindow):
                 for trade in trades:
                     if trade.symbol in current_symbols:
                         current_trades.append(trade)
-                original_buy_in = calculate_original_buy_in(current_trades)
+                # dict {"SYMBOL": original_buy_in}
+                original_buy_in_dict = calculate_original_buy_in(current_trades)
+                original_buy_in = original_buy_in_dict.get(symbol, None)
 
                 # adjusted buy-in
-                adjusted_buy_in = calculate_adjusted_buy_in(current_trades)
+                # dict {"SYMBOL": original_buy_in}
+                adjusted_buy_in_dict = calculate_adjusted_buy_in(current_trades)
+                adjusted_buy_in = adjusted_buy_in_dict.get(symbol, None)
 
                 # qty_shares
+                # float
                 quantity_shares = stock_data.stock_qty
 
                 # qty_options
+                # float
                 quantity_options = stock_data.option_qty
 
                 # Calculate profit (if needed)
-                profit = (current_price - original_buy_in) * quantity_shares if current_price else 0.0
+                profit = (current_price - adjusted_buy_in) * quantity_shares if current_price else 0.0
 
                 # Insert data into table
                 self.table.setItem(symbol, 0, QTableWidgetItem(str(stock_data.get('brokerage', ''))))
