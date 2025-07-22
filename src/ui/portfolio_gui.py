@@ -17,11 +17,11 @@ from src.utilities.fetch_market_data import fetch_current_stock_price, fetch_opt
 from src.journal.core.calculate_profit import (
     get_current_positions,
     calculate_qty_and_profit,
-    iterate_current_position_types,
     calculate_original_buy_in,
     calculate_adjusted_buy_in
 )
 from src.utilities.csv.load_trades import load_trades_from_excel
+from src.journal.core.portfolio_data import load_and_process_portfolio_data
 
 class PortfolioWindow(QMainWindow):
     def __init__(self):
@@ -45,10 +45,8 @@ class PortfolioWindow(QMainWindow):
         # Create table for portfolio data
         self.table = QTableWidget()
         self.table.setRowCount(0)
-        self.table.setColumnCount(9)
+        self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels([
-            "Brokerage",
-            "Account",
             "Symbol",
             "Current Price",
             "Original Buy-In",
@@ -77,94 +75,46 @@ class PortfolioWindow(QMainWindow):
         # Populate table with sample data
         self.populate_table()
 
-
     def populate_table(self):
         """Populate the table with data from a CSV file and fetch current prices."""
-        # Path to your CSV file (update this to your actual file path)
         file_path = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx"
 
         try:
-            # Load trades from Excel
-            trades = load_trades_from_excel(file_path)
-            print(f"Loaded {len(trades)} trades from {file_path}")
-
-            # Calculate quantities and profits
-            quantity_dict = calculate_qty_and_profit(trades)
-            print("Calculated quantities and profits")
-
-            # Get current positions
-            current_positions = get_current_positions(quantity_dict)
-            current_symbols = list(current_positions.keys())
-
-            # Case where there are no current positions
-            if (current_positions is None
-                    or (isinstance(current_positions, pd.DataFrame) and current_positions.empty)
-                    or (isinstance(current_positions, pd.Series) and current_positions.empty)
-            ):
+            # Load and process data using the new module
+            positions = load_and_process_portfolio_data(file_path)
+            if not positions:
                 print("No current positions found.")
                 self.table.setRowCount(1)
                 self.table.setItem(0, 0, QTableWidgetItem("No current positions found."))
-                self.table.setSpan(0, 0, 1, 9)
+                self.table.setSpan(0, 0, 1, 7)
                 return
 
-            # Set row count based on current positions
-            self.table.setRowCount(len(current_positions) if isinstance(current_positions, pd.DataFrame) else len(current_positions))
+            # Set row count
+            self.table.setRowCount(len(positions))
 
             # Populate table
-            row = 0
-            for symbol, stock_data in iterate_current_position_types(current_positions):
-                # Current price
-                current_price = None
-                if symbol != 'N/A' and isinstance(symbol, str):
-                    current_stock_data = fetch_current_stock_price(symbol)
-                    if current_stock_data:
-                        current_price = current_stock_data.current_price
-                    else:
-                        print(f"Stock {symbol} is likely delisted or invalid.")
-                        current_price = None
-
-
-                # original buy-in
-                current_trades = [trade for trade in trades if trade.symbol in current_symbols]
-                original_buy_in_dict = calculate_original_buy_in(current_trades)
-                original_buy_in = original_buy_in_dict.get(symbol, None)
-
-                # adjusted buy-in
-                # dict {"SYMBOL": original_buy_in}
-                adjusted_buy_in_dict = calculate_adjusted_buy_in(current_trades)
-                adjusted_buy_in = adjusted_buy_in_dict.get(symbol, None)
-
-                # Quantities
-                quantity_shares = stock_data.stock_qty
-                quantity_options = stock_data.option_qty
-
-                # Calculate profit (if needed)
-                profit = (current_price - adjusted_buy_in) * quantity_shares if current_price else 0.0
-
-                # Insert data into table
-                self.table.setItem(row, 0, QTableWidgetItem(str(getattr(stock_data, 'brokerage', ''))))
-                self.table.setItem(row, 1, QTableWidgetItem(str(getattr(stock_data, 'account', ''))))
-                self.table.setItem(row, 2, QTableWidgetItem(str(symbol)))
-                self.table.setItem(row, 3, QTableWidgetItem(f"{current_price:.2f}" if current_price else "N/A"))
-                self.table.setItem(row, 4, QTableWidgetItem(f"{original_buy_in:.2f}" if original_buy_in else "N/A"))
-                self.table.setItem(row, 5, QTableWidgetItem(f"{adjusted_buy_in:.2f}" if adjusted_buy_in else "N/A"))
-                self.table.setItem(row, 6, QTableWidgetItem(str(quantity_shares)))
-                self.table.setItem(row, 7, QTableWidgetItem(str(quantity_options)))
-                self.table.setItem(row, 8, QTableWidgetItem(f"{profit:.2f}"))
-
-                row += 1  # Increment row index
+            for row, position in enumerate(positions):
+                self.table.setItem(row, 0, QTableWidgetItem(position.symbol))
+                self.table.setItem(row, 1, QTableWidgetItem(
+                    f"{position.current_price:.2f}" if position.current_price else "N/A"))
+                self.table.setItem(row, 2, QTableWidgetItem(
+                    f"{position.original_buy_in:.2f}" if position.original_buy_in else "N/A"))
+                self.table.setItem(row, 3, QTableWidgetItem(
+                    f"{position.adjusted_buy_in:.2f}" if position.adjusted_buy_in else "N/A"))
+                self.table.setItem(row, 4, QTableWidgetItem(str(position.stock_qty)))
+                self.table.setItem(row, 5, QTableWidgetItem(str(position.option_qty)))
+                self.table.setItem(row, 6, QTableWidgetItem(f"{position.profit:.2f}" if position.profit else "N/A"))
 
         except FileNotFoundError:
             print(f"Excel file {file_path} not found.")
             self.table.setRowCount(1)
             self.table.setItem(0, 0, QTableWidgetItem(f"Excel file {file_path} not found."))
-            self.table.setSpan(0, 0, 1, 9)
-
+            self.table.setSpan(0, 0, 1, 7)
         except Exception as e:
             print(f"Error reading Excel or populating table: {e}")
             self.table.setRowCount(1)
             self.table.setItem(0, 0, QTableWidgetItem(f"Error: {str(e)}"))
-            self.table.setSpan(0, 0, 1, 9)
+            self.table.setSpan(0, 0, 1, 7)
 
 
     def toggle_options(self, row, column):

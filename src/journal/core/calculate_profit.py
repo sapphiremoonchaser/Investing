@@ -54,7 +54,7 @@ def _process_stock_etf_buy_trades(
         # Process STOCK or ETF trades with BUY action
         if (
             hasattr(trade, "security")
-            and trade.security in SecurityType._member_names_
+            and trade.security in [SecurityType.STOCK, SecurityType.ETF]
             and trade.action == TradeAction.BUY
             and isinstance(trade, StockEntry)
         ):
@@ -64,8 +64,8 @@ def _process_stock_etf_buy_trades(
 
 
 def calculate_qty_and_profit(
-        trades: List[TradeEntry]
-) -> dict:
+        trades: List[Union[StockEntry, DividendEntry, OptionEntry]],
+) -> Dict[str, SymbolResult]:
     """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
 
     Processes a list of TradeEntry instances, categorizing results by symbol and strategy.
@@ -89,6 +89,7 @@ def calculate_qty_and_profit(
     results: Dict[str, SymbolResult] = {}
 
     # Iterate through each trade to calculate and aggregate profit/loss
+    trade: Union[StockEntry, DividendEntry, OptionEntry]
     for trade in trades:
         symbol = trade.symbol
 
@@ -96,98 +97,80 @@ def calculate_qty_and_profit(
         if symbol not in results.keys():
             results[symbol] = SymbolResult()
 
-        # Calculate profit/loss based on teh trade type
-        # Stock
-        if isinstance(trade, StockEntry):
-            # For stock trades, profit/loss depends on the action
+        # Calculate profit/loss based on security type
+        stock_qty = 0.0
+        option_qty = 0.0
+        profit = 0.0
+
+        # Stock or ETF
+        if trade.security in [SecurityType.STOCK, SecurityType.ETF]:
             if trade.action == TradeAction.BUY:
-                stock_qty = trade.quantity # Positive for buying shares
-                option_qty = 0
-                profit = -trade.price_per_share * trade.quantity - trade.fees # Cash Outflow
+                stock_qty = trade.quantity  # Positive for buying shares
+                profit = -trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash outflow
             elif trade.action == TradeAction.SELL:
-                stock_qty = -trade.quantity # Negative for selling shares
-                option_qty = 0
-                profit = trade.price_per_share * trade.quantity - trade.fees # Cash Inflow
+                stock_qty = -trade.quantity  # Negative for selling shares
+                profit = trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash inflow
             else:
-                # Log warning for unexpected actions and treat as no impact
-                logger.warning(f"Unexpected action {trade.action} for StockEntry trade_id {trade.trade_id}")
-                stock_qty = 0
-                option_qty = 0
-                profit = 0
+                logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
+                stock_qty = 0.0
+                profit = 0.0
 
         # Dividend
-        elif isinstance(trade, DividendEntry):
-            # For dividends, profit is the dividend amount, minus fees
-            stock_qty = 0
-            option_qty = 0
-            profit = trade.dividend_amount - trade.fees
+        elif trade.security == SecurityType.DIVIDEND:
+            profit = getattr(trade, 'dividend_amount', 0.0) - trade.fees
+            stock_qty = 0.0
 
         # Options
-        elif isinstance(trade, OptionEntry):
-            # Sold Calls
-            if trade.option_type == OptionType.CALL:
+        elif trade.security == SecurityType.OPTION:
+            option_type = getattr(trade, 'option_type', None)
+            if option_type == OptionType.CALL:
                 if trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.OPEN:
-                    stock_qty = 0
-                    option_qty = trade.quantity # Positive for contract added to portfolio
-                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                    option_qty = trade.quantity
+                    profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
-                    stock_qty = 0
-                    option_qty = -trade.quantity # Negative because closing position
-                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                    option_qty = -trade.quantity
+                    profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
-                    stock_qty = 0
-                    option_qty = trade.quantity # Positive for contract added to portfolio
-                    profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
+                    option_qty = trade.quantity
+                    profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.CLOSE:
-                    stock_qty = 0
-                    option_qty = -trade.quantity # Negative because closing position
-                    profit = -trade.premium * trade.quantity * 100 - trade.fees
+                    option_qty = -trade.quantity
+                    profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.OPTION_EXPIRED:
-                    stock_qty = 0
-                    option_qty = -trade.quantity # Remove sold contracts
-                    profit = 0 # No profit/loss for expiration
+                    option_qty = -trade.quantity
+                    profit = 0.0
                 elif trade.action == TradeAction.OPTION_ASSIGNED:
-                    stock_qty = -trade.quantity * 100 # Buying shares to deliver
-                    option_qty = -trade.quantity # Remove assigned contract
-                    profit = trade.quantity * trade.strike * 100 - trade.fees # Shares sold at strike
+                    stock_qty = -trade.quantity * 100
+                    option_qty = -trade.quantity
+                    profit = trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.OPTION_EXERCISED:
-                    stock_qty = trade.quantity * 100 # Receive shares
-                    option_qty = -trade.quantity # Remove exercised contract
-                    profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
+                    stock_qty = trade.quantity * 100
+                    option_qty = -trade.quantity
+                    profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
                 else:
-                    # Log warning for unexpected actions
-                    logging.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
-                    stock_qty = 0
-                    option_qty = 0
-                    profit = 0
-
-            elif trade.option_type == OptionType.PUT:
+                    logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
+                    option_qty = 0.0
+                    profit = 0.0
+            elif option_type == OptionType.PUT:
                 if trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
-                    stock_qty = 0
-                    option_qty = trade.quantity # Positive for buying contracts
-                    profit = -trade.premium * trade.quantity * 100 - trade.fees # Premium Paid
+                    option_qty = trade.quantity
+                    profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
-                    stock_qty = 0
-                    option_qty = -trade.quantity # Negative for selling contracts
-                    profit = trade.premium * trade.quantity * 100 - trade.fees # Premium received
+                    option_qty = -trade.quantity
+                    profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
                 elif trade.action == TradeAction.OPTION_EXPIRED:
-                    stock_qty = 0
-                    option_qty = -trade.quantity # Remove sold contacts
-                    profit = 0
+                    option_qty = -trade.quantity
+                    profit = 0.0
                 elif trade.action == TradeAction.OPTION_ASSIGNED:
-                    stock_qty = trade.quantity * 100 # Receive shares (100 per contract)
-                    option_qty = -trade.quantity # Remove assigned contracts
-                    profit = -trade.quantity * trade.strike * 100 - trade.fees # Shares bought at strike
+                    stock_qty = trade.quantity * 100
+                    option_qty = -trade.quantity
+                    profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
                 else:
-                    # Log warning for unexpected actions
-                    logger.warning(f"Unexpected action {trade.action} for OptionEntry trade_id {trade.trade_id}")
-                    stock_qty = 0
-                    stock_qty = 0
-                    option_qty = 0
-
+                    logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
+                    option_qty = 0.0
+                    profit = 0.0
         else:
-            # Log warning for unexpected trade types
-            logger.warning(f"Unexpected trade type {type(trade)} for trade_id {trade.trade_id}")
+            logger.warning(f"Unexpected security type {trade.security} for trade_id {trade.trade_id}")
             stock_qty = 0.0
             option_qty = 0.0
             profit = 0.0
@@ -221,27 +204,27 @@ def get_current_positions(
     return active_positions
 
 
-def iterate_current_position_types(
-        current_positions: Union[list, dict, pd.DataFrame],
-) -> None:
-    """Iterate through possible current position types to deal with enumerating current_positions.
-
-    Args:
-        current_positions (UNION[list, dict pd.DataFrame): List of trade entries to process.
-    """
-    if isinstance(current_positions, list):
-        iterable = enumerate(current_positions)
-    elif isinstance(current_positions, dict):
-        iterable = current_positions.items()
-    elif isinstance(current_positions, pd.DataFrame):
-        iterable = current_positions.iterrows()
-    else:
-        raise TypeError(f"Unexpected type {type(current_positions)}")
-
-    for row_idx, row_data in iterable:
-        if isinstance(current_positions, pd.DataFrame):
-            row_data = row_data[1]
-        yield row_idx, row_data
+# def iterate_current_position_types(
+#         current_positions: Union[list, dict, pd.DataFrame],
+# ) -> None:
+#     """Iterate through possible current position types to deal with enumerating current_positions.
+#
+#     Args:
+#         current_positions (UNION[list, dict pd.DataFrame): List of trade entries to process.
+#     """
+#     if isinstance(current_positions, list):
+#         iterable = enumerate(current_positions)
+#     elif isinstance(current_positions, dict):
+#         iterable = current_positions.items()
+#     elif isinstance(current_positions, pd.DataFrame):
+#         iterable = current_positions.iterrows()
+#     else:
+#         raise TypeError(f"Unexpected type {type(current_positions)}")
+#
+#     for row_idx, row_data in iterable:
+#         if isinstance(current_positions, pd.DataFrame):
+#             row_data = row_data[1]
+#         yield row_idx, row_data
 
 
 def calculate_original_buy_in(
@@ -268,6 +251,7 @@ def calculate_original_buy_in(
     buy_in_data: Dict[str, BuyInData] = {}
     _process_stock_etf_buy_trades(trades, buy_in_data)
 
+    print(f"Buy-in data: {[(symbol, data.total_cost, data.total_quantity) for symbol, data in buy_in_data.items()]}")
     # Calculate average buy-in price per share by symbol
     result = {}
     for symbol, data in buy_in_data.items():

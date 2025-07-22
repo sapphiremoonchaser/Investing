@@ -4,8 +4,6 @@ from typing import Optional, List
 
 class Position(BaseModel):
     """Model for a current position in the portfolio."""
-    brokerage: str
-    account: str
     symbol: str
     current_price: Optional[float] = None
     original_buy_in: Optional[float] = None

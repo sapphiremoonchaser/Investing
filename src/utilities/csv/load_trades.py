@@ -1,7 +1,7 @@
 # Imports
 import pandas as pd
 import logging
-from typing import List
+from typing import List, Union
 
 from data.enum.security_type import SecurityType
 from data.enum.trade_action import TradeAction
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def load_trades_from_excel(
         file_path: str
-) -> list:
+) -> List[Union[StockEntry, DividendEntry, OptionEntry]]:
     # Read excel file
     try:
         df = pd.read_excel(file_path)
