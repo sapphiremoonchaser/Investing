@@ -1,14 +1,11 @@
 # Imports
 import logging
 from typing import List, Dict, Union
-import pandas as pd
 
 from data.data_model.entry.dividend_entry import DividendEntry
 from data.data_model.entry.option_entry import OptionEntry
 from data.data_model.entry.stock_entry import StockEntry
-from data.enum.security_type import SecurityType
 from journal.core.calculate_profit import SymbolResult
-from src.data.data_model.entry.trade_entry import TradeEntry
 from src.utilities.csv.load_trades import load_trades_from_excel
 from src.utilities.fetch_market_data import fetch_current_stock_price
 from src.journal.core.calculate_profit import (
@@ -17,7 +14,6 @@ from src.journal.core.calculate_profit import (
     calculate_adjusted_buy_in,
     calculate_original_buy_in
 )
-from src.data.data_model.market.stock_data import CurrentStockData
 from src.data.data_model.portfolio.position import Position
 
 logger = logging.getLogger(__name__)
@@ -32,32 +28,14 @@ def load_and_process_portfolio_data(
         raw_trades: List[Union[StockEntry, DividendEntry, OptionEntry]] = load_trades_from_excel(file_path)
         print(f"Loaded {len(raw_trades)} raw trades from {file_path}")
 
-        # Validate and convert raw trades to TradeEntry objects.
-        # Note: Converting from the different sub-children types to the TradeEntry type.
-        # Note: Not sure you need to do this, but leave for now.
-        # trades: List[TradeEntry] = [TradeEntry(**trade.__dict__) for trade in raw_trades]
-        # print(f"Validated {len(trades)} trades")
-
         # Calculate quantities and profits.
         quantity_dict: Dict[str, SymbolResult] = calculate_qty_and_profit(raw_trades)
         print("Calculated quantities and profits")
-
-        # # list with current assets
-        # current_asset_list = [key for key, value in quantity_dict.items() if value.stock_qty != 0 or value.option_qty != 0]
 
         # Get current positions.
         # Note: It filters down the quantity_dict to only symbols
         # that have non-zero stock or option quantity.
         current_positions: Dict[str, SymbolResult] = get_current_positions(quantity_dict)
-        # if (
-        #     not current_positions or
-        #     (isinstance(current_positions, (pd.DataFrame, pd.Series))
-        #     and current_positions.empty)
-        # ):
-        #     return []
-        # if not  current_positions:
-        #     print(f"No current positions found for {file_path}")
-        #     return []
 
         # Process each position
         positions = []
