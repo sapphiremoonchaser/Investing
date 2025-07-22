@@ -35,8 +35,8 @@ def load_and_process_portfolio_data(
         # Validate and convert raw trades to TradeEntry objects.
         # Note: Converting from the different sub-children types to the TradeEntry type.
         # Note: Not sure you need to do this, but leave for now.
-        trades: List[TradeEntry] = [TradeEntry(**trade.__dict__) for trade in raw_trades]
-        print(f"Validated {len(trades)} trades")
+        # trades: List[TradeEntry] = [TradeEntry(**trade.__dict__) for trade in raw_trades]
+        # print(f"Validated {len(trades)} trades")
 
         # Calculate quantities and profits.
         quantity_dict: Dict[str, SymbolResult] = calculate_qty_and_profit(raw_trades)
@@ -55,19 +55,20 @@ def load_and_process_portfolio_data(
         #     and current_positions.empty)
         # ):
         #     return []
-        if not  current_positions:
-            print(f"No current positions found for {file_path}")
-            return []
+        # if not  current_positions:
+        #     print(f"No current positions found for {file_path}")
+        #     return []
 
         # Process each position
         positions = []
         current_symbols: List[str] = list(current_positions.keys())
-        current_trades = [trade for trade in trades if trade.symbol in current_symbols]
+        current_trades = [trade for trade in raw_trades if trade.symbol in current_symbols]
 
         # Variables involving current data
         symbol: str
         stock_data: SymbolResult
         for symbol, stock_data in current_positions.items():
+            # Fetch the current stock price
             current_price = None
             if symbol != 'N/A' and isinstance(symbol, str):
                 current_stock_data = fetch_current_stock_price(symbol)
