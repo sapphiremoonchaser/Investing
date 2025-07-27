@@ -2,19 +2,19 @@
 import logging
 from typing import List, Dict, Union
 
-from data.data_model.entry.dividend_entry import DividendEntry
-from data.data_model.entry.option_entry import OptionEntry
-from data.data_model.entry.stock_entry import StockEntry
-from journal.core.calculate_profit import SymbolResult
-from src.utilities.csv.load_trades import load_trades_from_excel
-from src.utilities.fetch_market_data import fetch_current_stock_price
-from src.journal.core.calculate_profit import (
+from trading_analytics.data.data_model import DividendEntry
+from trading_analytics.data.data_model.entry.option_entry import OptionEntry
+from trading_analytics.data.data_model.entry.stock_entry import StockEntry
+from trading_analytics.journal.core.calculate_profit import SymbolResult
+from trading_analytics.utilities.csv.load_trades import load_trades_from_excel
+from trading_analytics.utilities.fetch_market_data import fetch_current_stock_price
+from trading_analytics.journal.core.calculate_profit import (
     get_current_positions,
     calculate_qty_and_profit,
     calculate_adjusted_buy_in,
     calculate_original_buy_in
 )
-from src.data.data_model.portfolio.position import Position
+from trading_analytics.data.data_model.portfolio.position import Position
 
 logger = logging.getLogger(__name__)
 

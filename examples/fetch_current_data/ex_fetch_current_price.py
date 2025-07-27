@@ -1,8 +1,7 @@
 import json
 import os.path
 
-from src.data.data_model.market.stock_data import CurrentStockData
-from utilities.fetch_market_data import fetch_current_stock_price
+from trading_analytics.utilities import fetch_current_stock_price
 
 
 def __main__(json_file_path: str) -> None:

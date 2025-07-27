@@ -1,7 +1,7 @@
 # Imports
 from pydantic import Field, model_validator
-from data.data_model.entry.trade_entry import TradeEntry
-from data.enum.security_type import SecurityType
+from trading_analytics.data.data_model.entry.trade_entry import TradeEntry
+from trading_analytics.data.enum.security_type import SecurityType
 
 class StockEntry(TradeEntry):
     """A model representing a stock entry with relevant details.

@@ -3,10 +3,10 @@ from datetime import date, datetime
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Union, List
 
-from src.data.enum.security_type import SecurityType
-from src.data.enum.trade_action import TradeAction
-from src.data.enum.sub_action import TradeSubAction
-from src.data.data_model.market.stock_data import CurrentStockData
+from trading_analytics.data.enum.security_type import SecurityType
+from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum.sub_action import TradeSubAction
+from trading_analytics.data.data_model.market.stock_data import CurrentStockData
 
 
 class TradeEntry(BaseModel):

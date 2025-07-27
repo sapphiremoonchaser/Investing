@@ -1,8 +1,7 @@
 import yfinance as yf
-import logging
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from data.data_model.market.stock_data import CurrentStockData
+from trading_analytics.data.data_model.market.stock_data import CurrentStockData
 
 def fetch_current_stock_price(
         symbol: str

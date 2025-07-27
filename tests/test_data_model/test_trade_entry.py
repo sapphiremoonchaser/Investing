@@ -3,10 +3,10 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.security_type import SecurityType
-from data.enum.trade_action import TradeAction
-from data.enum.sub_action import TradeSubAction
-from data.data_model.entry.trade_entry import TradeEntry
+from trading_analytics.data.enum.security_type import SecurityType
+from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum import TradeSubAction
+from trading_analytics.data.data_model.entry.trade_entry import TradeEntry
 
 
 class TestTradeId(unittest.TestCase):

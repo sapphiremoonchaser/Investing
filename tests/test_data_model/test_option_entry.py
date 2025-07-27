@@ -3,11 +3,11 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.security_type import SecurityType
-from data.enum.trade_action import TradeAction
-from data.enum.trade_strategy import TradeStrategy
-from data.enum.option_type import OptionType
-from data.data_model.entry.option_entry import OptionEntry
+from trading_analytics.data.enum.security_type import SecurityType
+from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data import TradeStrategy
+from trading_analytics.data.enum import OptionType
+from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 
 class TestExpirationDate(unittest.TestCase):
     """Unit tests for validating expiration date values in TradeEntry.

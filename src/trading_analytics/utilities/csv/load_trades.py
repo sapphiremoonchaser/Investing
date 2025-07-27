@@ -3,13 +3,13 @@ import pandas as pd
 import logging
 from typing import List, Union
 
-from data.enum.security_type import SecurityType
-from data.enum.trade_action import TradeAction
-from data.enum.sub_action import TradeSubAction
-from data.enum.option_type import OptionType
-from data.data_model.entry.stock_entry import StockEntry
-from data.data_model.entry.dividend_entry import DividendEntry
-from data.data_model.entry.option_entry import OptionEntry
+from trading_analytics.data.enum.security_type import SecurityType
+from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum import TradeSubAction
+from trading_analytics.data.enum import OptionType
+from trading_analytics.data.data_model.entry.stock_entry import StockEntry
+from trading_analytics.data.data_model import DividendEntry
+from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 
 # Configure logging to a file
 logger = logging.getLogger(__name__)
