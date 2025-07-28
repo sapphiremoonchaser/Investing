@@ -7,7 +7,10 @@ from trading_analytics.utilities.csv.load_trades import load_trades_from_excel
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('view_profit_by_symbol.log'), logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler('view_profit_by_symbol.log'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
