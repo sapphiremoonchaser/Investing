@@ -1,5 +1,9 @@
 # Imports
-from pydantic import BaseModel, Field, field_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    field_validator,
+)
 from typing import Union
 
 class CurrentStockData(BaseModel):
