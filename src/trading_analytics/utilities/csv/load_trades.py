@@ -18,7 +18,7 @@ from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 logger = logging.getLogger(__name__)
 
 def load_trades_from_excel(
-        file_path: str
+    file_path: str
 ) -> List[Union[StockEntry, DividendEntry, OptionEntry]]:
     # Read excel file
     try:

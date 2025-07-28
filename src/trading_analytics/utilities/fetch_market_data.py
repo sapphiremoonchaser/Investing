@@ -7,7 +7,7 @@ from typing import (
 from trading_analytics.data.data_model.market.stock_data import CurrentStockData
 
 def fetch_current_stock_price(
-        symbol: str
+    symbol: str
 ) -> CurrentStockData:
     """Fetches the current stock price for a given symbol.
 
@@ -35,7 +35,7 @@ def fetch_current_stock_price(
 
 
 def fetch_options_data(
-        symbol: str
+    symbol: str
 ) -> List[Dict]:
     """Fetches options data for a given symbol.
 
