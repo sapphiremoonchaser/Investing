@@ -54,3 +54,4 @@ credentials.json
 *.seed
 *.sqlite3
 *.db
+*.iml
