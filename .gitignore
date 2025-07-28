@@ -58,3 +58,7 @@ credentials.json
 *.iml
 *.xml
 config/settings.yaml
+src/trading_analytics.egg-info/PKG-INFO
+src/trading_analytics.egg-info/SOURCES.txt
+src/trading_analytics.egg-info/requires.txt
+src/trading_analytics.egg-info/top_level.txt
