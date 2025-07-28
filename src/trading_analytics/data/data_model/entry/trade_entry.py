@@ -1,7 +1,19 @@
 # Imports
-from datetime import date, datetime
-from pydantic import BaseModel, Field, field_validator, model_validator
-from typing import Union, List
+from datetime import (
+    date,
+    datetime,
+)
+from pydantic import (
+    BaseModel,
+    Field,
+    field_validator,
+    model_validator,
+)
+from typing import (
+    Union,
+    List,
+    Optional,
+)
 
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.trade_action import TradeAction
@@ -44,8 +56,8 @@ class TradeEntry(BaseModel):
         mode='before'
     )
     def normalize_brokerage(
-            cls,
-            value: str
+        cls,
+        value: str
     ) -> str:
         """Validates and normalizes the brokerage name.
 
@@ -58,12 +70,11 @@ class TradeEntry(BaseModel):
 
             Raises:
                 ValueError: If the provided brokerage name is not valid.
-            """
-        if isinstance(value, str):
-            try:
-                return value.upper()
-            except Exception:
-                raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
+        """
+        try:
+            return value.upper()
+        except Exception:
+            raise ValueError(f"Brokerage '{value}' is not a valid brokerage name.")
 
     # Convert account to string
     @field_validator(
@@ -71,8 +82,8 @@ class TradeEntry(BaseModel):
         mode='before'
     )
     def convert_account_to_string(
-            cls,
-            value: Union[str, int]
+        cls,
+        value: Union[str, int]
     ) -> str:
         """Converts and validates the account field to a string.
 
@@ -101,7 +112,7 @@ class TradeEntry(BaseModel):
     def parse_and_normalize_strategy(
             cls,
             value: Union[List[str], str]
-    ) -> List[str]:
+    ) -> Optional[List[str]]:
         """Parse the string into a list of strategies and normalizes the strategies to lowercase.
 
             Args:
@@ -135,8 +146,8 @@ class TradeEntry(BaseModel):
         mode='before'
     )
     def normalize_security(
-            cls,
-            value: Union[str, SecurityType]
+        cls,
+        value: Union[str, SecurityType]
     ) -> SecurityType:
         """Normalizes and validates the trade type.
 
@@ -149,16 +160,19 @@ class TradeEntry(BaseModel):
 
             Raises:
                 ValueError: If the trade type is not one of the valid types.
-            """
+        """
         # Don't need this if for my csv file but might need it later
         if isinstance(value, SecurityType):
             return value
+
         # This is the case for my csv file
         if isinstance(value, str):
             try:
                 return SecurityType(value.upper())
             except Exception:
                 raise ValueError(f"Security type {value} is invalid.")
+
+        raise ValueError(f"Security type {value} is invalid type, not string or SecurityType.")
 
     # Convert symbol to a string
     @field_validator(
