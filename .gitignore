@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # Virtual environments
 venv/
@@ -55,3 +56,5 @@ credentials.json
 *.sqlite3
 *.db
 *.iml
+*.xml
+config/settings.yaml
