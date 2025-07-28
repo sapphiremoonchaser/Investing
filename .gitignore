@@ -1,4 +1,56 @@
+# Python bytecode and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+ENV/
 .venv-investing/
-misc.xml
-.idea
-build
+
+# Dependency directories
+/site-packages/
+dist/
+build/
+*.egg-info/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Testing and coverage
+.coverage
+coverage.xml
+*.cover
+.pytest_cache/
+htmlcov/
+
+# Logs and temporary files
+*.log
+*.log.*
+*.tmp
+*.swp
+*.swo
+
+# Environment variables and secrets
+.env
+*.env
+*.env.*
+secrets/
+credentials.json
+
+# Jupyter notebooks
+*.ipynb_checkpoints/
+
+# Miscellaneous
+*.bak
+*.cache
+*.pid
+*.seed
+*.sqlite3
+*.db
