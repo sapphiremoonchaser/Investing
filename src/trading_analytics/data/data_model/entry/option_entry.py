@@ -79,12 +79,15 @@ class OptionEntry(TradeEntry):
         # Don't need this if using my csv file but might need later
         if isinstance(value, OptionType):
             return value
+
         # This is case for csv file
         if isinstance(value, str):
             try:
                 return OptionType(value.upper())
             except Exception:
                 raise ValueError(f"Option type '{value}' is not a valid option type.")
+
+        raise ValueError(f"Option type '{value}' is not a valid data type for option type.")
 
     # Validate that the security type is 'OPTION'
     @model_validator(mode='after')

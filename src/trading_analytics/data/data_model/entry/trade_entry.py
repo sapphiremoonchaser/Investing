@@ -15,7 +15,6 @@ from typing import (
     Optional,
 )
 
-from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.trade_action import TradeAction
 from trading_analytics.data.enum.sub_action import TradeSubAction
@@ -153,6 +152,8 @@ class TradeEntry(BaseModel):
             except Exception:
                 raise ValueError(f"Strategy '{value}' is not a valid strategy description.")
 
+        raise ValueError(f"Strategy '{value}' is not a valid data type for strategy description.")
+
     # Normalize 'security' to uppercase
     @field_validator(
         'security',
@@ -268,12 +269,15 @@ class TradeEntry(BaseModel):
             """
         if isinstance(value, TradeAction):
             return value
+
         # This is the case for my csv file
         if isinstance(value, str):
             try:
                 return TradeAction(value.upper())
             except Exception:
                 raise ValueError(f"Trade action '{value}' is invalid.")
+
+        raise ValueError(f"Trade action '{value}' is and invalid data type for trade action.")
 
     # Normalize 'sub_action' to uppercase
     @field_validator(
@@ -298,11 +302,14 @@ class TradeEntry(BaseModel):
             """
         if isinstance(value, TradeSubAction):
             return value
+
         if isinstance(value, str):
             try:
                 return TradeSubAction(value.upper())
             except Exception:
                 raise ValueError(f"Trade sub action '{value}' is invalid.")
+
+        raise ValueError(f"Trade sub action '{value}' is and invalid data type for trade sub action.")
 
     # Model Validator for mapping type to action
     # Defines a valid_action_map mapping type to action
