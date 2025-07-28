@@ -23,7 +23,7 @@ from trading_analytics.data.data_model.portfolio.position import Position
 logger = logging.getLogger(__name__)
 
 def load_and_process_portfolio_data(
-        file_path: str
+    file_path: str
 ) -> List[Position]:
     """Load trades and return processed positions."""
     try:

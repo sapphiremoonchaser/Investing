@@ -37,8 +37,8 @@ class BuyInData(BaseModel):
 
 
 def _process_stock_etf_buy_trades(
-        trades: List[TradeEntry],
-        data_dict: dict
+    trades: List[TradeEntry],
+    data_dict: dict
 ) -> None:
     """Helper function to process trades where SecurityType is STOCK or ETF and action is BUY.
 
@@ -70,7 +70,7 @@ def _process_stock_etf_buy_trades(
 
 
 def calculate_qty_and_profit(
-        trades: List[Union[StockEntry, DividendEntry, OptionEntry]],
+    trades: List[Union[StockEntry, DividendEntry, OptionEntry]],
 ) -> Dict[str, SymbolResult]:
     """Calculates aggregated profit/loss, stock quantity, and option quantity for a list of trades.
 
@@ -190,7 +190,7 @@ def calculate_qty_and_profit(
 
 
 def get_current_positions(
-        results: dict
+    results: dict
 ) -> dict:
     """Filters symbols with non-zero stock or option quantities from the results dictionary.
 
@@ -234,7 +234,7 @@ def get_current_positions(
 
 
 def calculate_original_buy_in(
-        trades: List[TradeEntry]
+    trades: List[TradeEntry]
 ) -> dict:
     """Calculates the average buy-in price per share for STOCK and ETF trades by symbol.
 
@@ -270,7 +270,7 @@ def calculate_original_buy_in(
 
 
 def calculate_adjusted_buy_in(
-        trades: List[TradeEntry]
+    trades: List[TradeEntry]
 ) -> dict:
     """Calculates the adjusted buy-in price per share for STOCK and ETF trades by symbol.
 
