@@ -2,7 +2,7 @@
 import logging
 from typing import List, Dict, Union
 
-from trading_analytics.data.data_model import DividendEntry
+from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 from trading_analytics.journal.core.calculate_profit import SymbolResult

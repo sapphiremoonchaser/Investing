@@ -10,8 +10,9 @@ from PySide6.QtWidgets import (
     QTableWidget
 )
 
-from trading_analytics.utilities import fetch_options_data
-from trading_analytics.journal.core import load_and_process_portfolio_data
+from trading_analytics.journal.core.portfolio_data import load_and_process_portfolio_data
+from trading_analytics.utilities.fetch_market_data import fetch_options_data
+
 
 class PortfolioWindow(QMainWindow):
     def __init__(self):
