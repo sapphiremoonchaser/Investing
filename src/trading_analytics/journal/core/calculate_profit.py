@@ -1,7 +1,14 @@
 # Imports
-from typing import List, Dict, Union
+from typing import (
+    List,
+    Dict,
+    Union,
+)
 import logging
-from pydantic import BaseModel, Field
+from pydantic import (
+    BaseModel,
+    Field,
+)
 
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.entry.trade_entry import TradeEntry
@@ -49,13 +56,14 @@ def _process_stock_etf_buy_trades(
         if symbol not in data_dict:
             data_dict[symbol] = BuyInData()
 
-        # Process STOCK or ETF trades with BUY action
-        if (
-            hasattr(trade, "security")
-            and trade.security in [SecurityType.STOCK, SecurityType.ETF]
-            and trade.action == TradeAction.BUY
-            and isinstance(trade, StockEntry)
-        ):
+        # # Process STOCK or ETF trades with BUY action
+        # if (
+        #     hasattr(trade, "security")
+        #     and trade.security in [SecurityType.STOCK, SecurityType.ETF]
+        #     and trade.action == TradeAction.BUY
+        #     and isinstance(trade, StockEntry)
+        # ):
+        if trade.is_bought_stock:
             total_cost = trade.price_per_share * trade.quantity + trade.fees
             data_dict[symbol].total_cost += total_cost
             data_dict[symbol].total_quantity += trade.quantity

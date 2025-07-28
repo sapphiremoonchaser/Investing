@@ -1,5 +1,8 @@
 import yfinance as yf
-from typing import Dict, List
+from typing import (
+    Dict,
+    List
+)
 
 from trading_analytics.data.data_model.market.stock_data import CurrentStockData
 

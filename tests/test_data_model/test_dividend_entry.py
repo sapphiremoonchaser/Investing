@@ -3,9 +3,10 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
+from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.trade_action import TradeAction
-from trading_analytics.data.data_model import DividendEntry
+
 
 
 class TestDividendAmount(unittest.TestCase):

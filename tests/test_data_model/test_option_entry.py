@@ -3,11 +3,11 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
+from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.trade_action import TradeAction
-from trading_analytics.data import TradeStrategy
-from trading_analytics.data.enum import OptionType
 from trading_analytics.data.data_model.entry.option_entry import OptionEntry
+
 
 class TestExpirationDate(unittest.TestCase):
     """Unit tests for validating expiration date values in TradeEntry.
@@ -37,7 +37,7 @@ class TestExpirationDate(unittest.TestCase):
                     strategy_id=1,
                     brokerage='ETRADE',
                     account="TEST1234",
-                    strategy=[TradeStrategy.COVERED_CALL],
+                    strategy=['COVERED_CALL'],
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
@@ -73,7 +73,7 @@ class TestExpirationDate(unittest.TestCase):
                         strategy_id=1,
                         brokerage='ETRADE',
                         account="TEST1234",
-                        strategy=[TradeStrategy.BASIC_TRADE],
+                        strategy=['BASIC_TRADE'],
                         security=SecurityType.STOCK,
                         trade_date=date(2025, 1, 23),
                         symbol="AAPL",

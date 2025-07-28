@@ -1,6 +1,10 @@
 # Imports
 import logging
-from typing import List, Dict, Union
+from typing import (
+    List,
+    Dict,
+    Union,
+)
 
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.entry.option_entry import OptionEntry

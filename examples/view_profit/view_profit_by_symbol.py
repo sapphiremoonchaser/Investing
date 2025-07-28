@@ -2,8 +2,8 @@
 import pandas as pd
 import logging
 
-from trading_analytics.utilities.csv import load_trades_from_excel
 from trading_analytics.journal.core.calculate_profit import calculate_qty_and_profit
+from trading_analytics.utilities.csv.load_trades import load_trades_from_excel
 
 logging.basicConfig(
     level=logging.INFO,

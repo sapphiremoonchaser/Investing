@@ -15,6 +15,7 @@ from typing import (
     Optional,
 )
 
+from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.trade_action import TradeAction
 from trading_analytics.data.enum.sub_action import TradeSubAction
@@ -49,6 +50,18 @@ class TradeEntry(BaseModel):
     sub_action: TradeSubAction = Field(frozen=True)
     quantity: float = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
+
+    # Process STOCK or ETF trades with BUY action
+    @property
+    def is_bought_stock_etf(self) -> bool:
+        """Whether the trade is bought stock or not."""
+        if (
+            self.security in [SecurityType.STOCK, SecurityType.ETF] and
+            self.action == TradeAction.BUY
+        ):
+            return True
+
+        return False
 
     # Normalize brokerage to uppercase
     @field_validator(

@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from trading_analytics.utilities import fetch_current_stock_price
+from trading_analytics.utilities.fetch_market_data import fetch_current_stock_price
 
 
 def __main__(json_file_path: str) -> None:

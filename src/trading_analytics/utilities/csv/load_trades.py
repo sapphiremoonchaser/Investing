@@ -1,7 +1,10 @@
 # Imports
 import pandas as pd
 import logging
-from typing import List, Union
+from typing import (
+    List,
+    Union,
+)
 
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.enum.option_type import OptionType
