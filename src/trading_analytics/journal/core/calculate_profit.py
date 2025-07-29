@@ -5,10 +5,6 @@ from typing import (
     Union,
 )
 import logging
-from pydantic import (
-    BaseModel,
-    Field,
-)
 
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.data_model.entry.trade_entry import TradeEntry
