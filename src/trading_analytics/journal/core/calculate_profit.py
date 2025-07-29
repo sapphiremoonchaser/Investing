@@ -18,23 +18,11 @@ from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.sub_action import TradeSubAction
 from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.portfolio.buy_in_data import BuyInData
+from trading_analytics.data.portfolio.symbol_result import SymbolResult
 
 # Configure logging to a file
 logger = logging.getLogger(__name__)
-
-# Pydantic Models
-class SymbolResult(BaseModel):
-    profit: float = Field(default=0.0)
-    stock_qty: float = Field(default=0.0)
-    option_qty: float = Field(default=0.0)
-
-
-class BuyInData(BaseModel):
-    total_cost: float = Field(default=0.0)
-    total_quantity: float = Field(default=0.0)
-    net_option_premiums: float = Field(default=0.0)
-    total_dividends: float = Field(default=0.0)
-
 
 def _process_stock_etf_buy_trades(
     trades: List[TradeEntry],
@@ -56,14 +44,7 @@ def _process_stock_etf_buy_trades(
         if symbol not in data_dict:
             data_dict[symbol] = BuyInData()
 
-        # # Process STOCK or ETF trades with BUY action
-        # if (
-        #     hasattr(trade, "security")
-        #     and trade.security in [SecurityType.STOCK, SecurityType.ETF]
-        #     and trade.action == TradeAction.BUY
-        #     and isinstance(trade, StockEntry)
-        # ):
-        if trade.is_bought_stock:
+        if trade.is_bought_stock_etf:
             total_cost = trade.price_per_share * trade.quantity + trade.fees
             data_dict[symbol].total_cost += total_cost
             data_dict[symbol].total_quantity += trade.quantity

@@ -6,6 +6,8 @@ from typing import (
     Union,
 )
 
+from openpyxl.utils import rows_from_range
+
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
@@ -25,13 +27,15 @@ def load_trades_from_excel(
         df = pd.read_excel(file_path)
     except Exception as e:
         logger.error(f"Failed to read Excel file {file_path}. {e}")
+        raise e
 
     trades = []
+    row: pd.Series
     for _, row in df.iterrows():
         try:
             common_fields = {
-                "trade_id": int(row["trade_id"]),
-                "strategy_id": int(row["strategy_id"]),
+                "trade_id": int(str(row["trade_id"])),
+                "strategy_id": int(str(row["strategy_id"])),
                 "brokerage": str(row["brokerage"]),
                 "account": str(row["account"]),
                 "strategy": str(row["strategy"]),
