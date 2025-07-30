@@ -1,3 +1,12 @@
+"""DividendEntry class for representing dividend transactions.
+
+This module defines the `DividendEntry` class, a Pydantic model that extends `TradeEntry`
+to represent dividend-specific transaction details. It includes validation to ensure
+the security type is set to 'DIVIDEND' and enforces constraints on the dividend amount.
+
+Classes:
+    DividendEntry: A model for dividend entries with a dividend amount and security type validation.
+"""
 from pydantic import (
     Field,
     model_validator,

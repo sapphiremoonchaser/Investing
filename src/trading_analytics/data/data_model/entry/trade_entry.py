@@ -1,4 +1,14 @@
-# Imports
+"""TradeEntry class for representing trading transactions.
+
+This module defines the `TradeEntry` class, a Pydantic model that encapsulates the details of a trading transaction.
+It includes fields for trade identification, strategy, security type, and other relevant details, with validators to
+ensure data integrity and normalization. The class supports various security types (e.g., STOCK, ETF, DIVIDEND, OPTION)
+and trade actions, with specific validation logic to enforce valid combinations.
+
+Classes:
+    TradeEntry: A Pydantic model representing a trade entry with validation for fields like brokerage, account, strategy,
+                security type, trade date, symbol, action, sub-action, quantity, and fees.
+"""
 from datetime import (
     date,
     datetime,
@@ -114,7 +124,7 @@ class TradeEntry(BaseModel):
         try:
             return f"{value}"
         except Exception as e:
-            raise ValueError(f"Did you enter the account as a string or an integer with length >= 4?")
+            raise ValueError(f"Did you enter the account as a string or an integer with length >= 4? Exception: {e}")
 
     # comma-separated string to a list of strings
     @field_validator(
@@ -216,7 +226,7 @@ class TradeEntry(BaseModel):
         try:
             return f"{value}"
         except Exception as e:
-            raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1?")
+            raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1? Exception: {e}")
 
     # Convert date to format YYYY-mm-dd
     @field_validator(
@@ -230,7 +240,7 @@ class TradeEntry(BaseModel):
         """Parses a date from a string or returns an existing date object.
 
         Args:
-            cls: The class calling this method (used in classmethod context).
+            cls: The class calling this method (used in class method context).
             value: A date object or a string in 'YYYY-MM-DD' format.
 
         Returns:
@@ -244,7 +254,7 @@ class TradeEntry(BaseModel):
         try:
             return datetime.strptime(value, "%Y-%m-%d").date()
         except Exception as e:
-            raise ValueError(f"Invalid date format: {value}. Use 'YYYY-MM-DD' format.")
+            raise ValueError(f"Invalid date format: {value}. Use 'YYYY-MM-DD' format. Exception: {e}")
 
     # Normalize 'action' to uppercase
     @field_validator(
