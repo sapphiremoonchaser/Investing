@@ -1,8 +1,17 @@
-# Imports
+"""Action enumeration for valid option subtypes.
+
+This module defines the `Action` enumeration, which specifies valid actions for trades
+using Python's `Enum` class. It ensures that only predefined actions
+(BUY, SELL, DIVIDEND, OPTION EXPIRED, OPTION EXERCISED, OPTION ASSIGNED)
+are used.
+
+Classes:
+    SubAction: A string-based enumeration for trade sub actions (OPEN, CLOSE, DIVIDEND).
+"""
 from enum import Enum
 
 # Enum for valid trade actions
-class TradeAction(str, Enum):
+class Action(str, Enum):
     """Enum class for valid trade actions.
 
     This class defines a set of valid trade actions as string enumerations.

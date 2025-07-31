@@ -1,4 +1,17 @@
-# Imports
+"""Utilities for calculating trading profits and positions.
+
+This module provides functions to get current positions and basic information about them
+such as profit, quantity, original buy-in, and adjusted buy-in. It has a helper function
+that processes stock or etf security types where the action is 'buy' to update total_cost
+and total_quantity.
+
+Functions:
+    _process_stock_etf_buy_trades: initializes and updates values for BuyInData (cost and quantity)
+    calculate_qty_and_profit: calculate profit, stock quantity, and option quantity
+    get_current_positions: returns a dict with securities and quantities if stock or option quantity != 0
+    calculate_original_buy_in: calculates buy-in based only on total cost and total quantity
+    calculate_adjusted_buy_in: calculates buy-in with option premiums and dividends factored in
+"""
 from typing import (
     List,
     Dict,
@@ -12,8 +25,8 @@ from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
-from trading_analytics.data.enum.sub_action import TradeSubAction
-from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum.sub_action import SubAction
+from trading_analytics.data.enum.trade_action import Action
 from trading_analytics.data.portfolio.buy_in_data import BuyInData
 from trading_analytics.data.portfolio.symbol_result import SymbolResult
 
@@ -87,10 +100,10 @@ def calculate_qty_and_profit(
 
         # Stock or ETF
         if trade.security in [SecurityType.STOCK, SecurityType.ETF]:
-            if trade.action == TradeAction.BUY:
+            if trade.action == Action.BUY:
                 stock_qty = trade.quantity  # Positive for buying shares
                 profit = -trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash outflow
-            elif trade.action == TradeAction.SELL:
+            elif trade.action == Action.SELL:
                 stock_qty = -trade.quantity  # Negative for selling shares
                 profit = trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash inflow
             else:
@@ -107,26 +120,26 @@ def calculate_qty_and_profit(
         elif trade.security == SecurityType.OPTION:
             option_type = getattr(trade, 'option_type', None)
             if option_type == OptionType.CALL:
-                if trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.OPEN:
+                if trade.action == Action.SELL and trade.sub_action == SubAction.OPEN:
                     option_qty = trade.quantity
                     profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
+                elif trade.action == Action.SELL and trade.sub_action == SubAction.CLOSE:
                     option_qty = -trade.quantity
                     profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
+                elif trade.action == Action.BUY and trade.sub_action == SubAction.OPEN:
                     option_qty = trade.quantity
                     profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.CLOSE:
+                elif trade.action == Action.BUY and trade.sub_action == SubAction.CLOSE:
                     option_qty = -trade.quantity
                     profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.OPTION_EXPIRED:
+                elif trade.action == Action.OPTION_EXPIRED:
                     option_qty = -trade.quantity
                     profit = 0.0
-                elif trade.action == TradeAction.OPTION_ASSIGNED:
+                elif trade.action == Action.OPTION_ASSIGNED:
                     stock_qty = -trade.quantity * 100
                     option_qty = -trade.quantity
                     profit = trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.OPTION_EXERCISED:
+                elif trade.action == Action.OPTION_EXERCISED:
                     stock_qty = trade.quantity * 100
                     option_qty = -trade.quantity
                     profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
@@ -135,16 +148,16 @@ def calculate_qty_and_profit(
                     option_qty = 0.0
                     profit = 0.0
             elif option_type == OptionType.PUT:
-                if trade.action == TradeAction.BUY and trade.sub_action == TradeSubAction.OPEN:
+                if trade.action == Action.BUY and trade.sub_action == SubAction.OPEN:
                     option_qty = trade.quantity
                     profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.SELL and trade.sub_action == TradeSubAction.CLOSE:
+                elif trade.action == Action.SELL and trade.sub_action == SubAction.CLOSE:
                     option_qty = -trade.quantity
                     profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-                elif trade.action == TradeAction.OPTION_EXPIRED:
+                elif trade.action == Action.OPTION_EXPIRED:
                     option_qty = -trade.quantity
                     profit = 0.0
-                elif trade.action == TradeAction.OPTION_ASSIGNED:
+                elif trade.action == Action.OPTION_ASSIGNED:
                     stock_qty = trade.quantity * 100
                     option_qty = -trade.quantity
                     profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
@@ -260,15 +273,15 @@ def calculate_adjusted_buy_in(
             if isinstance(trade, OptionEntry):
                 if trade.option_type in [OptionType.CALL, OptionType.PUT]:
                     if (
-                        trade.action == TradeAction.SELL
-                        and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
+                        trade.action == Action.SELL
+                        and trade.sub_action in [SubAction.OPEN, SubAction.CLOSE]
                     ):
                         premium = trade.premium  * trade.quantity * 100 - trade.fees
                         adjusted_data[symbol].net_option_premiums += premium
 
                     elif (
-                            trade.action == TradeAction.BUY
-                        and trade.sub_action in [TradeSubAction.OPEN, TradeSubAction.CLOSE]
+                            trade.action == Action.BUY
+                            and trade.sub_action in [SubAction.OPEN, SubAction.CLOSE]
                     ):
                         premium = -trade.premium * trade.quantity * 100 - trade.fees
                         adjusted_data[symbol].net_option_premiums += premium

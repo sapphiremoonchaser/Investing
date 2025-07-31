@@ -1,4 +1,12 @@
-# Imports
+"""CurrentStockData class for representing live data about stock.
+
+This module defines the `CurrentStockData` class, a Pydantic model,
+to represent live data about a stock. Currently, this includes symbol and price.
+'symbol' is validated to make sure it has a minimum length of 1.
+
+Classes:
+    CurrentStockData: A model for live stock data, symbol and price
+"""
 from pydantic import (
     BaseModel,
     Field,
@@ -42,4 +50,4 @@ class CurrentStockData(BaseModel):
         try:
             return f"{value}"
         except Exception as e:
-            raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1?")
+            raise ValueError(f"Did you enter the symbol as a string or integer with length >= 1? Exception: {e}")

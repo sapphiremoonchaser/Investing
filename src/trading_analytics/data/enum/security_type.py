@@ -1,4 +1,12 @@
-# Imports
+"""SecurityType enumeration for valid option subtypes.
+
+This module defines the `SecurityType` enumeration, which specifies valid types for securities
+using Python's `Enum` class. It ensures that only predefined option subtypes (STOCK, ETF, OPTION, DIVIDEND)
+are used.
+
+Classes:
+    SecurityType: A string-based enumeration for security types (STOCK, ETF, OPTION, DIVIDEND).
+"""
 from enum import Enum
 
 # Enum for valid security types

@@ -1,4 +1,12 @@
-# Imports
+"""Loads trade entries from an Excel file into a list of trade objects.
+
+This module defines a function to read trade data from an Excel file and convert it into
+a list of `StockEntry`, `DividendEntry`, or `OptionEntry` objects based on the security type.
+It handles data parsing, validation, and error logging for robust processing of trade records.
+
+Functions:
+    load_trades_from_excel: Reads trade data from an Excel file and returns a list of trade entries.
+"""
 import pandas as pd
 import logging
 from typing import (
@@ -6,13 +14,11 @@ from typing import (
     Union,
 )
 
-from openpyxl.utils import rows_from_range
-
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
-from trading_analytics.data.enum.sub_action import TradeSubAction
-from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum.sub_action import SubAction
+from trading_analytics.data.enum.trade_action import Action
 from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 
@@ -22,6 +28,22 @@ logger = logging.getLogger(__name__)
 def load_trades_from_excel(
     file_path: str
 ) -> List[Union[StockEntry, DividendEntry, OptionEntry]]:
+    """Loads trade entries from an Excel file into a list of trade objects.
+
+        Reads an Excel file using pandas and converts each row into a `StockEntry`, `DividendEntry`,
+        or `OptionEntry` based on the security type. Validates and parses common fields for all trade
+        types and specific fields for each security type, logging errors for invalid rows without
+        raising exceptions unless the file cannot be read.
+
+        Args:
+            file_path (str): Path to the Excel file containing trade data.
+
+        Returns:
+            List[Union[StockEntry, DividendEntry, OptionEntry]]: A list of parsed trade entry objects.
+
+        Raises:
+            Exception: If the Excel file cannot be read (e.g., file not found, invalid format).
+    """
     # Read excel file
     try:
         df = pd.read_excel(file_path)
@@ -42,13 +64,14 @@ def load_trades_from_excel(
                 "security": SecurityType(row["security_type"]),
                 "trade_date": pd.to_datetime(row["trade_date"]).date(),
                 "symbol": str(row["symbol"]),
-                "action": TradeAction(row["action"]),
-                "sub_action": TradeSubAction(row["sub_action"]),
-                "quantity": float(row["quantity"]),
-                "fees": float(row["fees"]),
+                "action": Action(row["action"]),
+                "sub_action": SubAction(row["sub_action"]),
+                "quantity": float(str(row["quantity"])),
+                "fees": float(str(row["fees"])),
             }
         except (KeyError, ValueError, TypeError) as e:
             logger.error(f"Failed to parse row for (trade_id={row.get('trade_id', 'unknown')}): {e}")
+            raise e
 
         # Create appropriate entry based on security type
         try:

@@ -1,4 +1,12 @@
-# Imports
+"""OptionType enumeration for valid option subtypes.
+
+This module defines the `OptionType` enumeration, which specifies valid subtypes for option contracts
+using Python's `Enum` class. It ensures that only predefined option subtypes (CALL and PUT) are used
+in trading-related applications.
+
+Classes:
+    OptionType: A string-based enumeration for option contract subtypes (CALL, PUT).
+"""
 from enum import Enum
 
 # Enum for valid option subtypes

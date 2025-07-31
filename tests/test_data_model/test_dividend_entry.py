@@ -5,7 +5,7 @@ from pydantic import ValidationError
 
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.enum.security_type import SecurityType
-from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum.trade_action import Action
 
 
 
@@ -44,7 +44,7 @@ class TestDividendAmount(unittest.TestCase):
                     security=SecurityType.DIVIDEND,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.DIVIDEND,
+                    action=Action.DIVIDEND,
                     quantity=100,
                     fees=0.05,
                     dividend_amount=value
@@ -75,7 +75,7 @@ class TestDividendAmount(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BOUGHT,
+                    action=Action.BOUGHT,
                     quantity=100,
                     fees=5.0,
                     dividend_amount=value

@@ -5,7 +5,7 @@ from datetime import date
 from trading_analytics.data.data_model.entry.dividend_entry import DividendEntry
 from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
-from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum.trade_action import Action
 from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 from trading_analytics.data.data_model.entry.option_entry import OptionEntry
 from trading_analytics.journal.core.calculate_profit import calculate_qty_and_profit
@@ -25,7 +25,7 @@ class TestCalculateProfit(unittest.TestCase):
                 security=SecurityType.STOCK,
                 trade_date=date(2023, 10, 15),
                 symbol="AAPL",
-                action=TradeAction.BOUGHT,
+                action=Action.BOUGHT,
                 quantity=100,
                 fees=5.0,
                 price_per_share=150.0
@@ -40,7 +40,7 @@ class TestCalculateProfit(unittest.TestCase):
                 security=SecurityType.STOCK,
                 trade_date=date(2023, 10, 16),
                 symbol="AAPL",
-                action=TradeAction.SOLD,
+                action=Action.SOLD,
                 quantity=50,
                 fees=3.0,
                 price_per_share=160.0
@@ -55,7 +55,7 @@ class TestCalculateProfit(unittest.TestCase):
                 security=SecurityType.DIVIDEND,
                 trade_date=date(2023, 10, 16),
                 symbol="AAPL",
-                action=TradeAction.DIVIDEND,
+                action=Action.DIVIDEND,
                 quantity=100,
                 fees=0.0,
                 dividend_amount=0.5
@@ -70,7 +70,7 @@ class TestCalculateProfit(unittest.TestCase):
                 security=SecurityType.OPTION,
                 trade_date=date(2023, 10, 17),
                 symbol="AAPL",
-                action=TradeAction.SOLD_SHORT,
+                action=Action.SOLD_SHORT,
                 quantity=1,
                 fees=1.0,
                 expiration_date=date(2023, 11, 17),
@@ -91,7 +91,7 @@ class TestCalculateProfit(unittest.TestCase):
                 security=SecurityType.OPTION,
                 trade_date=date(2023, 10, 18),
                 symbol="MSFT",
-                action=TradeAction.BOUGHT_OPEN,
+                action=Action.BOUGHT_OPEN,
                 quantity=2,
                 fees=2.0,
                 expiration_date=date(2023, 11, 17),
@@ -109,7 +109,7 @@ class TestCalculateProfit(unittest.TestCase):
                 security=SecurityType.OPTION,
                 trade_date=date(2023, 10, 19),
                 symbol="MSFT",
-                action=TradeAction.OPTION_ASSIGNED,
+                action=Action.OPTION_ASSIGNED,
                 quantity=1,
                 fees=1.0,
                 expiration_date=date(2023, 11, 19),

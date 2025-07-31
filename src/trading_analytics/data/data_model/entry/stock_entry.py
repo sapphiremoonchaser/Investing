@@ -1,4 +1,12 @@
-# Imports
+"""StockEntry class for representing stock or etf transactions.
+
+This module defines the `StockEntry` class, a Pydantic model that extends `TradeEntry`
+to represent options stock and etf transaction details. It includes validation to ensure
+SecurityType is 'Stock' or 'ETF' and uses constraints to ensure that price_per_share is non-negative.
+
+Classes:
+    StockEntry: A model for stock or etf entries with a price_per_share.
+"""
 from pydantic import (
     Field,
     model_validator,

@@ -1,3 +1,11 @@
+"""BuyInData class for representing everything necessary to calculate the original or adjusted buy-in.
+
+This module defines the `BuyInData` class, a Pydantic model that includes everything necessary for
+calculating original buy-in or adjusted buy-in.
+
+Classes:
+    BuyInData: A model for values necessary to calculate original or adjusted buy-in.
+"""
 from pydantic import (
     BaseModel,
     Field,

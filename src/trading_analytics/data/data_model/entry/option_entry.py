@@ -1,4 +1,12 @@
-# Imports
+"""OptionEntry class for representing option contract transactions.
+
+This module defines the `OptionEntry` class, a Pydantic model that extends `TradeEntry`
+to represent options contract-specific transaction details. It includes validation to ensure
+datatypes and uses constraints to ensure that strike and premium are non-negative.
+
+Classes:
+    OptionEntry: A model for option contract entries with an expiration date, premium, strike, and type validations.
+"""
 from datetime import (
     date,
     datetime,
@@ -53,7 +61,7 @@ class OptionEntry(TradeEntry):
         try:
             return datetime.strptime(value, "%Y-%m-%d").date()
         except Exception as e:
-            raise ValueError("Yo mama needs to get tha time, fool")
+            raise ValueError(f"Yo mama needs to get tha time, fool. Exception: {e}")
 
     # Normalize option type to uppercase
     @field_validator(

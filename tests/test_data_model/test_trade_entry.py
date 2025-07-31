@@ -4,8 +4,8 @@ from datetime import date
 from pydantic import ValidationError
 
 from trading_analytics.data.enum.security_type import SecurityType
-from trading_analytics.data.enum.sub_action import TradeSubAction
-from trading_analytics.data.enum.trade_action import TradeAction
+from trading_analytics.data.enum.sub_action import SubAction
+from trading_analytics.data.enum.trade_action import Action
 from trading_analytics.data.data_model.entry.trade_entry import TradeEntry
 
 
@@ -41,8 +41,8 @@ class TestTradeId(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -72,8 +72,8 @@ class TestTradeId(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -111,8 +111,8 @@ class TestStrategyId(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -142,8 +142,8 @@ class TestStrategyId(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -183,8 +183,8 @@ class TestBrokerage(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -215,8 +215,8 @@ class TestBrokerage(unittest.TestCase):
                         security=SecurityType.STOCK,
                         trade_date=date(2023, 10, 15),
                         symbol="AAPL",
-                        action=TradeAction.BUY,
-                        sub_action=TradeSubAction.OPEN,
+                        action=Action.BUY,
+                        sub_action=SubAction.OPEN,
                         quantity=100,
                         fees=5.0
                     )
@@ -251,8 +251,8 @@ class TestAccount(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -279,8 +279,8 @@ class TestAccount(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -326,8 +326,8 @@ class TestSecurity(unittest.TestCase):
                     security=value,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -358,8 +358,8 @@ class TestSecurity(unittest.TestCase):
                         security=value,
                         trade_date=date(2023, 10, 15),
                         symbol="AAPL",
-                        action=TradeAction.BUY,
-                        sub_action=TradeSubAction.OPEN,
+                        action=Action.BUY,
+                        sub_action=SubAction.OPEN,
                         quantity=100,
                         fees=5.0
                     )
@@ -387,8 +387,8 @@ class TestSecurity(unittest.TestCase):
                     security=value,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.DIVIDEND,
-                    sub_action=TradeSubAction.DIVIDEND,
+                    action=Action.DIVIDEND,
+                    sub_action=SubAction.DIVIDEND,
                     quantity=100,
                     fees=5.0
                 )
@@ -420,7 +420,7 @@ class TestSecurity(unittest.TestCase):
                         trade_date=date(2023, 10, 15),
                         symbol="AAPL",
                         action=['dividend'],
-                        sub_action=TradeSubAction.DIVIDEND,
+                        sub_action=SubAction.DIVIDEND,
                         quantity=100,
                         fees=5.0
                     )
@@ -447,8 +447,8 @@ class TestSecurity(unittest.TestCase):
                     security=value,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_ASSIGNED,
-                    sub_action=TradeSubAction.CLOSE,
+                    action=Action.OPTION_ASSIGNED,
+                    sub_action=SubAction.CLOSE,
                     quantity=100,
                     fees=5.0
                 )
@@ -479,8 +479,8 @@ class TestSecurity(unittest.TestCase):
                         security=value,
                         trade_date=date(2023, 10, 15),
                         symbol="AAPL",
-                        action=TradeAction.OPTION_ASSIGNED,
-                        sub_action=TradeSubAction.CLOSE,
+                        action=Action.OPTION_ASSIGNED,
+                        sub_action=SubAction.CLOSE,
                         quantity=100,
                         fees=5.0
                     )
@@ -518,8 +518,8 @@ class TestTradeDate(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=value,
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -551,8 +551,8 @@ class TestTradeDate(unittest.TestCase):
                         security=SecurityType.STOCK,
                         trade_date=value,
                         symbol="AAPL",
-                        action=TradeAction.BUY,
-                        sub_action=TradeSubAction.OPEN,
+                        action=Action.BUY,
+                        sub_action=SubAction.OPEN,
                         quantity=100,
                         fees=5.0
                     )
@@ -585,8 +585,8 @@ class TestSymbol(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol=value,
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -613,8 +613,8 @@ class TestSymbol(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol=value,
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=5.0
                 )
@@ -646,7 +646,7 @@ class TestAction(unittest.TestCase):
         Args:
             self: The test case instance.
         """
-        valid_actions = [TradeAction.DIVIDEND, "DIVIDEND"]
+        valid_actions = [Action.DIVIDEND, "DIVIDEND"]
         for value in valid_actions:
             with self.subTest(value=value):
                 trade_entry = TradeEntry(
@@ -659,7 +659,7 @@ class TestAction(unittest.TestCase):
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
                     action=value,
-                    sub_action=TradeSubAction.DIVIDEND,
+                    sub_action=SubAction.DIVIDEND,
                     quantity=100,
                     fees=5.0
                 )
@@ -691,7 +691,7 @@ class TestAction(unittest.TestCase):
                         trade_date=date(2023, 10, 15),
                         symbol="AAPL",
                         action=value,
-                        sub_action=TradeSubAction.OPEN,
+                        sub_action=SubAction.OPEN,
                         quantity=100,
                         fees=5.0
                     )
@@ -848,8 +848,8 @@ class TestQuantity(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=value,
                     fees=5.0
                 )
@@ -879,8 +879,8 @@ class TestQuantity(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=value,
                     fees=5.0
                 )
@@ -919,8 +919,8 @@ class TestFees(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=100,
                     fees=value
                 )
@@ -950,8 +950,8 @@ class TestFees(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BUY,
-                    sub_action=TradeSubAction.OPEN,
+                    action=Action.BUY,
+                    sub_action=SubAction.OPEN,
                     quantity=value,
                     fees=5.0
                 )

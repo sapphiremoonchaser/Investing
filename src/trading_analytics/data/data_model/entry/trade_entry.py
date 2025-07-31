@@ -26,8 +26,8 @@ from typing import (
 )
 
 from trading_analytics.data.enum.security_type import SecurityType
-from trading_analytics.data.enum.trade_action import TradeAction
-from trading_analytics.data.enum.sub_action import TradeSubAction
+from trading_analytics.data.enum.trade_action import Action
+from trading_analytics.data.enum.sub_action import SubAction
 from trading_analytics.data.data_model.market.stock_data import CurrentStockData
 
 
@@ -55,8 +55,8 @@ class TradeEntry(BaseModel):
     security: SecurityType = Field(frozen=True)
     trade_date: date = Field(frozen=True)
     symbol: str = Field(min_length=1, frozen=True)
-    action: TradeAction = Field(frozen=True)
-    sub_action: TradeSubAction = Field(frozen=True)
+    action: Action = Field(frozen=True)
+    sub_action: SubAction = Field(frozen=True)
     quantity: float = Field(ge=0, frozen=True)
     fees: float = Field(ge=0, frozen=True)
 
@@ -66,7 +66,7 @@ class TradeEntry(BaseModel):
         """Whether the trade is bought stock or not."""
         if (
             self.security in [SecurityType.STOCK, SecurityType.ETF] and
-            self.action == TradeAction.BUY
+            self.action == Action.BUY
         ):
             return True
 
@@ -263,8 +263,8 @@ class TradeEntry(BaseModel):
     )
     def normalize_action(
             cls,
-            value: Union[str, TradeAction]
-    ) -> TradeAction:
+            value: Union[str, Action]
+    ) -> Action:
         """Normalizes and validates the trade action.
 
             Args:
@@ -277,13 +277,13 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the trade action is not one of the valid types.
             """
-        if isinstance(value, TradeAction):
+        if isinstance(value, Action):
             return value
 
         # This is the case for my csv file
         if isinstance(value, str):
             try:
-                return TradeAction(value.upper())
+                return Action(value.upper())
             except Exception:
                 raise ValueError(f"Trade action '{value}' is invalid.")
 
@@ -296,8 +296,8 @@ class TradeEntry(BaseModel):
     )
     def normalize_sub_action(
             cls,
-            value: Union[str, TradeSubAction]
-    ) -> TradeSubAction:
+            value: Union[str, SubAction]
+    ) -> SubAction:
         """Normalizes and validates the trade sub action.
 
             Args:
@@ -310,12 +310,12 @@ class TradeEntry(BaseModel):
             Raises:
                 ValueError: If the trade sub action is not one of the valid types.
             """
-        if isinstance(value, TradeSubAction):
+        if isinstance(value, SubAction):
             return value
 
         if isinstance(value, str):
             try:
-                return TradeSubAction(value.upper())
+                return SubAction(value.upper())
             except Exception:
                 raise ValueError(f"Trade sub action '{value}' is invalid.")
 
@@ -340,12 +340,12 @@ class TradeEntry(BaseModel):
 
         # Define mapping of actions to type
         valid_action_map = {
-            SecurityType.STOCK: {TradeAction.BUY, TradeAction.SELL},
-            SecurityType.ETF: {TradeAction.BUY, TradeAction.SELL},
-            SecurityType.DIVIDEND: {TradeAction.DIVIDEND},
-            SecurityType.OPTION: {TradeAction.BUY,
-                                  TradeAction.OPTION_ASSIGNED, TradeAction.OPTION_EXPIRED, TradeAction.OPTION_EXERCISED,
-                                  TradeAction.SELL}
+            SecurityType.STOCK: {Action.BUY, Action.SELL},
+            SecurityType.ETF: {Action.BUY, Action.SELL},
+            SecurityType.DIVIDEND: {Action.DIVIDEND},
+            SecurityType.OPTION: {Action.BUY,
+                                  Action.OPTION_ASSIGNED, Action.OPTION_EXPIRED, Action.OPTION_EXERCISED,
+                                  Action.SELL}
         }
 
         valid_actions = valid_action_map.get(security, set())

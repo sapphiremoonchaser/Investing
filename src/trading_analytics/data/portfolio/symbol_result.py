@@ -1,3 +1,12 @@
+"""SymbolResult class for representing profit, stock quantity, and option quantity.
+
+This module defines the `SymbolResult` class, a Pydantic model that represents profit,
+option quantity, and option quantity. It is used to determine whether or not an asset
+is currently owned.
+
+Classes:
+    SymbolResult: represents profit, stock quantity, and option quantity.
+"""
 from pydantic import (
     BaseModel,
     Field,
