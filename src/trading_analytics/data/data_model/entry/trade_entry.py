@@ -72,6 +72,26 @@ class TradeEntry(BaseModel):
 
         return False
 
+    # ToDo: is_sold_open_option
+
+
+    # ToDo: is_sold_close_option
+
+
+    # ToDo: is_bought_open_option
+
+
+    # ToDo: is_bought_close_option
+
+
+    # ToDo: is_expired_option
+
+
+    # ToDo: is_assigned_call_or_exercised_put
+
+
+    # ToDo: is_exercised_call_or_assigned_put
+
     # Normalize brokerage to uppercase
     @field_validator(
         'brokerage',
