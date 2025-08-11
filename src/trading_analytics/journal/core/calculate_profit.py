@@ -101,25 +101,24 @@ def calculate_qty_and_profit(
         profit = 0.0
 
         # Assign quantities and profit for stock/etf
-        if trade.security in [SecurityType.STOCK, SecurityType.ETF]:
-            # Bought stock/etf
-            if trade.action == Action.BUY:
-                stock_qty = trade.quantity  # Positive for buying shares
-                profit = -trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash outflow
+        # Bought stock/etf
+        if trade.is_bought_stock_etf:
+            stock_qty = trade.quantity  # Positive for buying shares
+            profit = -trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash outflow
 
-            # Sold stock/etf
-            elif trade.action == Action.SELL:
-                stock_qty = -trade.quantity  # Negative for selling shares
-                profit = trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash inflow
+        # Sold stock/etf
+        elif trade.is_stock_etf:
+            stock_qty = -trade.quantity  # Negative for selling shares
+            profit = trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash inflow
 
-            # Stock/ETF trade should only be bought or sold
-            else:
-                logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
-                stock_qty = 0.0
-                profit = 0.0
+        # Stock/ETF trade should only be bought or sold
+        else:
+            logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
+            stock_qty = 0.0
+            profit = 0.0
 
         # Assign profit for Dividends
-        elif trade.security == SecurityType.DIVIDEND:
+        if trade.security == SecurityType.DIVIDEND:
             profit = getattr(trade, 'dividend_amount', 0.0) - trade.fees
             stock_qty = 0.0
 
