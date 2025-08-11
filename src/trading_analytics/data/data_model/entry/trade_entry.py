@@ -72,7 +72,17 @@ class TradeEntry(BaseModel):
 
         return False
 
-    # ToDo: is_sold_open_option
+    # Process Option sold open
+    def is_sold_open_option(self) -> bool:
+        """Option trades that were sold open (call or put)"""
+        if (
+            self.security in [SecurityType.OPTION] and
+            self.action == Action.SELL and
+            self.sub_action == SubAction.OPEN
+        ):
+            return True
+
+        return False
 
 
     # ToDo: is_sold_close_option
