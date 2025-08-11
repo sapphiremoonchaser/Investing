@@ -73,6 +73,18 @@ class TradeEntry(BaseModel):
 
         return False
 
+    # Process STOCK or ETF with SELL action
+    @property
+    def is_sold_stock_etf(self) -> bool:
+        """STOCK/ETF trades where the action is SELL"""
+        if (
+            self.security in [SecurityType.STOCK, SecurityType.ETF] and
+            self.action == Action.SELL
+        ):
+            return True
+
+        return False
+
     # Process Options sold to open
     @property
     def is_sold_open_option(self) -> bool:
