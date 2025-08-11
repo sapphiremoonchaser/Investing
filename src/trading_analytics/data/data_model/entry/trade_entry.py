@@ -73,6 +73,7 @@ class TradeEntry(BaseModel):
         return False
 
     # Process Option sold open
+    @property
     def is_sold_open_option(self) -> bool:
         """Option trades that were sold open (call or put)"""
         if (
