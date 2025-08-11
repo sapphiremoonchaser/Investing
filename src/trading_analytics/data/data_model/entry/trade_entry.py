@@ -114,7 +114,17 @@ class TradeEntry(BaseModel):
         return False
 
 
-    # ToDo: is_bought_close_option
+    # Process Options bought to close
+    @property
+    def is_bought_close_option(self) -> bool:
+        if(
+            self.security == [SecurityType.OPTION] and
+            self.action == Action.BUY and
+            self.sub_action == SubAction.CLOSE
+        ):
+            return True
+
+        return False
 
 
     # ToDo: is_expired_option
