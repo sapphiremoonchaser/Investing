@@ -100,7 +100,18 @@ class TradeEntry(BaseModel):
         return False
 
 
-    # ToDo: is_bought_open_option
+    # Process Options bought to open
+    @property
+    def is_bought_open_option(self) -> bool:
+        """Option trades that were bought open (call or put)"""
+        if(
+            self.security == [SecurityType.OPTION] and
+            self.action == Action.BUY and
+            self.sub_action == SubAction.OPEN
+        ):
+            return True
+
+        return False
 
 
     # ToDo: is_bought_close_option
