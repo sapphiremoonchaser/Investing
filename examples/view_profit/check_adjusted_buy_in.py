@@ -2,13 +2,16 @@
 import logging
 import pandas as pd
 
-from utilities.csv.load_trades import load_trades_from_excel
-from journal.core.calculate_profit import calculate_adjusted_buy_in
+from trading_analytics.journal.core.calculate_profit import calculate_adjusted_buy_in
+from trading_analytics.utilities.csv.load_trades import load_trades_from_excel
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('view_profit_by_symbol.log'), logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler('view_profit_by_symbol.log'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 

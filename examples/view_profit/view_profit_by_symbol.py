@@ -2,13 +2,16 @@
 import pandas as pd
 import logging
 
-from utilities.csv.load_trades import load_trades_from_excel
-from journal.core.calculate_profit import calculate_qty_and_profit
+from trading_analytics.journal.core.calculate_profit import calculate_qty_and_profit
+from trading_analytics.utilities.csv.load_trades import load_trades_from_excel
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('view_profit_by_symbol.log'), logging.StreamHandler()]
+    handlers=[
+        logging.FileHandler('view_profit_by_symbol.log'),
+        logging.StreamHandler()
+    ]
 )
 
 def _test(file_path: str = "C:/Users/viole/dev/Investing-data/trades/trades.xlsx"):

@@ -3,11 +3,11 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.security_type import SecurityType
-from data.enum.trade_action import TradeAction
-from data.enum.trade_strategy import TradeStrategy
-from data.enum.option_type import OptionType
-from data.data_model.entry.option_entry import OptionEntry
+from trading_analytics.data.enum.option_type import OptionType
+from trading_analytics.data.enum.security_type import SecurityType
+from trading_analytics.data.enum.trade_action import Action
+from trading_analytics.data.data_model.entry.option_entry import OptionEntry
+
 
 class TestExpirationDate(unittest.TestCase):
     """Unit tests for validating expiration date values in TradeEntry.
@@ -37,11 +37,11 @@ class TestExpirationDate(unittest.TestCase):
                     strategy_id=1,
                     brokerage='ETRADE',
                     account="TEST1234",
-                    strategy=[TradeStrategy.COVERED_CALL],
+                    strategy=['COVERED_CALL'],
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_EXPIRED,
+                    action=Action.OPTION_EXPIRED,
                     quantity=100,
                     fees=5.0,
                     expiration_date=value,
@@ -73,11 +73,11 @@ class TestExpirationDate(unittest.TestCase):
                         strategy_id=1,
                         brokerage='ETRADE',
                         account="TEST1234",
-                        strategy=[TradeStrategy.BASIC_TRADE],
+                        strategy=['BASIC_TRADE'],
                         security=SecurityType.STOCK,
                         trade_date=date(2025, 1, 23),
                         symbol="AAPL",
-                        action=TradeAction.BOUGHT,
+                        action=Action.BOUGHT,
                         quantity=100,
                         fees=5.0,
                         expiration_date=value,
@@ -121,7 +121,7 @@ class TestStrike(unittest.TestCase):
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_EXPIRED,
+                    action=Action.OPTION_EXPIRED,
                     quantity=100,
                     fees=5.0,
                     expiration_date=date(2025, 1, 30),
@@ -155,7 +155,7 @@ class TestStrike(unittest.TestCase):
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_EXPIRED,
+                    action=Action.OPTION_EXPIRED,
                     quantity=100,
                     fees=5.0,
                     expiration_date=date(2025, 1, 30),
@@ -199,7 +199,7 @@ class TestPremium(unittest.TestCase):
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_EXPIRED,
+                    action=Action.OPTION_EXPIRED,
                     quantity=100,
                     fees=5.0,
                     expiration_date=date(2025, 1, 30),
@@ -233,7 +233,7 @@ class TestPremium(unittest.TestCase):
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_EXPIRED,
+                    action=Action.OPTION_EXPIRED,
                     quantity=100,
                     fees=5.0,
                     expiration_date=date(2025, 1, 30),
@@ -280,7 +280,7 @@ class TestSubtype(unittest.TestCase):
                     security=SecurityType.OPTION,
                     trade_date=date(2025, 1, 23),
                     symbol="AAPL",
-                    action=TradeAction.OPTION_EXPIRED,
+                    action=Action.OPTION_EXPIRED,
                     quantity=100,
                     fees=5.0,
                     expiration_date=date(2025, 1, 30),
@@ -315,7 +315,7 @@ class TestSubtype(unittest.TestCase):
                         security=SecurityType.OPTION,
                         trade_date=date(2025, 1, 23),
                         symbol="AAPL",
-                        action=TradeAction.OPTION_EXPIRED,
+                        action=Action.OPTION_EXPIRED,
                         quantity=100,
                         fees=5.0,
                         expiration_date=date(2025, 1, 30),

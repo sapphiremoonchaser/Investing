@@ -3,10 +3,9 @@ import unittest
 from datetime import date
 from pydantic import ValidationError
 
-from data.enum.security_type import SecurityType
-from data.enum.trade_strategy import TradeStrategy
-from data.enum.trade_action import TradeAction
-from data.data_model.entry.stock_entry import StockEntry
+from trading_analytics.data.enum.security_type import SecurityType
+from trading_analytics.data.enum.trade_action import Action
+from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 
 class TestPricePerShare(unittest.TestCase):
     """Unit tests for validating stock/index price per share in StockEntry.
@@ -42,7 +41,7 @@ class TestPricePerShare(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BOUGHT,
+                    action=Action.BOUGHT,
                     quantity=100,
                     fees=0.05,
                     price_per_share=value
@@ -73,7 +72,7 @@ class TestPricePerShare(unittest.TestCase):
                     security=SecurityType.STOCK,
                     trade_date=date(2023, 10, 15),
                     symbol="AAPL",
-                    action=TradeAction.BOUGHT,
+                    action=Action.BOUGHT,
                     quantity=100,
                     fees=5.0,
                     price_per_share=value

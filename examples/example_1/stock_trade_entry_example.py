@@ -1,7 +1,7 @@
 import json
 import os.path
 
-from data.data_model.entry.stock_entry import StockEntry
+from trading_analytics.data.data_model.entry.stock_entry import StockEntry
 
 
 def __main(json_file_path: str) -> None:
