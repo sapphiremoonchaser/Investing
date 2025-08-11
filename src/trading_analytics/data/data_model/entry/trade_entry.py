@@ -127,7 +127,16 @@ class TradeEntry(BaseModel):
         return False
 
 
-    # ToDo: is_expired_option
+    # Process Expired Options
+    @property
+    def is_expired_option(self) -> bool:
+        if (
+            self.security == [SecurityType.OPTION] and
+            self.action == Action.OPTION_EXPIRED
+        ):
+            return True
+
+        return False
 
 
     # ToDo: is_assigned_call_or_exercised_put
