@@ -117,89 +117,49 @@ def calculate_qty_and_profit(
             stock_qty = 0.0
             profit = 0.0
 
+        # Dividends
         # Assign profit for Dividends
         if trade.security == SecurityType.DIVIDEND:
             profit = getattr(trade, 'dividend_amount', 0.0) - trade.fees
             stock_qty = 0.0
 
-        # Assign quantity and profit for Options
-        elif trade.security == SecurityType.OPTION:
-            # Get option type (call or put)
-            option_type = getattr(trade, 'option_type', None)
+        # Options
+        # Options sold open
+        if trade.is_sold_open_option:
+            option_qty = trade.quantity
+            profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
 
-            # Assign quantity and profit for Calls
-            if option_type == OptionType.CALL:
-                # Calls sold open
-                if trade.action == Action.SELL and trade.sub_action == SubAction.OPEN:
-                    option_qty = trade.quantity
-                    profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+        # Options sold close
+        elif trade.is_sold_closed_option:
+            option_qty = -trade.quantity
+            profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
 
-                # Calls sold close
-                elif trade.action == Action.SELL and trade.sub_action == SubAction.CLOSE:
-                    option_qty = -trade.quantity
-                    profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+        # Options bought open
+        elif trade.is_bought_open_option:
+            option_qty = trade.quantity
+            profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
 
-                # Calls bought open
-                elif trade.action == Action.BUY and trade.sub_action == SubAction.OPEN:
-                    option_qty = trade.quantity
-                    profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+        # Options bought close
+        elif trade.is_bought_closed_option:
+            option_qty = -trade.quantity
+            profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
 
-                # Calls bought close
-                elif trade.action == Action.BUY and trade.sub_action == SubAction.CLOSE:
-                    option_qty = -trade.quantity
-                    profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+        # Options expired
+        elif trade.is_expired_option:
+            option_qty = -trade.quantity
+            profit = 0.0
 
-                # Calls expired
-                elif trade.action == Action.OPTION_EXPIRED:
-                    option_qty = -trade.quantity
-                    profit = 0.0
+        # Calls assinged, Puts exercised
+        elif trade.is_assigned_call_or_exercised_put:
+            stock_qty = -trade.quantity * 100
+            option_qty = -trade.quantity
+            profit = trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
 
-                # Calls assigned
-                elif trade.action == Action.OPTION_ASSIGNED:
-                    stock_qty = -trade.quantity * 100
-                    option_qty = -trade.quantity
-                    profit = trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
-
-                # Calls exercised
-                elif trade.action == Action.OPTION_EXERCISED:
-                    stock_qty = trade.quantity * 100
-                    option_qty = -trade.quantity
-                    profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
-
-                # Wrong action for calls
-                else:
-                    logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
-                    option_qty = 0.0
-                    profit = 0.0
-
-            # Assign quantity and profit for Puts
-            elif option_type == OptionType.PUT:
-                # Puts bought open
-                if trade.action == Action.BUY and trade.sub_action == SubAction.OPEN:
-                    option_qty = trade.quantity
-                    profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-
-                # Puts sold close
-                elif trade.action == Action.SELL and trade.sub_action == SubAction.CLOSE:
-                    option_qty = -trade.quantity
-                    profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
-
-                # Puts expired
-                elif trade.action == Action.OPTION_EXPIRED:
-                    option_qty = -trade.quantity
-                    profit = 0.0
-
-                # Puts assigned
-                elif trade.action == Action.OPTION_ASSIGNED:
-                    stock_qty = trade.quantity * 100
-                    option_qty = -trade.quantity
-                    profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
-
-                # Invalid action for puts
-                else:
-                    logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
-                    option_qty = 0.0
-                    profit = 0.0
+        # Calls exercised, puts assigned
+        elif trade.is_exercised_call_or_assigned_put:
+            stock_qty = trade.quantity * 100
+            option_qty = -trade.quantity
+            profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
 
         # Unexpected security type
         else:
