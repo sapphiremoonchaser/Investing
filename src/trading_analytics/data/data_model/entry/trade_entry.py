@@ -25,6 +25,7 @@ from typing import (
     Optional,
 )
 
+from trading_analytics.data.enum.option_type import OptionType
 from trading_analytics.data.enum.security_type import SecurityType
 from trading_analytics.data.enum.trade_action import Action
 from trading_analytics.data.enum.sub_action import SubAction
@@ -117,6 +118,7 @@ class TradeEntry(BaseModel):
     # Process Options bought to close
     @property
     def is_bought_close_option(self) -> bool:
+        """Option trades that were bought close (call or put)"""
         if(
             self.security == [SecurityType.OPTION] and
             self.action == Action.BUY and
@@ -130,6 +132,7 @@ class TradeEntry(BaseModel):
     # Process Expired Options
     @property
     def is_expired_option(self) -> bool:
+        """Option trades that were expired (call or put)"""
         if (
             self.security == [SecurityType.OPTION] and
             self.action == Action.OPTION_EXPIRED
@@ -139,10 +142,47 @@ class TradeEntry(BaseModel):
         return False
 
 
-    # ToDo: is_assigned_call_or_exercised_put
+    # Process Assigned Calls and Exercised Puts
+    @property
+    def is_assigned_call_or_exercised_put(self) -> bool:
+        """Options where a call was assigned or a put was exercised"""
+        if(
+            (
+                self.security == [SecurityType.OPTION] and
+                self.OptionType == OptionType.CALL and
+                self.action == Action.OPTION_ASSIGNED
+            ) or
+            (
+                self.security == [SecurityType.OPTION] and
+                self.OptionType == OptionType.PUT and
+                self.action == Action.OPTION_ASSIGNED
+            )
+        ):
+            return True
+
+        return False
 
 
-    # ToDo: is_exercised_call_or_assigned_put
+    # Process Exercised Calls and Assigned Puts
+    @property
+    def is_exercised_call_or_assigned_put(self) -> bool:
+        """Options where a call was exercised or a put was assigned"""
+        if (
+            (
+                self.security == [SecurityType.OPTION] and
+                self.OptionType == OptionType.CALL and
+                self.action == Action.OPTION_EXERCISED
+            ) or
+            (
+                self.security == [SecurityType.OPTION] and
+                self.OptionType == OptionType.PUT and
+                self.action == Action.OPTION_ASSIGNED
+            )
+        ):
+            return True
+
+        return False
+
 
     # Normalize brokerage to uppercase
     @field_validator(
