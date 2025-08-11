@@ -51,6 +51,7 @@ def load_trades_from_excel(
         logger.error(f"Failed to read Excel file {file_path}. {e}")
         raise e
 
+    # Assign values from csv rows to a Series
     trades = []
     row: pd.Series
     for _, row in df.iterrows():
@@ -75,16 +76,21 @@ def load_trades_from_excel(
 
         # Create appropriate entry based on security type
         try:
+            # Stock or ETF, assign price_per_share
             if common_fields['security'] in [SecurityType.STOCK, SecurityType.ETF]:
                 trade = StockEntry(
                     **common_fields,
                     price_per_share=float(row.get("price_per_share", 0.0))
                 )
+
+            # Dividend, assign dividend_amount
             elif common_fields['security'] == SecurityType.DIVIDEND:
                 trade = DividendEntry(
                     **common_fields,
                     dividend_amount=float(row.get("dividend_amount", 0.0))
                 )
+
+            # Option, assign expiration date, strike, premium, option_type
             elif common_fields['security'] == SecurityType.OPTION:
                 try:
                     trade = OptionEntry(
@@ -95,7 +101,6 @@ def load_trades_from_excel(
                         option_type=OptionType[row["option_type"].upper()] if row.get("option_type") else None
                     )
                 except Exception as e:
-                    x = 1
                     raise ValueError(f"Failed to parse row for (trade_id={row.get('trade_id')}): {e}")
             else:
                 logger.error(f"Invalid security type for (trade_id={row['trade_id']}): {common_fields['security']}")

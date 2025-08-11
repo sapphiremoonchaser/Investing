@@ -37,7 +37,8 @@ def _process_stock_etf_buy_trades(
     trades: List[TradeEntry],
     data_dict: dict
 ) -> None:
-    """Helper function to process trades where SecurityType is STOCK or ETF and action is BUY.
+    """Helper function to process trades where SecurityType is STOCK or ETF
+        and action is BUY. If all of that is true update cost and quantity.
 
     Args:
         trades (List[TradeEntry]): List of trade entries to process.
@@ -51,8 +52,9 @@ def _process_stock_etf_buy_trades(
 
         # Initialize dict for new symbol is not already there
         if symbol not in data_dict:
-            data_dict[symbol] = BuyInData()
+            data_dict[symbol] = BuyInData() # Class with variables need for calculating original or adjusted buy-in
 
+        # If bought stock/etf update cost and quantity
         if trade.is_bought_stock_etf:
             total_cost = trade.price_per_share * trade.quantity + trade.fees
             data_dict[symbol].total_cost += total_cost
@@ -93,78 +95,114 @@ def calculate_qty_and_profit(
         if symbol not in results.keys():
             results[symbol] = SymbolResult()
 
-        # Calculate profit/loss based on security type
+        # Initialize quantities and profit
         stock_qty = 0.0
         option_qty = 0.0
         profit = 0.0
 
-        # Stock or ETF
+        # Assign quantities and profit for stock/etf
         if trade.security in [SecurityType.STOCK, SecurityType.ETF]:
+            # Bought stock/etf
             if trade.action == Action.BUY:
                 stock_qty = trade.quantity  # Positive for buying shares
                 profit = -trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash outflow
+
+            # Sold stock/etf
             elif trade.action == Action.SELL:
                 stock_qty = -trade.quantity  # Negative for selling shares
                 profit = trade.quantity * getattr(trade, 'price_per_share', 0.0) - trade.fees  # Cash inflow
+
+            # Stock/ETF trade should only be bought or sold
             else:
                 logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
                 stock_qty = 0.0
                 profit = 0.0
 
-        # Dividend
+        # Assign profit for Dividends
         elif trade.security == SecurityType.DIVIDEND:
             profit = getattr(trade, 'dividend_amount', 0.0) - trade.fees
             stock_qty = 0.0
 
-        # Options
+        # Assign quantity and profit for Options
         elif trade.security == SecurityType.OPTION:
+            # Get option type (call or put)
             option_type = getattr(trade, 'option_type', None)
+
+            # Assign quantity and profit for Calls
             if option_type == OptionType.CALL:
+                # Calls sold open
                 if trade.action == Action.SELL and trade.sub_action == SubAction.OPEN:
                     option_qty = trade.quantity
                     profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+
+                # Calls sold close
                 elif trade.action == Action.SELL and trade.sub_action == SubAction.CLOSE:
                     option_qty = -trade.quantity
                     profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+
+                # Calls bought open
                 elif trade.action == Action.BUY and trade.sub_action == SubAction.OPEN:
                     option_qty = trade.quantity
                     profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+
+                # Calls bought close
                 elif trade.action == Action.BUY and trade.sub_action == SubAction.CLOSE:
                     option_qty = -trade.quantity
                     profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+
+                # Calls expired
                 elif trade.action == Action.OPTION_EXPIRED:
                     option_qty = -trade.quantity
                     profit = 0.0
+
+                # Calls assigned
                 elif trade.action == Action.OPTION_ASSIGNED:
                     stock_qty = -trade.quantity * 100
                     option_qty = -trade.quantity
                     profit = trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
+
+                # Calls exercised
                 elif trade.action == Action.OPTION_EXERCISED:
                     stock_qty = trade.quantity * 100
                     option_qty = -trade.quantity
                     profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
+
+                # Wrong action for calls
                 else:
                     logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
                     option_qty = 0.0
                     profit = 0.0
+
+            # Assign quantity and profit for Puts
             elif option_type == OptionType.PUT:
+                # Puts bought open
                 if trade.action == Action.BUY and trade.sub_action == SubAction.OPEN:
                     option_qty = trade.quantity
                     profit = -trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+
+                # Puts sold close
                 elif trade.action == Action.SELL and trade.sub_action == SubAction.CLOSE:
                     option_qty = -trade.quantity
                     profit = trade.quantity * getattr(trade, 'premium', 0.0) * 100 - trade.fees
+
+                # Puts expired
                 elif trade.action == Action.OPTION_EXPIRED:
                     option_qty = -trade.quantity
                     profit = 0.0
+
+                # Puts assigned
                 elif trade.action == Action.OPTION_ASSIGNED:
                     stock_qty = trade.quantity * 100
                     option_qty = -trade.quantity
                     profit = -trade.quantity * getattr(trade, 'strike', 0.0) * 100 - trade.fees
+
+                # Invalid action for puts
                 else:
                     logger.warning(f"Unexpected action {trade.action} for trade_id {trade.trade_id}")
                     option_qty = 0.0
                     profit = 0.0
+
+        # Unexpected security type
         else:
             logger.warning(f"Unexpected security type {trade.security} for trade_id {trade.trade_id}")
             stock_qty = 0.0
@@ -222,9 +260,12 @@ def calculate_original_buy_in(
               raising exceptions.
     """
     buy_in_data: Dict[str, BuyInData] = {}
+
+    # Stock/ETF trades bought
     _process_stock_etf_buy_trades(trades, buy_in_data)
 
-    print(f"Buy-in data: {[(symbol, data.total_cost, data.total_quantity) for symbol, data in buy_in_data.items()]}")
+    # print(f"Buy-in data: {[(symbol, data.total_cost, data.total_quantity) for symbol, data in buy_in_data.items()]}")
+
     # Calculate average buy-in price per share by symbol
     result = {}
     for symbol, data in buy_in_data.items():
@@ -259,8 +300,11 @@ def calculate_adjusted_buy_in(
               raising exceptions.
     """
     adjusted_data: Dict[str, BuyInData] = {}
+
+    # Stock/ETF trade that were bought
     _process_stock_etf_buy_trades(trades, adjusted_data)
 
+    # Add/subtract premiums and dividends
     for trade in trades:
         symbol = trade.symbol
 
@@ -272,6 +316,8 @@ def calculate_adjusted_buy_in(
             # Option Trades (premiums)
             if isinstance(trade, OptionEntry):
                 if trade.option_type in [OptionType.CALL, OptionType.PUT]:
+
+                    # Sold option, add premium
                     if (
                         trade.action == Action.SELL
                         and trade.sub_action in [SubAction.OPEN, SubAction.CLOSE]
@@ -279,6 +325,7 @@ def calculate_adjusted_buy_in(
                         premium = trade.premium  * trade.quantity * 100 - trade.fees
                         adjusted_data[symbol].net_option_premiums += premium
 
+                    # Bought option, subtract premium
                     elif (
                             trade.action == Action.BUY
                             and trade.sub_action in [SubAction.OPEN, SubAction.CLOSE]
@@ -286,7 +333,7 @@ def calculate_adjusted_buy_in(
                         premium = -trade.premium * trade.quantity * 100 - trade.fees
                         adjusted_data[symbol].net_option_premiums += premium
 
-            # Dividend Trades
+            # Dividend Trades, add dividend
             elif isinstance(trade, DividendEntry):
                 dividend = trade.dividend_amount - trade.fees
                 adjusted_data[symbol].total_dividends += dividend

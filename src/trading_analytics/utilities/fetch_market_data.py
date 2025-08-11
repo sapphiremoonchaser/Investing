@@ -43,15 +43,23 @@ def fetch_options_data(
     :return: List of dictionaries containing options data (strike, last price, expiration)
     """
     try:
+        # Create a Ticker object for the symbol passed in
         ticker = yf.Ticker(symbol.upper())
+
         # Get the first available expiration date
+        # Do I really want the first expiration?
+        # ToDo: work on this function
         expiration = ticker.options[0] if ticker.options else None
         if not expiration:
             raise ValueError(f"No options data available for {symbol}")
+
         # Fetch options chain for the first expiration
         options = ticker.option_chain(expiration)
+
         # Return calls data with relevant fields
         calls = options.calls[['strike', 'lastPrice', 'expiration']].to_dict('records')
+
         return [{'strike': c['strike'], 'lastPrice': c['lastPrice'], 'expiration': expiration} for c in calls]
+
     except Exception as e:
         raise ValueError(f"Failed to fetch options data for {symbol}: {str(e)}")
